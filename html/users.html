@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Management — MediCare HMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Filter tabs */
+    .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-tab {
+      padding: 7px 16px; border-radius: 999px; font-size: .82rem; font-weight: 700;
+      cursor: pointer; border: 1.5px solid var(--gray-200); color: var(--gray-600);
+      transition: all .15s;
+    }
+    .filter-tab:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-tab.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+
+    /* User list row actions */
+    .action-btns { display: flex; gap: 6px; }
+    .action-btn {
+      width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--gray-200);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: .88rem; background: var(--white); transition: all .15s;
+    }
+    .action-btn:hover { background: var(--gray-100); }
+    .action-btn.danger:hover { background: #fee2e2; border-color: #fca5a5; }
+
+    /* Modal role content */
+    .role-fields { display: none; }
+    .role-fields.show { display: block; }
+
+    /* Specialty tags */
+    .spec-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .spec-chip {
+      padding: 4px 12px; border-radius: 999px; background: var(--primary-light);
+      color: var(--primary); font-size: .78rem; font-weight: 600;
+      display: flex; align-items: center; gap: 4px; cursor: pointer;
+    }
+    .spec-chip:hover { background: #bfdbfe; }
+
+    /* Availability toggle */
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+    .toggle {
+      width: 44px; height: 24px; background: var(--gray-300); border-radius: 999px;
+      position: relative; cursor: pointer; transition: background .2s;
+    }
+    .toggle.on { background: var(--primary); }
+    .toggle::after {
+      content: ''; position: absolute; width: 18px; height: 18px;
+      background: var(--white); border-radius: 50%; top: 3px; left: 3px;
+      transition: transform .2s; box-shadow: var(--shadow-sm);
+    }
+    .toggle.on::after { transform: translateX(20px); }
+    .toggle-label { font-size: .85rem; color: var(--gray-600); }
+
+    /* Working hours grid */
+    .hours-grid { display: grid; grid-template-columns: 100px 1fr 1fr auto; gap: 8px; align-items: center; }
+    .hours-grid .hdr { font-size: .75rem; font-weight: 700; color: var(--gray-500); text-transform: uppercase; }
+
+    /* Search + filter bar */
+    .list-toolbar {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .search-input-wrap { position: relative; flex: 1; min-width: 200px; }
+    .search-input-wrap input {
+      width: 100%; padding: 9px 12px 9px 36px;
+      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+      font-size: .88rem; background: var(--gray-50);
+    }
+    .search-input-wrap input:focus { outline: none; border-color: var(--primary); background: var(--white); }
+    .search-input-wrap .ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🏥</div>
+      <div>
+        <div class="logo-text">MediCare HMS</div>
+        <div class="logo-sub">Hospital Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="booking.html"   class="nav-item"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
+        <a href="users.html"     class="nav-item active"><span class="nav-icon">👥</span> Users</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Clinical</div>
+        <a href="patients.html" class="nav-item"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
+        <a href="doctors.html" class="nav-item"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
+        <a href="wards.html" class="nav-item"><span class="nav-icon">🏨</span> Wards & Beds</a>
+        <a href="pharmacy.html" class="nav-item"><span class="nav-icon">💊</span> Pharmacy</a>
+        <a href="lab.html" class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Administration</div>
+        <a href="billing.html" class="nav-item"><span class="nav-icon">💰</span> Billing</a>
+        <a href="reports.html" class="nav-item"><span class="nav-icon">📈</span> Reports</a>
+        <a href="#" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar avatar-blue">SA</div>
+        <div class="user-info">
+          <div class="user-name">Dr. Sarah Admin</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div>
+          <div class="topbar-title">User Management</div>
+          <div class="topbar-breadcrumb">Admin / Users</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search users…" />
+        </div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Header -->
+      <div class="page-header">
+        <div>
+          <h2>Users</h2>
+          <p>Manage doctors, patients and admin accounts</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('createModal')">➕ Add New User</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <div class="stat-info"><div class="stat-value">1,378</div><div class="stat-label">Total Users</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">👨‍⚕️</div>
+          <div class="stat-info"><div class="stat-value">64</div><div class="stat-label">Doctors</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">🧑‍⚕️</div>
+          <div class="stat-info"><div class="stat-value">1,248</div><div class="stat-label">Patients</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">🛡️</div>
+          <div class="stat-info"><div class="stat-value">66</div><div class="stat-label">Admins</div></div>
+        </div>
+      </div>
+
+      <!-- Table card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="filter-tabs" id="filterTabs">
+            <div class="filter-tab active" onclick="setFilter('all',this)">All Users</div>
+            <div class="filter-tab" onclick="setFilter('doctor',this)">👨‍⚕️ Doctors</div>
+            <div class="filter-tab" onclick="setFilter('patient',this)">🧑 Patients</div>
+            <div class="filter-tab" onclick="setFilter('admin',this)">🛡️ Admins</div>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-sm btn-secondary">⬇️ Export</button>
+          </div>
+        </div>
+
+        <div class="card-body" style="padding:0;">
+          <!-- Toolbar -->
+          <div style="padding:16px 20px;border-bottom:1px solid var(--gray-100);">
+            <div class="list-toolbar">
+              <div class="search-input-wrap">
+                <span class="ico">🔍</span>
+                <input type="text" placeholder="Search by name, email or ID…" oninput="filterTable(this.value)" />
+              </div>
+              <select class="form-select" style="width:auto;" onchange="filterByDept(this.value)">
+                <option value="">All Departments</option>
+                <option>Cardiology</option>
+                <option>Neurology</option>
+                <option>Oncology</option>
+                <option>Pediatrics</option>
+                <option>Orthopedics</option>
+                <option>General</option>
+              </select>
+              <select class="form-select" style="width:auto;">
+                <option value="">Status: All</option>
+                <option>Active</option>
+                <option>Inactive</option>
+                <option>Pending</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table id="userTable">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" onchange="toggleAll(this)" /></th>
+                  <th>User</th>
+                  <th>Role</th>
+                  <th>Department / Info</th>
+                  <th>Contact</th>
+                  <th>Joined</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="userBody">
+                <!-- rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div style="padding:14px 20px;border-top:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;">
+            <span class="text-sm text-muted">Showing 1–8 of 1,378 users</span>
+            <div class="flex gap-2">
+              <button class="btn btn-sm btn-secondary">← Prev</button>
+              <button class="btn btn-sm btn-primary">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /page-content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- ===== CREATE USER MODAL ===== -->
+<div class="modal-overlay hidden" id="createModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div>
+        <h3>➕ Create New User</h3>
+        <p class="text-sm text-muted" style="margin-top:3px;">Fill in details to create a doctor, patient or admin account.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('createModal')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Step indicator -->
+      <div class="steps" id="formSteps">
+        <div class="step-item active" id="step1-ind">
+          <div class="step-circle">1</div>
+          <div class="step-label">Role & Basic Info</div>
+        </div>
+        <div class="step-line" id="line1"></div>
+        <div class="step-item" id="step2-ind">
+          <div class="step-circle">2</div>
+          <div class="step-label">Role Details</div>
+        </div>
+        <div class="step-line" id="line2"></div>
+        <div class="step-item" id="step3-ind">
+          <div class="step-circle">3</div>
+          <div class="step-label">Access & Password</div>
+        </div>
+      </div>
+
+      <!-- Step 1: Role + basic -->
+      <div id="stepPanel1">
+        <div class="role-tabs" id="roleTabs">
+          <div class="role-tab selected" onclick="selectUserRole('doctor', this)">
+            <div class="role-icon">👨‍⚕️</div>
+            <div class="role-name">Doctor</div>
+          </div>
+          <div class="role-tab" onclick="selectUserRole('patient', this)">
+            <div class="role-icon">🧑</div>
+            <div class="role-name">Patient</div>
+          </div>
+          <div class="role-tab" onclick="selectUserRole('admin', this)">
+            <div class="role-icon">🛡️</div>
+            <div class="role-name">Admin</div>
+          </div>
+          <div class="role-tab" onclick="selectUserRole('super_admin', this)">
+            <div class="role-icon">⚙️</div>
+            <div class="role-name">Super Admin</div>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">First Name *</label>
+            <input type="text" class="form-control" placeholder="John" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name *</label>
+            <input type="text" class="form-control" placeholder="Doe" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address *</label>
+            <input type="email" class="form-control" placeholder="john@hospital.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number *</label>
+            <input type="tel" class="form-control" placeholder="+1 (555) 000-0000" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select class="form-select">
+              <option value="">Select gender</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+              <option>Prefer not to say</option>
+            </select>
+          </div>
+          <div class="form-group col-span-2">
+            <label class="form-label">Address</label>
+            <input type="text" class="form-control" placeholder="123 Main Street, City, State" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Role-specific fields -->
+      <div id="stepPanel2" style="display:none;">
+        <!-- Doctor fields -->
+        <div class="role-fields show" id="fields-doctor">
+          <div class="alert alert-info" style="margin-bottom:18px;">
+            👨‍⚕️ Fill in the doctor's professional details below.
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Medical License No. *</label>
+              <input type="text" class="form-control" placeholder="ML-2024-XXXXX" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Specialization *</label>
+              <select class="form-select">
+                <option value="">Select specialization</option>
+                <option>Cardiology</option>
+                <option>Neurology</option>
+                <option>Oncology</option>
+                <option>Pediatrics</option>
+                <option>Orthopedics</option>
+                <option>General Medicine</option>
+                <option>Gynecology</option>
+                <option>Dermatology</option>
+                <option>Psychiatry</option>
+                <option>Radiology</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Department</label>
+              <select class="form-select">
+                <option value="">Select department</option>
+                <option>Cardiology</option>
+                <option>Neurology</option>
+                <option>Oncology</option>
+                <option>Pediatrics</option>
+                <option>Orthopedics</option>
+                <option>OPD</option>
+                <option>ICU</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Years of Experience</label>
+              <input type="number" class="form-control" placeholder="e.g. 8" min="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Consultation Fee ($)</label>
+              <input type="number" class="form-control" placeholder="150" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Consultation Duration (min)</label>
+              <select class="form-select">
+                <option>15</option><option>20</option><option selected>30</option><option>45</option><option>60</option>
+              </select>
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Qualifications</label>
+              <input type="text" class="form-control" placeholder="MBBS, MD, FRCS …" />
+            </div>
+          </div>
+
+          <!-- Working Hours -->
+          <div class="form-group" style="margin-top:8px;">
+            <label class="form-label">Working Days & Hours</label>
+            <div class="hours-grid" style="margin-bottom:6px;">
+              <span class="hdr">Day</span>
+              <span class="hdr">Start</span>
+              <span class="hdr">End</span>
+              <span class="hdr">Active</span>
+            </div>
+            <div id="hoursRows"></div>
+          </div>
+        </div>
+
+        <!-- Patient fields -->
+        <div class="role-fields" id="fields-patient">
+          <div class="alert alert-info" style="margin-bottom:18px;">
+            🧑 Fill in the patient's medical background information.
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Blood Group</label>
+              <select class="form-select">
+                <option value="">Unknown</option>
+                <option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option>
+                <option>O+</option><option>O-</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Height (cm)</label>
+              <input type="number" class="form-control" placeholder="175" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Weight (kg)</label>
+              <input type="number" class="form-control" placeholder="70" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Marital Status</label>
+              <select class="form-select">
+                <option value="">Select</option>
+                <option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option>
+              </select>
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Allergies</label>
+              <input type="text" class="form-control" placeholder="e.g. Penicillin, Peanuts, Latex" />
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Chronic Conditions</label>
+              <input type="text" class="form-control" placeholder="e.g. Diabetes Type 2, Hypertension" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Emergency Contact Name</label>
+              <input type="text" class="form-control" placeholder="Jane Doe" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Emergency Contact Phone</label>
+              <input type="tel" class="form-control" placeholder="+1 (555) 000-0001" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Insurance Provider</label>
+              <input type="text" class="form-control" placeholder="Blue Cross Blue Shield" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Insurance Policy No.</label>
+              <input type="text" class="form-control" placeholder="BCB-2024-XXXXXX" />
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Assign Primary Doctor</label>
+              <select class="form-select">
+                <option value="">— Unassigned —</option>
+                <option>Dr. S. Patel (Cardiology)</option>
+                <option>Dr. L. Chen (Oncology)</option>
+                <option>Dr. T. Nguyen (Neurology)</option>
+                <option>Dr. J. Smith (Pediatrics)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin fields -->
+        <div class="role-fields" id="fields-admin">
+          <div class="alert alert-info" style="margin-bottom:18px;">
+            🛡️ Set the admin's access level and responsible departments.
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Admin Level</label>
+              <select class="form-select">
+                <option>Department Admin</option>
+                <option>Hospital Admin</option>
+                <option>Finance Admin</option>
+                <option>HR Admin</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Employee ID</label>
+              <input type="text" class="form-control" placeholder="EMP-2024-XXX" />
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Responsible Departments</label>
+              <select class="form-select" multiple style="height:90px;">
+                <option>Cardiology</option>
+                <option>Neurology</option>
+                <option>Oncology</option>
+                <option>Pediatrics</option>
+                <option>Finance</option>
+                <option>HR</option>
+              </select>
+              <span class="text-xs text-muted mt-1">Hold Ctrl/Cmd to select multiple</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Super Admin fields -->
+        <div class="role-fields" id="fields-super_admin">
+          <div class="alert alert-warning" style="margin-bottom:18px;">
+            ⚙️ Super Admin has <strong>full system access</strong>. Assign this role with caution.
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Employee ID</label>
+              <input type="text" class="form-control" placeholder="EMP-2024-XXX" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Designation</label>
+              <input type="text" class="form-control" placeholder="Chief Medical Officer" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Password + Permissions -->
+      <div id="stepPanel3" style="display:none;">
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Username *</label>
+            <input type="text" class="form-control" placeholder="john.doe" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Initial Password *</label>
+            <div class="input-group" style="position:relative;">
+              <input type="password" class="form-control" id="newPass" placeholder="Min 8 characters" />
+              <span onclick="toggleNewPass()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--gray-400);">👁️</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password *</label>
+            <input type="password" class="form-control" placeholder="Repeat password" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Account Status</label>
+            <select class="form-select">
+              <option value="active">Active (Immediate Access)</option>
+              <option value="pending">Pending (Send Invite)</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <label class="form-label">Permissions</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
+            <input type="checkbox" checked /> View Patients
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
+            <input type="checkbox" checked /> Manage Appointments
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
+            <input type="checkbox" /> Manage Users
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
+            <input type="checkbox" /> View Reports
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
+            <input type="checkbox" /> Manage Billing
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
+            <input type="checkbox" /> System Settings
+          </label>
+        </div>
+
+        <div class="form-group mt-3">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.9rem;">
+            <input type="checkbox" checked />
+            Send welcome email with login credentials
+          </label>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.9rem;">
+            <input type="checkbox" checked />
+            Force password change on first login
+          </label>
+        </div>
+
+        <div class="alert alert-success mt-3" id="successAlert" style="display:none;">
+          ✅ User created successfully! A welcome email has been sent.
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevStep()" style="display:none;">← Back</button>
+      <button class="btn btn-secondary" onclick="closeModal('createModal')">Cancel</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW USER MODAL -->
+<div class="modal-overlay hidden" id="viewModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 id="viewModalTitle">User Profile</h3>
+      <button class="modal-close" onclick="closeModal('viewModal')">✕</button>
+    </div>
+    <div class="modal-body" id="viewModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('viewModal')">Close</button>
+      <button class="btn btn-primary">Edit User</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ---- Sample Data ---- */
+  const users = [
+    { id:'USR-001', name:'Dr. Sanjay Patel',   role:'doctor',  dept:'Cardiology',  email:'s.patel@mc.com',    phone:'+1 555-0101', joined:'Jan 12, 2022', status:'active'   },
+    { id:'USR-002', name:'Dr. Linda Chen',      role:'doctor',  dept:'Oncology',    email:'l.chen@mc.com',     phone:'+1 555-0102', joined:'Mar 05, 2021', status:'active'   },
+    { id:'USR-003', name:'James Donovan',       role:'patient', dept:'—',           email:'j.donovan@m.com',   phone:'+1 555-0201', joined:'Feb 10, 2023', status:'active'   },
+    { id:'USR-004', name:'Maria Rodriguez',     role:'patient', dept:'—',           email:'m.rodriguez@m.com', phone:'+1 555-0202', joined:'Aug 22, 2023', status:'active'   },
+    { id:'USR-005', name:'Alice Brown',         role:'admin',   dept:'HR',          email:'a.brown@mc.com',    phone:'+1 555-0301', joined:'Nov 01, 2020', status:'active'   },
+    { id:'USR-006', name:'Dr. Sarah Admin',     role:'super_admin', dept:'All',     email:'admin@mc.com',      phone:'+1 555-0001', joined:'Jan 01, 2020', status:'active'   },
+    { id:'USR-007', name:'Dr. Tom Nguyen',      role:'doctor',  dept:'Neurology',   email:'t.nguyen@mc.com',   phone:'+1 555-0103', joined:'Jun 15, 2023', status:'active'   },
+    { id:'USR-008', name:'Emily Carter',        role:'patient', dept:'—',           email:'e.carter@m.com',    phone:'+1 555-0203', joined:'Mar 07, 2026', status:'pending'  },
+  ];
+
+  const roleBadge = { doctor:'badge-accent', patient:'badge-primary', admin:'badge-warning', super_admin:'badge-danger' };
+  const roleLabel = { doctor:'👨‍⚕️ Doctor', patient:'🧑 Patient', admin:'🛡️ Admin', super_admin:'⚙️ Super Admin' };
+  const statusBadge = { active:'badge-success', inactive:'badge-gray', pending:'badge-warning' };
+
+  let currentFilter = 'all';
+  let currentSearch = '';
+  let currentStep = 1;
+  let selectedUserRole = 'doctor';
+  const TOTAL_STEPS = 3;
+
+  function renderTable() {
+    const tbody = document.getElementById('userBody');
+    const filtered = users.filter(u => {
+      const matchRole = currentFilter === 'all' || u.role === currentFilter;
+      const matchSearch = !currentSearch || u.name.toLowerCase().includes(currentSearch) || u.email.toLowerCase().includes(currentSearch) || u.id.toLowerCase().includes(currentSearch);
+      return matchRole && matchSearch;
+    });
+    tbody.innerHTML = filtered.map(u => `
+      <tr>
+        <td><input type="checkbox" /></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="avatar ${getAvatarColor(u.role)}">${initials(u.name)}</div>
+            <div>
+              <div style="font-weight:700;font-size:.88rem;">${u.name}</div>
+              <div style="font-size:.75rem;color:var(--gray-400);">${u.id}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge ${roleBadge[u.role]}">${roleLabel[u.role]}</span></td>
+        <td style="color:var(--gray-600);font-size:.85rem;">${u.dept}</td>
+        <td>
+          <div style="font-size:.85rem;">${u.email}</div>
+          <div style="font-size:.78rem;color:var(--gray-400);">${u.phone}</div>
+        </td>
+        <td style="font-size:.85rem;color:var(--gray-500);">${u.joined}</td>
+        <td><span class="badge ${statusBadge[u.status]}">${u.status.charAt(0).toUpperCase()+u.status.slice(1)}</span></td>
+        <td>
+          <div class="action-btns">
+            <button class="action-btn" title="View" onclick="viewUser('${u.id}')">👁️</button>
+            <button class="action-btn" title="Edit">✏️</button>
+            <button class="action-btn danger" title="Delete">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `).join('') || `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray-400);">No users found</td></tr>`;
+  }
+
+  function initials(name) {
+    return name.replace('Dr. ','').split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase();
+  }
+  function getAvatarColor(role) {
+    return {doctor:'avatar-blue',patient:'avatar-green',admin:'avatar-orange',super_admin:'avatar-purple'}[role] || 'avatar-blue';
+  }
+
+  function setFilter(role, el) {
+    currentFilter = role;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderTable();
+  }
+  function filterTable(val) {
+    currentSearch = val.toLowerCase();
+    renderTable();
+  }
+  function filterByDept() { renderTable(); }
+  function toggleAll(cb) {
+    document.querySelectorAll('#userBody input[type=checkbox]').forEach(c => c.checked = cb.checked);
+  }
+
+  /* ---- Modal ---- */
+  function openModal(id) {
+    document.getElementById(id).classList.remove('hidden');
+    if (id === 'createModal') initHoursRows();
+  }
+  function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+  function viewUser(uid) {
+    const u = users.find(x => x.id === uid);
+    if (!u) return;
+    document.getElementById('viewModalTitle').textContent = u.name + ' — Profile';
+    document.getElementById('viewModalBody').innerHTML = `
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+        <div class="avatar avatar-lg ${getAvatarColor(u.role)}">${initials(u.name)}</div>
+        <div>
+          <h3>${u.name}</h3>
+          <span class="badge ${roleBadge[u.role]}">${roleLabel[u.role]}</span>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div><label class="form-label">Email</label><p>${u.email}</p></div>
+        <div><label class="form-label">Phone</label><p>${u.phone}</p></div>
+        <div><label class="form-label">Department</label><p>${u.dept}</p></div>
+        <div><label class="form-label">Member Since</label><p>${u.joined}</p></div>
+        <div><label class="form-label">Status</label><p><span class="badge ${statusBadge[u.status]}">${u.status}</span></p></div>
+        <div><label class="form-label">User ID</label><p style="font-family:monospace;">${u.id}</p></div>
+      </div>`;
+    openModal('viewModal');
+  }
+
+  /* ---- Multi-step form ---- */
+  function selectUserRole(role, el) {
+    selectedUserRole = role;
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function nextStep() {
+    if (currentStep < TOTAL_STEPS) {
+      markStep(currentStep, 'done');
+      currentStep++;
+      showStep(currentStep);
+    } else {
+      // Submit
+      document.getElementById('successAlert').style.display = 'flex';
+      document.getElementById('nextBtn').textContent = '✅ Done';
+      document.getElementById('nextBtn').onclick = () => closeModal('createModal');
+    }
+  }
+  function prevStep() {
+    if (currentStep > 1) {
+      markStep(currentStep, 'pending');
+      currentStep--;
+      showStep(currentStep);
+    }
+  }
+  function showStep(n) {
+    [1,2,3].forEach(i => {
+      document.getElementById('stepPanel'+i).style.display = i===n ? 'block' : 'none';
+    });
+    markStep(n, 'active');
+    document.getElementById('prevBtn').style.display = n > 1 ? 'inline-flex' : 'none';
+    document.getElementById('nextBtn').textContent = n === TOTAL_STEPS ? '✅ Create User' : 'Next →';
+
+    // Show role-specific fields on step 2
+    if (n === 2) {
+      document.querySelectorAll('.role-fields').forEach(f => f.classList.remove('show'));
+      const el = document.getElementById('fields-'+selectedUserRole);
+      if (el) el.classList.add('show');
+    }
+  }
+  function markStep(n, state) {
+    const el = document.getElementById('step'+n+'-ind');
+    el.classList.remove('active','done');
+    if (state !== 'pending') el.classList.add(state);
+    if (n < 3) {
+      const line = document.getElementById('line'+n);
+      line.classList.toggle('done', state === 'done');
+    }
+  }
+
+  /* ---- Working hours rows ---- */
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  function initHoursRows() {
+    const wrap = document.getElementById('hoursRows');
+    if (!wrap || wrap.children.length > 0) return;
+    wrap.innerHTML = days.map((d,i) => `
+      <div class="hours-grid" style="margin-bottom:8px;">
+        <span style="font-size:.85rem;font-weight:600;color:var(--gray-700);">${d}</span>
+        <input type="time" class="form-control" value="09:00" ${i>=5?'disabled':''} style="padding:7px 10px;" />
+        <input type="time" class="form-control" value="17:00" ${i>=5?'disabled':''} style="padding:7px 10px;" />
+        <div class="toggle ${i<5?'on':''}" onclick="this.classList.toggle('on');
+          const inputs=this.closest('.hours-grid').querySelectorAll('input[type=time]');
+          inputs.forEach(inp=>inp.disabled=!this.classList.contains('on'));"></div>
+      </div>`).join('');
+  }
+
+  function toggleNewPass() {
+    const inp = document.getElementById('newPass');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+
+  // Init
+  renderTable();
+</script>
+</body>
+</html>

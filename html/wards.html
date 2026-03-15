@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wards & Beds — MediCare HMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .ward-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+
+    .ward-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-200); overflow: hidden; }
+    .ward-header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--gray-100); }
+    .ward-title { font-weight: 700; font-size: .95rem; color: var(--gray-800); }
+    .ward-occ { font-size: .8rem; color: var(--gray-500); margin-top: 2px; }
+    .ward-body { padding: 16px 20px; }
+
+    .bed-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 14px; }
+    .bed {
+      aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; cursor: pointer; transition: transform .15s;
+      border: 1.5px solid transparent;
+    }
+    .bed:hover { transform: scale(1.1); }
+    .bed.occupied  { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+    .bed.available { background: #dcfce7; color: #166534; border-color: #86efac; }
+    .bed.reserved  { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+    .bed.maintenance { background: var(--gray-100); color: var(--gray-400); border-color: var(--gray-300); }
+
+    .bed-legend { display: flex; gap: 14px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--gray-600); }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+    .ld-occupied  { background: #fee2e2; border: 1px solid #fca5a5; }
+    .ld-available { background: #dcfce7; border: 1px solid #86efac; }
+    .ld-reserved  { background: #fef3c7; border: 1px solid #fde68a; }
+    .ld-maintenance { background: var(--gray-100); border: 1px solid var(--gray-300); }
+
+    .progress { height: 6px; background: var(--gray-100); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+    .progress-bar { height: 100%; border-radius: 999px; transition: width .4s; }
+
+    .ward-footer { padding: 12px 20px; border-top: 1px solid var(--gray-100); display: flex; gap: 8px; background: var(--gray-50); }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🏥</div>
+      <div>
+        <div class="logo-text">MediCare HMS</div>
+        <div class="logo-sub">Hospital Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="booking.html"   class="nav-item"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
+        <a href="users.html"     class="nav-item"><span class="nav-icon">👥</span> Users</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Clinical</div>
+        <a href="patients.html"  class="nav-item"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
+        <a href="doctors.html"   class="nav-item"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
+        <a href="wards.html"     class="nav-item active"><span class="nav-icon">🏨</span> Wards & Beds</a>
+        <a href="pharmacy.html"  class="nav-item"><span class="nav-icon">💊</span> Pharmacy</a>
+        <a href="lab.html"       class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Administration</div>
+        <a href="billing.html" class="nav-item"><span class="nav-icon">💰</span> Billing</a>
+        <a href="reports.html" class="nav-item"><span class="nav-icon">📈</span> Reports</a>
+        <a href="#" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar avatar-blue">SA</div>
+        <div class="user-info">
+          <div class="user-name">Dr. Sarah Admin</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div>
+          <div class="topbar-title">Wards & Beds</div>
+          <div class="topbar-breadcrumb">Clinical / Wards & Beds</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search ward or patient…" />
+        </div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="page-header">
+        <div>
+          <h2>Wards & Beds</h2>
+          <p>Real-time bed occupancy across all wards</p>
+        </div>
+        <button class="btn btn-primary">🛏️ Assign Bed</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card">
+          <div class="stat-icon blue">🛏️</div>
+          <div class="stat-info"><div class="stat-value">320</div><div class="stat-label">Total Beds</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">🔴</div>
+          <div class="stat-info"><div class="stat-value">142</div><div class="stat-label">Occupied</div><div class="stat-change down">▼ 87% occupancy</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">🟢</div>
+          <div class="stat-info"><div class="stat-value">156</div><div class="stat-label">Available</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">🔧</div>
+          <div class="stat-info"><div class="stat-value">22</div><div class="stat-label">Maintenance / Reserved</div></div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div style="margin-bottom:18px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <span style="font-size:.82rem;font-weight:600;color:var(--gray-600);margin-right:6px;">Legend:</span>
+        <div class="bed-legend">
+          <div class="legend-item"><div class="legend-dot ld-occupied"></div> Occupied</div>
+          <div class="legend-item"><div class="legend-dot ld-available"></div> Available</div>
+          <div class="legend-item"><div class="legend-dot ld-reserved"></div> Reserved</div>
+          <div class="legend-item"><div class="legend-dot ld-maintenance"></div> Maintenance</div>
+        </div>
+      </div>
+
+      <div class="ward-grid" id="wardGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const wards = [
+    {
+      name: 'Cardiology Ward A',
+      floor: 'Floor 2',
+      nurse: 'Sr. Mary Johnson',
+      beds: 24,
+      data: 'OOOOOOOOOOOOAAAARRROO OOAAAAAA'
+    },
+    {
+      name: 'Oncology Ward',
+      floor: 'Floor 3',
+      nurse: 'Sr. Beth Wilson',
+      beds: 20,
+      data: 'OOOOOOOOOOOAAAARRAAAA'
+    },
+    {
+      name: 'Neurology Ward',
+      floor: 'Floor 4',
+      nurse: 'Sr. Karen Lee',
+      beds: 18,
+      data: 'OOOOOOOOAAAAAARRAAAAAA'
+    },
+    {
+      name: 'Pediatrics Ward',
+      floor: 'Floor 1',
+      nurse: 'Sr. Anna Clark',
+      beds: 30,
+      data: 'OOOOOOOOOOOOOAAAAAAAARRMMAAAAAAAA'
+    },
+    {
+      name: 'ICU',
+      floor: 'Floor 5',
+      nurse: 'Sr. Patricia Moore',
+      beds: 16,
+      data: 'OOOOOOOOOOOORRAAAA'
+    },
+    {
+      name: 'General Ward B',
+      floor: 'Floor 1',
+      nurse: 'Sr. Susan Hall',
+      beds: 40,
+      data: 'OOOOOOOOOOOOOOOOOOOOAAAAAAAAAAAAAAAARRRMMMMM'
+    },
+  ];
+
+  function renderWards() {
+    const container = document.getElementById('wardGrid');
+    container.innerHTML = wards.map(w => {
+      const bedCodes = w.data.replace(/\s/g, '').split('').slice(0, w.beds);
+      const occupied    = bedCodes.filter(c => c === 'O').length;
+      const available   = bedCodes.filter(c => c === 'A').length;
+      const reserved    = bedCodes.filter(c => c === 'R').length;
+      const maintenance = bedCodes.filter(c => c === 'M').length;
+      const pct = Math.round((occupied / w.beds) * 100);
+      const barColor = pct >= 90 ? '#ef4444' : pct >= 70 ? '#f97316' : '#22c55e';
+
+      const bedHtml = bedCodes.map((c, i) => {
+        const cls = c === 'O' ? 'occupied' : c === 'A' ? 'available' : c === 'R' ? 'reserved' : 'maintenance';
+        const lbl = c === 'O' ? 'B'+(i+1) : c === 'A' ? '' : c === 'R' ? 'R' : 'M';
+        return `<div class="bed ${cls}" title="Bed ${i+1} — ${cls}">${lbl}</div>`;
+      }).join('');
+
+      return `
+        <div class="ward-card">
+          <div class="ward-header">
+            <div>
+              <div class="ward-title">🏨 ${w.name}</div>
+              <div class="ward-occ">${w.floor} · Nurse: ${w.nurse}</div>
+            </div>
+            <span class="badge ${pct >= 90 ? 'badge-danger' : pct >= 70 ? 'badge-warning' : 'badge-success'}">${pct}% full</span>
+          </div>
+          <div class="ward-body">
+            <div class="bed-grid">${bedHtml}</div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--gray-600);margin-bottom:6px;">
+              <span>🔴 ${occupied} occupied</span>
+              <span>🟢 ${available} free</span>
+              <span>🟡 ${reserved} reserved</span>
+              <span>⚙️ ${maintenance} maint.</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width:${pct}%;background:${barColor};"></div></div>
+          </div>
+          <div class="ward-footer">
+            <button class="btn btn-sm btn-primary" style="flex:1;justify-content:center;">🛏️ Assign Bed</button>
+            <button class="btn btn-sm btn-secondary" style="flex:1;justify-content:center;">👁️ Details</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  renderWards();
+</script>
+</body>
+</html>

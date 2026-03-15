@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patients — MediCare HMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-tab {
+      padding: 7px 16px; border-radius: 999px; font-size: .82rem; font-weight: 700;
+      cursor: pointer; border: 1.5px solid var(--gray-200); color: var(--gray-600);
+      transition: all .15s;
+    }
+    .filter-tab:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-tab.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+
+    .action-btns { display: flex; gap: 6px; }
+    .action-btn {
+      width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--gray-200);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: .88rem; background: var(--white); transition: all .15s;
+    }
+    .action-btn:hover { background: var(--gray-100); }
+    .action-btn.danger:hover { background: #fee2e2; border-color: #fca5a5; }
+
+    .list-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .search-input-wrap { position: relative; flex: 1; min-width: 200px; }
+    .search-input-wrap input {
+      width: 100%; padding: 9px 12px 9px 36px;
+      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+      font-size: .88rem; background: var(--gray-50);
+    }
+    .search-input-wrap input:focus { outline: none; border-color: var(--primary); background: var(--white); }
+    .search-input-wrap .ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🏥</div>
+      <div>
+        <div class="logo-text">MediCare HMS</div>
+        <div class="logo-sub">Hospital Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="booking.html"   class="nav-item"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
+        <a href="users.html"     class="nav-item"><span class="nav-icon">👥</span> Users</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Clinical</div>
+        <a href="patients.html"  class="nav-item active"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
+        <a href="doctors.html"   class="nav-item"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
+        <a href="wards.html"     class="nav-item"><span class="nav-icon">🏨</span> Wards & Beds</a>
+        <a href="pharmacy.html"  class="nav-item"><span class="nav-icon">💊</span> Pharmacy</a>
+        <a href="lab.html"       class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Administration</div>
+        <a href="billing.html" class="nav-item"><span class="nav-icon">💰</span> Billing</a>
+        <a href="reports.html" class="nav-item"><span class="nav-icon">📈</span> Reports</a>
+        <a href="#" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar avatar-blue">SA</div>
+        <div class="user-info">
+          <div class="user-name">Dr. Sarah Admin</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div>
+          <div class="topbar-title">Patients</div>
+          <div class="topbar-breadcrumb">Clinical / Patients</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search patients…" />
+        </div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="page-header">
+        <div>
+          <h2>Patients</h2>
+          <p>View and manage all registered patients</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('addModal')">➕ Register Patient</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card">
+          <div class="stat-icon blue">🧑‍⚕️</div>
+          <div class="stat-info"><div class="stat-value">1,248</div><div class="stat-label">Total Patients</div><div class="stat-change up">▲ 12% this month</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">🏥</div>
+          <div class="stat-info"><div class="stat-value">142</div><div class="stat-label">Admitted</div><div class="stat-change up">▲ 87% bed occupancy</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">📅</div>
+          <div class="stat-info"><div class="stat-value">38</div><div class="stat-label">Appointments Today</div><div class="stat-change down">▼ 4 cancelled</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">🆕</div>
+          <div class="stat-info"><div class="stat-value">24</div><div class="stat-label">New This Week</div><div class="stat-change up">▲ 8 since yesterday</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="filter-tabs" id="filterTabs">
+            <div class="filter-tab active" onclick="setFilter('all',this)">All Patients</div>
+            <div class="filter-tab" onclick="setFilter('admitted',this)">🏥 Admitted</div>
+            <div class="filter-tab" onclick="setFilter('outpatient',this)">🚶 Outpatient</div>
+            <div class="filter-tab" onclick="setFilter('critical',this)">🚨 Critical</div>
+          </div>
+          <button class="btn btn-sm btn-secondary">⬇️ Export</button>
+        </div>
+
+        <div class="card-body" style="padding:0;">
+          <div style="padding:16px 20px;border-bottom:1px solid var(--gray-100);">
+            <div class="list-toolbar">
+              <div class="search-input-wrap">
+                <span class="ico">🔍</span>
+                <input type="text" placeholder="Search by name, ID or doctor…" oninput="filterTable(this.value)" />
+              </div>
+              <select class="form-select" style="width:auto;">
+                <option value="">All Departments</option>
+                <option>Cardiology</option>
+                <option>Neurology</option>
+                <option>Oncology</option>
+                <option>Pediatrics</option>
+                <option>Orthopedics</option>
+                <option>General</option>
+              </select>
+              <select class="form-select" style="width:auto;">
+                <option value="">Blood Group: All</option>
+                <option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option>
+                <option>O+</option><option>O-</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table id="patientTable">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" onchange="toggleAll(this)" /></th>
+                  <th>Patient</th>
+                  <th>Age / Gender</th>
+                  <th>Blood Group</th>
+                  <th>Assigned Doctor</th>
+                  <th>Last Visit</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="patientBody"></tbody>
+            </table>
+          </div>
+
+          <div style="padding:14px 20px;border-top:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;">
+            <span class="text-sm text-muted">Showing 1–10 of 1,248 patients</span>
+            <div class="flex gap-2">
+              <button class="btn btn-sm btn-secondary">← Prev</button>
+              <button class="btn btn-sm btn-primary">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PATIENT MODAL -->
+<div class="modal-overlay hidden" id="addModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div>
+        <h3>➕ Register New Patient</h3>
+        <p class="text-sm text-muted" style="margin-top:3px;">Enter patient demographics and medical background.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">First Name *</label>
+          <input type="text" class="form-control" placeholder="John" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name *</label>
+          <input type="text" class="form-control" placeholder="Doe" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date of Birth *</label>
+          <input type="date" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select class="form-select">
+            <option value="">Select</option>
+            <option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone *</label>
+          <input type="tel" class="form-control" placeholder="+1 (555) 000-0000" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Blood Group</label>
+          <select class="form-select">
+            <option value="">Unknown</option>
+            <option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option>
+            <option>AB+</option><option>AB-</option>
+            <option>O+</option><option>O-</option>
+          </select>
+        </div>
+        <div class="form-group col-span-2">
+          <label class="form-label">Address</label>
+          <input type="text" class="form-control" placeholder="123 Main St, City, State" />
+        </div>
+        <div class="form-group col-span-2">
+          <label class="form-label">Allergies</label>
+          <input type="text" class="form-control" placeholder="e.g. Penicillin, Peanuts" />
+        </div>
+        <div class="form-group col-span-2">
+          <label class="form-label">Chronic Conditions</label>
+          <input type="text" class="form-control" placeholder="e.g. Diabetes, Hypertension" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Insurance Provider</label>
+          <input type="text" class="form-control" placeholder="Blue Cross Blue Shield" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Assign Primary Doctor</label>
+          <select class="form-select">
+            <option value="">— Unassigned —</option>
+            <option>Dr. S. Patel (Cardiology)</option>
+            <option>Dr. L. Chen (Oncology)</option>
+            <option>Dr. T. Nguyen (Neurology)</option>
+            <option>Dr. J. Smith (Pediatrics)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addModal')">Cancel</button>
+      <button class="btn btn-primary">✅ Register Patient</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const patients = [
+    { id:'PT-001', name:'James Donovan',    age:54, gender:'Male',   blood:'A+',  doctor:'Dr. Patel',   dept:'Cardiology',  last:'Mar 12, 2026', status:'admitted'   },
+    { id:'PT-002', name:'Maria Rodriguez',  age:42, gender:'Female', blood:'O-',  doctor:'Dr. Chen',    dept:'Oncology',    last:'Mar 12, 2026', status:'critical'   },
+    { id:'PT-003', name:'Ali Khan',         age:38, gender:'Male',   blood:'B+',  doctor:'Dr. Nguyen',  dept:'Neurology',   last:'Mar 11, 2026', status:'outpatient' },
+    { id:'PT-004', name:'Sarah Williams',   age:7,  gender:'Female', blood:'A-',  doctor:'Dr. Smith',   dept:'Pediatrics',  last:'Mar 12, 2026', status:'outpatient' },
+    { id:'PT-005', name:'Robert Brown',     age:67, gender:'Male',   blood:'AB+', doctor:'Dr. Patel',   dept:'Cardiology',  last:'Mar 10, 2026', status:'admitted'   },
+    { id:'PT-006', name:'Emily Carter',     age:29, gender:'Female', blood:'O+',  doctor:'—',           dept:'—',           last:'Mar 07, 2026', status:'outpatient' },
+    { id:'PT-007', name:'David Kim',        age:45, gender:'Male',   blood:'B-',  doctor:'Dr. Nguyen',  dept:'Neurology',   last:'Mar 08, 2026', status:'admitted'   },
+    { id:'PT-008', name:'Lisa Thompson',    age:33, gender:'Female', blood:'A+',  doctor:'Dr. Smith',   dept:'Pediatrics',  last:'Mar 09, 2026', status:'outpatient' },
+    { id:'PT-009', name:'Carlos Mendes',    age:71, gender:'Male',   blood:'O+',  doctor:'Dr. Patel',   dept:'Cardiology',  last:'Mar 06, 2026', status:'critical'   },
+    { id:'PT-010', name:'Nina Patel',       age:26, gender:'Female', blood:'AB-', doctor:'Dr. Chen',    dept:'Oncology',    last:'Mar 05, 2026', status:'outpatient' },
+  ];
+
+  const statusCls = { admitted:'badge-primary', outpatient:'badge-success', critical:'badge-danger' };
+  const statusLbl = { admitted:'🏥 Admitted',   outpatient:'🚶 Outpatient', critical:'🚨 Critical' };
+  const avatarCls = ['avatar-blue','avatar-green','avatar-orange','avatar-purple'];
+
+  let currentFilter = 'all';
+  let currentSearch = '';
+
+  function renderTable() {
+    const tbody = document.getElementById('patientBody');
+    const filtered = patients.filter(p => {
+      const matchStatus = currentFilter === 'all' || p.status === currentFilter;
+      const matchSearch = !currentSearch || p.name.toLowerCase().includes(currentSearch) || p.id.toLowerCase().includes(currentSearch) || p.doctor.toLowerCase().includes(currentSearch);
+      return matchStatus && matchSearch;
+    });
+    tbody.innerHTML = filtered.map((p, i) => `
+      <tr>
+        <td><input type="checkbox" /></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="avatar ${avatarCls[i % 4]}">${p.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div>
+            <div>
+              <div style="font-weight:700;font-size:.88rem;">${p.name}</div>
+              <div style="font-size:.75rem;color:var(--gray-400);">${p.id}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-size:.85rem;">${p.age} yrs &nbsp;<span class="text-muted">${p.gender}</span></td>
+        <td><span class="badge badge-accent">${p.blood}</span></td>
+        <td style="font-size:.85rem;">
+          <div style="font-weight:600;">${p.doctor}</div>
+          <div style="font-size:.75rem;color:var(--gray-400);">${p.dept}</div>
+        </td>
+        <td style="font-size:.85rem;color:var(--gray-500);">${p.last}</td>
+        <td><span class="badge ${statusCls[p.status]}">${statusLbl[p.status]}</span></td>
+        <td>
+          <div class="action-btns">
+            <button class="action-btn" title="View Record">👁️</button>
+            <button class="action-btn" title="Edit">✏️</button>
+            <button class="action-btn" title="Book Appointment" onclick="window.location='booking.html'">📅</button>
+            <button class="action-btn danger" title="Delete">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `).join('') || `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray-400);">No patients found</td></tr>`;
+  }
+
+  function setFilter(val, el) {
+    currentFilter = val;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderTable();
+  }
+  function filterTable(val) { currentSearch = val.toLowerCase(); renderTable(); }
+  function toggleAll(cb) { document.querySelectorAll('#patientBody input[type=checkbox]').forEach(c => c.checked = cb.checked); }
+  function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+  function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+  renderTable();
+</script>
+</body>
+</html>

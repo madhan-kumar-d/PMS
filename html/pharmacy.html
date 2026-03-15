@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pharmacy — MediCare HMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-200); margin-bottom: 24px; }
+    .tab-btn {
+      padding: 10px 22px; font-size: .88rem; font-weight: 600; cursor: pointer;
+      border: none; background: none; color: var(--gray-500);
+      border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s;
+    }
+    .tab-btn:hover { color: var(--primary); }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .stock-level { height: 6px; background: var(--gray-100); border-radius: 999px; overflow: hidden; width: 80px; display: inline-block; vertical-align: middle; margin-left: 8px; }
+    .stock-bar { height: 100%; border-radius: 999px; }
+
+    .action-btn {
+      width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--gray-200);
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      font-size: .88rem; background: var(--white); transition: all .15s;
+    }
+    .action-btn:hover { background: var(--gray-100); }
+
+    .list-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .search-input-wrap { position: relative; flex: 1; min-width: 200px; }
+    .search-input-wrap input {
+      width: 100%; padding: 9px 12px 9px 36px;
+      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+      font-size: .88rem; background: var(--gray-50);
+    }
+    .search-input-wrap input:focus { outline: none; border-color: var(--primary); background: var(--white); }
+    .search-input-wrap .ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🏥</div>
+      <div>
+        <div class="logo-text">MediCare HMS</div>
+        <div class="logo-sub">Hospital Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="booking.html"   class="nav-item"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
+        <a href="users.html"     class="nav-item"><span class="nav-icon">👥</span> Users</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Clinical</div>
+        <a href="patients.html"  class="nav-item"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
+        <a href="doctors.html"   class="nav-item"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
+        <a href="wards.html"     class="nav-item"><span class="nav-icon">🏨</span> Wards & Beds</a>
+        <a href="pharmacy.html"  class="nav-item active"><span class="nav-icon">💊</span> Pharmacy</a>
+        <a href="lab.html"       class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Administration</div>
+        <a href="billing.html" class="nav-item"><span class="nav-icon">💰</span> Billing</a>
+        <a href="reports.html" class="nav-item"><span class="nav-icon">📈</span> Reports</a>
+        <a href="#" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar avatar-blue">SA</div>
+        <div class="user-info">
+          <div class="user-name">Dr. Sarah Admin</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div>
+          <div class="topbar-title">Pharmacy</div>
+          <div class="topbar-breadcrumb">Clinical / Pharmacy</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search drugs or prescriptions…" />
+        </div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="page-header">
+        <div>
+          <h2>Pharmacy</h2>
+          <p>Drug inventory and prescription management</p>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn btn-secondary">📦 Restock</button>
+          <button class="btn btn-primary">💊 New Prescription</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card">
+          <div class="stat-icon blue">💊</div>
+          <div class="stat-info"><div class="stat-value">842</div><div class="stat-label">Drug Items in Stock</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">⚠️</div>
+          <div class="stat-info"><div class="stat-value">14</div><div class="stat-label">Low Stock Alerts</div><div class="stat-change down">▼ Requires attention</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">📋</div>
+          <div class="stat-info"><div class="stat-value">58</div><div class="stat-label">Prescriptions Today</div><div class="stat-change up">▲ 12 dispensed</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">📅</div>
+          <div class="stat-info"><div class="stat-value">6</div><div class="stat-label">Expiring This Month</div></div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('inventory', this)">📦 Inventory</button>
+        <button class="tab-btn" onclick="switchTab('prescriptions', this)">📋 Prescriptions</button>
+      </div>
+
+      <!-- Inventory Tab -->
+      <div id="tab-inventory" class="tab-panel active">
+        <div class="card">
+          <div class="card-header">
+            <h3>Drug Inventory</h3>
+            <div class="flex gap-2">
+              <select class="form-select" style="width:auto;font-size:.85rem;">
+                <option>All Categories</option>
+                <option>Antibiotics</option>
+                <option>Analgesics</option>
+                <option>Cardiovascular</option>
+                <option>Oncology</option>
+                <option>Neurology</option>
+              </select>
+              <button class="btn btn-sm btn-secondary">⬇️ Export</button>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Drug Name</th>
+                    <th>Category</th>
+                    <th>Stock</th>
+                    <th>Unit</th>
+                    <th>Unit Price</th>
+                    <th>Expiry</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="inventoryBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prescriptions Tab -->
+      <div id="tab-prescriptions" class="tab-panel">
+        <div class="card">
+          <div class="card-header">
+            <h3>Prescriptions</h3>
+            <div class="flex gap-2">
+              <select class="form-select" style="width:auto;font-size:.85rem;">
+                <option>All Status</option>
+                <option>Pending</option>
+                <option>Dispensed</option>
+                <option>Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rx ID</th>
+                    <th>Patient</th>
+                    <th>Prescribed By</th>
+                    <th>Drugs</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="rxBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const drugs = [
+    { name:'Amoxicillin 500mg',   cat:'Antibiotics',    stock:240, unit:'Capsules', price:0.45, expiry:'Dec 2026', low:false },
+    { name:'Ibuprofen 400mg',     cat:'Analgesics',     stock:580, unit:'Tablets',  price:0.12, expiry:'Aug 2026', low:false },
+    { name:'Lisinopril 10mg',     cat:'Cardiovascular', stock:42,  unit:'Tablets',  price:0.85, expiry:'Jun 2026', low:true  },
+    { name:'Metformin 850mg',     cat:'Endocrinology',  stock:310, unit:'Tablets',  price:0.22, expiry:'Nov 2026', low:false },
+    { name:'Atorvastatin 20mg',   cat:'Cardiovascular', stock:18,  unit:'Tablets',  price:1.10, expiry:'Mar 2026', low:true  },
+    { name:'Ondansetron 4mg',     cat:'Oncology',       stock:95,  unit:'Vials',    price:3.50, expiry:'Sep 2026', low:false },
+    { name:'Levetiracetam 500mg', cat:'Neurology',      stock:22,  unit:'Tablets',  price:2.80, expiry:'Jul 2026', low:true  },
+    { name:'Paracetamol 1g IV',   cat:'Analgesics',     stock:120, unit:'Vials',    price:1.20, expiry:'Oct 2026', low:false },
+    { name:'Ceftriaxone 1g',      cat:'Antibiotics',    stock:11,  unit:'Vials',    price:4.20, expiry:'May 2026', low:true  },
+    { name:'Morphine 10mg/ml',    cat:'Analgesics',     stock:48,  unit:'Ampoules', price:5.60, expiry:'Aug 2026', low:false },
+  ];
+
+  const rxs = [
+    { id:'RX-2026-0201', patient:'James Donovan',   doctor:'Dr. Patel',   drugs:'Lisinopril 10mg, Atorvastatin 20mg', date:'Mar 12, 2026', status:'dispensed' },
+    { id:'RX-2026-0202', patient:'Maria Rodriguez', doctor:'Dr. Chen',    drugs:'Ondansetron 4mg, Metformin 850mg',   date:'Mar 12, 2026', status:'pending'   },
+    { id:'RX-2026-0203', patient:'Ali Khan',        doctor:'Dr. Nguyen',  drugs:'Levetiracetam 500mg',                date:'Mar 11, 2026', status:'dispensed' },
+    { id:'RX-2026-0204', patient:'Sarah Williams',  doctor:'Dr. Smith',   drugs:'Amoxicillin 500mg, Ibuprofen 400mg', date:'Mar 12, 2026', status:'pending'   },
+    { id:'RX-2026-0205', patient:'Robert Brown',    doctor:'Dr. Patel',   drugs:'Atorvastatin 20mg, Metformin 850mg', date:'Mar 10, 2026', status:'dispensed' },
+    { id:'RX-2026-0206', patient:'Carlos Mendes',   doctor:'Dr. Patel',   drugs:'Ceftriaxone 1g, Morphine 10mg/ml',   date:'Mar 09, 2026', status:'cancelled' },
+  ];
+
+  const rxStatus = { pending:'badge-warning', dispensed:'badge-success', cancelled:'badge-gray' };
+  const rxLabel  = { pending:'⏳ Pending',    dispensed:'✅ Dispensed',  cancelled:'❌ Cancelled' };
+
+  function renderInventory() {
+    const tbody = document.getElementById('inventoryBody');
+    const MAX = 600;
+    tbody.innerHTML = drugs.map(d => {
+      const pct = Math.min(100, Math.round((d.stock / MAX) * 100));
+      const barColor = d.low ? '#ef4444' : pct > 30 ? '#22c55e' : '#f97316';
+      return `
+        <tr>
+          <td style="font-weight:600;font-size:.88rem;">💊 ${d.name}</td>
+          <td><span class="badge badge-primary">${d.cat}</span></td>
+          <td>
+            <span style="font-weight:700;font-size:.88rem;color:${d.low ? 'var(--danger)' : 'var(--gray-800)'};">${d.stock}</span>
+            <div class="stock-level"><div class="stock-bar" style="width:${pct}%;background:${barColor};"></div></div>
+          </td>
+          <td style="font-size:.85rem;color:var(--gray-500);">${d.unit}</td>
+          <td style="font-size:.85rem;font-weight:700;">$${d.price.toFixed(2)}</td>
+          <td style="font-size:.85rem;color:var(--gray-500);">${d.expiry}</td>
+          <td>${d.low ? '<span class="badge badge-danger">⚠️ Low Stock</span>' : '<span class="badge badge-success">✅ Adequate</span>'}</td>
+          <td>
+            <button class="action-btn" title="Edit">✏️</button>
+            <button class="action-btn" title="Restock" style="margin-left:4px;">📦</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function renderPrescriptions() {
+    const tbody = document.getElementById('rxBody');
+    tbody.innerHTML = rxs.map(r => `
+      <tr>
+        <td style="font-family:monospace;font-size:.82rem;color:var(--primary);">${r.id}</td>
+        <td style="font-weight:600;font-size:.88rem;">${r.patient}</td>
+        <td style="font-size:.85rem;color:var(--gray-600);">${r.doctor}</td>
+        <td style="font-size:.82rem;color:var(--gray-600);max-width:200px;">${r.drugs}</td>
+        <td style="font-size:.85rem;color:var(--gray-500);">${r.date}</td>
+        <td><span class="badge ${rxStatus[r.status]}">${rxLabel[r.status]}</span></td>
+        <td>
+          <button class="action-btn" title="View">👁️</button>
+          ${r.status === 'pending' ? '<button class="action-btn" title="Dispense" style="margin-left:4px;">✅</button>' : ''}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+
+  renderInventory();
+  renderPrescriptions();
+</script>
+</body>
+</html>

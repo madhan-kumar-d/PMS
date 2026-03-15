@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctors — MediCare HMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .doctor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+    .doctor-card {
+      background: var(--white); border-radius: var(--radius);
+      border: 1px solid var(--gray-200); padding: 22px;
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+    .doctor-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+    .doctor-card-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+    .doctor-card-info { flex: 1; }
+    .doctor-name { font-weight: 700; font-size: .95rem; color: var(--gray-800); }
+    .doctor-spec { font-size: .8rem; color: var(--gray-500); margin-top: 2px; }
+    .doctor-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .doctor-stat { background: var(--gray-50); border-radius: 8px; padding: 10px 12px; text-align: center; }
+    .doctor-stat .val { font-size: 1.1rem; font-weight: 800; color: var(--gray-800); }
+    .doctor-stat .lbl { font-size: .72rem; color: var(--gray-500); margin-top: 2px; }
+    .doctor-card-footer { display: flex; gap: 8px; }
+    .doctor-card-footer .btn { flex: 1; justify-content: center; }
+
+    .list-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+    .search-input-wrap { position: relative; flex: 1; min-width: 200px; }
+    .search-input-wrap input {
+      width: 100%; padding: 9px 12px 9px 36px;
+      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+      font-size: .88rem; background: var(--gray-50);
+    }
+    .search-input-wrap input:focus { outline: none; border-color: var(--primary); background: var(--white); }
+    .search-input-wrap .ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+
+    .view-toggle { display: flex; gap: 4px; }
+    .view-btn { width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid var(--gray-200); background: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: .95rem; transition: all .15s; }
+    .view-btn.active { border-color: var(--primary); background: var(--primary-light); }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🏥</div>
+      <div>
+        <div class="logo-text">MediCare HMS</div>
+        <div class="logo-sub">Hospital Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="booking.html"   class="nav-item"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
+        <a href="users.html"     class="nav-item"><span class="nav-icon">👥</span> Users</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Clinical</div>
+        <a href="patients.html"  class="nav-item"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
+        <a href="doctors.html"   class="nav-item active"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
+        <a href="wards.html"     class="nav-item"><span class="nav-icon">🏨</span> Wards & Beds</a>
+        <a href="pharmacy.html"  class="nav-item"><span class="nav-icon">💊</span> Pharmacy</a>
+        <a href="lab.html"       class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Administration</div>
+        <a href="billing.html" class="nav-item"><span class="nav-icon">💰</span> Billing</a>
+        <a href="reports.html" class="nav-item"><span class="nav-icon">📈</span> Reports</a>
+        <a href="#" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar avatar-blue">SA</div>
+        <div class="user-info">
+          <div class="user-name">Dr. Sarah Admin</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div>
+          <div class="topbar-title">Doctors</div>
+          <div class="topbar-breadcrumb">Clinical / Doctors</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search doctors…" />
+        </div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="page-header">
+        <div>
+          <h2>Doctors</h2>
+          <p>Clinical staff directory and availability</p>
+        </div>
+        <button class="btn btn-primary">➕ Add Doctor</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card">
+          <div class="stat-icon blue">👨‍⚕️</div>
+          <div class="stat-info"><div class="stat-value">64</div><div class="stat-label">Total Doctors</div><div class="stat-change up">▲ 3 new this week</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">✅</div>
+          <div class="stat-info"><div class="stat-value">48</div><div class="stat-label">Available Now</div><div class="stat-change up">▲ 75% on duty</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">⏳</div>
+          <div class="stat-info"><div class="stat-value">12</div><div class="stat-label">In Consultation</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">☕</div>
+          <div class="stat-info"><div class="stat-value">4</div><div class="stat-label">On Break / Off</div></div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="list-toolbar">
+        <div class="search-input-wrap">
+          <span class="ico">🔍</span>
+          <input type="text" placeholder="Search by name or specialty…" oninput="filterDoctors(this.value)" />
+        </div>
+        <select class="form-select" style="width:auto;" onchange="filterBySpec(this.value)">
+          <option value="">All Specialties</option>
+          <option>Cardiology</option>
+          <option>Neurology</option>
+          <option>Oncology</option>
+          <option>Pediatrics</option>
+          <option>Orthopedics</option>
+          <option>General Medicine</option>
+        </select>
+        <select class="form-select" style="width:auto;" onchange="filterByStatus(this.value)">
+          <option value="">All Status</option>
+          <option value="available">Available</option>
+          <option value="busy">In Consultation</option>
+          <option value="break">On Break</option>
+          <option value="off">Off Duty</option>
+        </select>
+        <div class="view-toggle">
+          <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')" title="Grid view">⊞</button>
+          <button class="view-btn" id="listViewBtn" onclick="setView('list')" title="List view">☰</button>
+        </div>
+      </div>
+
+      <!-- Grid view -->
+      <div id="gridView" class="doctor-grid"></div>
+
+      <!-- List view -->
+      <div id="listView" style="display:none;">
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <div class="table-wrap">
+              <table id="doctorTable">
+                <thead>
+                  <tr>
+                    <th>Doctor</th>
+                    <th>Specialty</th>
+                    <th>Experience</th>
+                    <th>Patients Today</th>
+                    <th>Consultation Fee</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="doctorListBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const doctors = [
+    { id:'DR-001', name:'Dr. Sanjay Patel',   spec:'Cardiology',      exp:14, today:8,  fee:200, status:'available', avatar:'SP', color:'avatar-blue'   },
+    { id:'DR-002', name:'Dr. Linda Chen',      spec:'Oncology',        exp:11, today:5,  fee:250, status:'busy',      avatar:'LC', color:'avatar-orange' },
+    { id:'DR-003', name:'Dr. Tom Nguyen',      spec:'Neurology',       exp:9,  today:6,  fee:180, status:'available', avatar:'TN', color:'avatar-purple' },
+    { id:'DR-004', name:'Dr. James Smith',     spec:'Pediatrics',      exp:7,  today:10, fee:150, status:'break',     avatar:'JS', color:'avatar-green'  },
+    { id:'DR-005', name:'Dr. Aisha Rahman',    spec:'Orthopedics',     exp:12, today:4,  fee:220, status:'available', avatar:'AR', color:'avatar-blue'   },
+    { id:'DR-006', name:'Dr. Marco Rossi',     spec:'General Medicine',exp:6,  today:12, fee:120, status:'busy',      avatar:'MR', color:'avatar-orange' },
+    { id:'DR-007', name:'Dr. Yuki Tanaka',     spec:'Cardiology',      exp:18, today:3,  fee:280, status:'off',       avatar:'YT', color:'avatar-purple' },
+    { id:'DR-008', name:'Dr. Grace Okonkwo',   spec:'Neurology',       exp:10, today:7,  fee:190, status:'available', avatar:'GO', color:'avatar-green'  },
+  ];
+
+  const statusBadge = { available:'badge-success', busy:'badge-warning', break:'badge-gray', off:'badge-gray' };
+  const statusLabel  = { available:'✅ Available',  busy:'⏳ Busy',       break:'☕ Break',    off:'🔴 Off Duty' };
+
+  let filtered = [...doctors];
+  let currentSearch = '';
+  let currentSpec = '';
+  let currentStatus = '';
+  let currentView = 'grid';
+
+  function applyFilters() {
+    filtered = doctors.filter(d => {
+      const matchSearch = !currentSearch || d.name.toLowerCase().includes(currentSearch) || d.spec.toLowerCase().includes(currentSearch);
+      const matchSpec   = !currentSpec   || d.spec === currentSpec;
+      const matchStatus = !currentStatus || d.status === currentStatus;
+      return matchSearch && matchSpec && matchStatus;
+    });
+    renderView();
+  }
+
+  function filterDoctors(v)  { currentSearch = v.toLowerCase(); applyFilters(); }
+  function filterBySpec(v)   { currentSpec   = v; applyFilters(); }
+  function filterByStatus(v) { currentStatus = v; applyFilters(); }
+
+  function setView(v) {
+    currentView = v;
+    document.getElementById('gridView').style.display = v === 'grid' ? 'grid' : 'none';
+    document.getElementById('listView').style.display = v === 'list' ? 'block' : 'none';
+    document.getElementById('gridViewBtn').classList.toggle('active', v === 'grid');
+    document.getElementById('listViewBtn').classList.toggle('active', v === 'list');
+    renderView();
+  }
+
+  function renderView() {
+    if (currentView === 'grid') renderGrid();
+    else renderList();
+  }
+
+  function renderGrid() {
+    const el = document.getElementById('gridView');
+    if (!filtered.length) { el.innerHTML = '<p class="text-muted" style="padding:40px;text-align:center;">No doctors found</p>'; return; }
+    el.innerHTML = filtered.map(d => `
+      <div class="doctor-card">
+        <div class="doctor-card-top">
+          <div class="avatar avatar-lg ${d.color}">${d.avatar}</div>
+          <div class="doctor-card-info">
+            <div class="doctor-name">${d.name}</div>
+            <div class="doctor-spec">${d.spec}</div>
+            <span class="badge ${statusBadge[d.status]}" style="margin-top:6px;">${statusLabel[d.status]}</span>
+          </div>
+        </div>
+        <div class="doctor-stats">
+          <div class="doctor-stat"><div class="val">${d.exp}</div><div class="lbl">Yrs Experience</div></div>
+          <div class="doctor-stat"><div class="val">${d.today}</div><div class="lbl">Patients Today</div></div>
+        </div>
+        <div style="font-size:.8rem;color:var(--gray-500);margin-bottom:14px;">Consultation Fee: <strong style="color:var(--gray-800);">$${d.fee}</strong></div>
+        <div class="doctor-card-footer">
+          <a href="booking.html" class="btn btn-sm btn-primary">📅 Book</a>
+          <button class="btn btn-sm btn-secondary">👁️ Profile</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderList() {
+    const tbody = document.getElementById('doctorListBody');
+    if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--gray-400);">No doctors found</td></tr>'; return; }
+    tbody.innerHTML = filtered.map(d => `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="avatar ${d.color}">${d.avatar}</div>
+            <div>
+              <div style="font-weight:700;font-size:.88rem;">${d.name}</div>
+              <div style="font-size:.75rem;color:var(--gray-400);">${d.id}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-size:.85rem;">${d.spec}</td>
+        <td style="font-size:.85rem;">${d.exp} years</td>
+        <td style="font-size:.85rem;">${d.today} patients</td>
+        <td style="font-size:.85rem;font-weight:700;">$${d.fee}</td>
+        <td><span class="badge ${statusBadge[d.status]}">${statusLabel[d.status]}</span></td>
+        <td>
+          <div style="display:flex;gap:6px;">
+            <button style="width:30px;height:30px;border-radius:7px;border:1px solid var(--gray-200);cursor:pointer;background:var(--white);" title="View">👁️</button>
+            <button style="width:30px;height:30px;border-radius:7px;border:1px solid var(--gray-200);cursor:pointer;background:var(--white);" title="Schedule">📅</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  renderGrid();
+</script>
+</body>
+</html>

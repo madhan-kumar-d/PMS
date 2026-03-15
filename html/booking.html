@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Appointments — MediCare HMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .booking-layout { display: grid; grid-template-columns: 380px 1fr; gap: 24px; align-items: start; }
+
+    /* Booking wizard panel */
+    .wizard-panel { position: sticky; top: 84px; }
+    .wizard-step { display: none; }
+    .wizard-step.active { display: block; }
+
+    /* Doctor card in booking */
+    .doc-grid { display: flex; flex-direction: column; gap: 10px; max-height: 340px; overflow-y: auto; padding-right: 4px; }
+    .doc-grid::-webkit-scrollbar { width: 5px; }
+    .doc-grid::-webkit-scrollbar-track { background: var(--gray-100); border-radius: 999px; }
+    .doc-grid::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 999px; }
+
+    /* Appointment list */
+    .appt-card {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 16px; border-radius: var(--radius);
+      border: 1px solid var(--gray-200); background: var(--white);
+      margin-bottom: 12px; transition: box-shadow var(--transition);
+    }
+    .appt-card:hover { box-shadow: var(--shadow); }
+    .appt-date-block {
+      min-width: 58px; text-align: center; padding: 8px 6px;
+      background: var(--primary-light); border-radius: 10px;
+    }
+    .appt-date-block .month { font-size: .68rem; font-weight: 700; text-transform: uppercase; color: var(--primary); }
+    .appt-date-block .day   { font-size: 1.5rem; font-weight: 900; color: var(--primary); line-height: 1; }
+    .appt-date-block .year  { font-size: .68rem; color: var(--primary); }
+
+    .appt-details { flex: 1; }
+    .appt-title   { font-weight: 700; font-size: .92rem; color: var(--gray-800); margin-bottom: 4px; }
+    .appt-meta    { display: flex; flex-wrap: wrap; gap: 12px; }
+    .appt-meta span { font-size: .8rem; color: var(--gray-500); display: flex; align-items: center; gap: 4px; }
+
+    .appt-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+
+    /* Confirmation card */
+    .confirm-section { background: var(--gray-50); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+    .confirm-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--gray-200); }
+    .confirm-row:last-child { border-bottom: none; }
+    .confirm-label { font-size: .82rem; color: var(--gray-500); font-weight: 600; }
+    .confirm-value { font-size: .88rem; color: var(--gray-800); font-weight: 700; }
+
+    /* Status chips */
+    .status-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .status-chip {
+      padding: 6px 14px; border-radius: 999px; font-size: .8rem; font-weight: 700;
+      cursor: pointer; transition: all .15s; border: 1.5px solid transparent;
+    }
+    .status-chip.all      { background: var(--gray-100); color: var(--gray-600); }
+    .status-chip.upcoming { background: #e0f2fe; color: #0369a1; }
+    .status-chip.today    { background: #dcfce7; color: #166534; }
+    .status-chip.past     { background: var(--gray-100); color: var(--gray-500); }
+    .status-chip.cancelled{ background: #fee2e2; color: #991b1b; }
+    .status-chip.active   { border: 1.5px solid currentColor; box-shadow: 0 0 0 2px rgba(0,0,0,.07); }
+
+    /* Search patients inline */
+    .patient-search-result {
+      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+      max-height: 200px; overflow-y: auto; display: none;
+    }
+    .patient-search-result.show { display: block; }
+    .patient-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; cursor: pointer; transition: background .1s;
+    }
+    .patient-row:hover { background: var(--gray-50); }
+
+    @media (max-width: 900px) {
+      .booking-layout { grid-template-columns: 1fr; }
+      .wizard-panel { position: static; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🏥</div>
+      <div>
+        <div class="logo-text">MediCare HMS</div>
+        <div class="logo-sub">Hospital Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="booking.html"   class="nav-item active"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
+        <a href="users.html"     class="nav-item"><span class="nav-icon">👥</span> Users</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Clinical</div>
+        <a href="patients.html" class="nav-item"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
+        <a href="doctors.html" class="nav-item"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
+        <a href="wards.html" class="nav-item"><span class="nav-icon">🏨</span> Wards & Beds</a>
+        <a href="pharmacy.html" class="nav-item"><span class="nav-icon">💊</span> Pharmacy</a>
+        <a href="lab.html" class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Administration</div>
+        <a href="billing.html" class="nav-item"><span class="nav-icon">💰</span> Billing</a>
+        <a href="reports.html" class="nav-item"><span class="nav-icon">📈</span> Reports</a>
+        <a href="#" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar avatar-blue">SA</div>
+        <div class="user-info">
+          <div class="user-name">Dr. Sarah Admin</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div>
+          <div class="topbar-title">Appointments</div>
+          <div class="topbar-breadcrumb">Schedule & Manage</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search appointments…" />
+        </div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="page-header">
+        <div>
+          <h2>Appointments</h2>
+          <p>Book, view and manage patient appointments</p>
+        </div>
+      </div>
+
+      <div class="booking-layout">
+
+        <!-- ===== LEFT: BOOKING WIZARD ===== -->
+        <div class="wizard-panel">
+          <div class="card">
+            <div class="card-header">
+              <h3>📅 New Appointment</h3>
+              <span class="badge badge-primary" id="wizardStepLabel">Step 1 / 4</span>
+            </div>
+            <div class="card-body">
+
+              <!-- Step progress -->
+              <div class="steps" style="margin-bottom:20px;" id="wiz-steps">
+                <div class="step-item active" id="ws1">
+                  <div class="step-circle">1</div>
+                  <div class="step-label">Patient</div>
+                </div>
+                <div class="step-line" id="wl1"></div>
+                <div class="step-item" id="ws2">
+                  <div class="step-circle">2</div>
+                  <div class="step-label">Doctor</div>
+                </div>
+                <div class="step-line" id="wl2"></div>
+                <div class="step-item" id="ws3">
+                  <div class="step-circle">3</div>
+                  <div class="step-label">Date & Time</div>
+                </div>
+                <div class="step-line" id="wl3"></div>
+                <div class="step-item" id="ws4">
+                  <div class="step-circle">4</div>
+                  <div class="step-label">Confirm</div>
+                </div>
+              </div>
+
+              <!-- STEP 1: Select Patient -->
+              <div class="wizard-step active" id="wiz1">
+                <div class="form-group">
+                  <label class="form-label">Search Patient *</label>
+                  <input type="text" class="form-control" id="patientSearch"
+                    placeholder="Type name, ID or phone…"
+                    oninput="searchPatients(this.value)" autocomplete="off" />
+                  <div class="patient-search-result" id="patientResults"></div>
+                </div>
+
+                <!-- Selected patient card -->
+                <div id="selectedPatientCard" style="display:none;margin-top:2px;">
+                  <div class="doc-card selected">
+                    <div class="avatar avatar-green" id="spAvatar">JD</div>
+                    <div class="doc-info">
+                      <div class="doc-name" id="spName">James Donovan</div>
+                      <div class="doc-spec" id="spId">USR-003 · +1 555-0201</div>
+                      <div class="doc-meta" style="margin-top:6px;">
+                        <span id="spBlood">🩸 A+</span>
+                        <span id="spDoctor">👨‍⚕️ Dr. Patel</span>
+                      </div>
+                    </div>
+                    <button onclick="clearPatient()" style="border:none;background:none;cursor:pointer;color:var(--gray-400);font-size:.9rem;">✕</button>
+                  </div>
+                </div>
+
+                <div class="divider-label"><span>or</span></div>
+                <a href="users.html" class="btn btn-secondary btn-block btn-sm">➕ Register New Patient</a>
+              </div>
+
+              <!-- STEP 2: Select Doctor -->
+              <div class="wizard-step" id="wiz2">
+                <div class="form-group">
+                  <label class="form-label">Filter by Specialization</label>
+                  <select class="form-select" onchange="filterDoctors(this.value)">
+                    <option value="">All Specializations</option>
+                    <option>Cardiology</option>
+                    <option>Neurology</option>
+                    <option>Oncology</option>
+                    <option>Pediatrics</option>
+                    <option>Orthopedics</option>
+                    <option>General Medicine</option>
+                  </select>
+                </div>
+                <div class="doc-grid" id="doctorList"></div>
+              </div>
+
+              <!-- STEP 3: Date & Time -->
+              <div class="wizard-step" id="wiz3">
+                <div class="form-group">
+                  <label class="form-label">Select Date</label>
+                  <div class="cal-strip" id="calStrip"></div>
+                </div>
+                <div class="form-group" style="margin-top:16px;" id="slotSection">
+                  <label class="form-label">Available Time Slots</label>
+                  <div class="slot-grid" id="slotGrid"></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Appointment Type</label>
+                  <select class="form-select" id="apptType">
+                    <option value="consultation">Consultation</option>
+                    <option value="follow_up">Follow-up</option>
+                    <option value="emergency">Emergency</option>
+                    <option value="routine">Routine Check-up</option>
+                    <option value="procedure">Procedure / Surgery</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Reason / Chief Complaint</label>
+                  <textarea class="form-control" rows="3" placeholder="Describe the reason for the appointment…"></textarea>
+                </div>
+              </div>
+
+              <!-- STEP 4: Confirm -->
+              <div class="wizard-step" id="wiz4">
+                <div class="confirm-section">
+                  <div class="confirm-row">
+                    <span class="confirm-label">Patient</span>
+                    <span class="confirm-value" id="cfPatient">—</span>
+                  </div>
+                  <div class="confirm-row">
+                    <span class="confirm-label">Doctor</span>
+                    <span class="confirm-value" id="cfDoctor">—</span>
+                  </div>
+                  <div class="confirm-row">
+                    <span class="confirm-label">Specialization</span>
+                    <span class="confirm-value" id="cfSpec">—</span>
+                  </div>
+                  <div class="confirm-row">
+                    <span class="confirm-label">Date & Time</span>
+                    <span class="confirm-value" id="cfDateTime">—</span>
+                  </div>
+                  <div class="confirm-row">
+                    <span class="confirm-label">Type</span>
+                    <span class="confirm-value" id="cfType">Consultation</span>
+                  </div>
+                  <div class="confirm-row">
+                    <span class="confirm-label">Fee</span>
+                    <span class="confirm-value" id="cfFee">$150</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;cursor:pointer;">
+                    <input type="checkbox" checked /> Send confirmation SMS to patient
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;cursor:pointer;">
+                    <input type="checkbox" checked /> Send notification to doctor
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;cursor:pointer;">
+                    <input type="checkbox" /> Add to doctor's calendar
+                  </label>
+                </div>
+
+                <div class="alert alert-success" id="bookingSuccess" style="display:none;">
+                  🎉 Appointment booked successfully! ID: <strong id="newApptId"></strong>
+                </div>
+              </div>
+
+            </div><!-- /card-body -->
+            <div class="card-footer" style="display:flex;gap:10px;justify-content:flex-end;">
+              <button class="btn btn-secondary btn-sm" id="wizPrev" onclick="wizPrev()" style="display:none;">← Back</button>
+              <button class="btn btn-primary btn-sm" id="wizNext" onclick="wizNext()">Next →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== RIGHT: APPOINTMENTS LIST ===== -->
+        <div>
+          <!-- Status filter bar -->
+          <div class="status-bar">
+            <span class="status-chip all active"    onclick="filterAppts('all',this)">All (38)</span>
+            <span class="status-chip today"          onclick="filterAppts('today',this)">Today (8)</span>
+            <span class="status-chip upcoming"       onclick="filterAppts('upcoming',this)">Upcoming (22)</span>
+            <span class="status-chip past"           onclick="filterAppts('past',this)">Completed (5)</span>
+            <span class="status-chip cancelled"      onclick="filterAppts('cancelled',this)">Cancelled (3)</span>
+          </div>
+
+          <!-- Toolbar -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+            <div style="position:relative;flex:1;min-width:180px;">
+              <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--gray-400);">🔍</span>
+              <input type="text" class="form-control" style="padding-left:34px;" placeholder="Search appointments…" />
+            </div>
+            <select class="form-select" style="width:auto;">
+              <option>All Doctors</option>
+              <option>Dr. S. Patel</option>
+              <option>Dr. L. Chen</option>
+              <option>Dr. T. Nguyen</option>
+              <option>Dr. J. Smith</option>
+            </select>
+            <select class="form-select" style="width:auto;">
+              <option>All Types</option>
+              <option>Consultation</option>
+              <option>Follow-up</option>
+              <option>Emergency</option>
+              <option>Routine</option>
+            </select>
+            <button class="btn btn-secondary btn-sm">⬇️ Export</button>
+          </div>
+
+          <!-- Appointment cards -->
+          <div id="apptList"></div>
+        </div>
+
+      </div>
+    </div><!-- /page-content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay hidden" id="apptDetailModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Appointment Details</h3>
+      <button class="modal-close" onclick="closeModal('apptDetailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="apptDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" onclick="closeModal('apptDetailModal')">❌ Cancel Appointment</button>
+      <button class="btn btn-secondary" onclick="closeModal('apptDetailModal')">Close</button>
+      <button class="btn btn-primary">✏️ Reschedule</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ===== DATA ===== */
+  const patients = [
+    { id:'USR-003', name:'James Donovan',   blood:'A+', phone:'+1 555-0201', doctor:'Dr. S. Patel' },
+    { id:'USR-004', name:'Maria Rodriguez', blood:'B+', phone:'+1 555-0202', doctor:'Dr. L. Chen'  },
+    { id:'USR-008', name:'Emily Carter',    blood:'O-', phone:'+1 555-0203', doctor:'Unassigned'   },
+    { id:'USR-010', name:'Robert Brown',    blood:'AB+',phone:'+1 555-0204', doctor:'Dr. T. Nguyen'},
+    { id:'USR-011', name:'Priya Sharma',    blood:'B-', phone:'+1 555-0205', doctor:'Dr. J. Smith' },
+    { id:'USR-012', name:'Carlos Mendes',   blood:'A-', phone:'+1 555-0206', doctor:'Dr. S. Patel' },
+  ];
+
+  const doctors = [
+    { id:'D01', name:'Dr. Sanjay Patel',  spec:'Cardiology',       exp:14, fee:150, rating:'4.9', slots:['09:00','09:30','10:30','14:00','15:30'], color:'avatar-blue'   },
+    { id:'D02', name:'Dr. Linda Chen',    spec:'Oncology',          exp:10, fee:200, rating:'4.8', slots:['10:00','11:00','13:00','14:30'],        color:'avatar-orange' },
+    { id:'D03', name:'Dr. Tom Nguyen',    spec:'Neurology',         exp:8,  fee:175, rating:'4.7', slots:['09:30','11:30','14:00','16:00'],        color:'avatar-purple' },
+    { id:'D04', name:'Dr. Jane Smith',    spec:'Pediatrics',        exp:12, fee:130, rating:'4.9', slots:['09:00','10:00','11:00','13:30','15:00'],color:'avatar-green'  },
+    { id:'D05', name:'Dr. Mark Wilson',   spec:'Orthopedics',       exp:9,  fee:160, rating:'4.6', slots:['10:00','12:00','14:00'],                color:'avatar-blue'   },
+    { id:'D06', name:'Dr. Amy Johnson',   spec:'General Medicine',  exp:6,  fee:100, rating:'4.8', slots:['09:00','09:30','10:00','10:30','11:00','13:00','14:00','15:00','16:00'], color:'avatar-orange' },
+  ];
+
+  const appointments = [
+    { id:'APT-0241', patient:'James Donovan',   doctor:'Dr. S. Patel',  spec:'Cardiology',  date:'Mar 12', day:12, month:'Mar', year:'2026', time:'09:00 AM', type:'Routine',      status:'today',     fee:150 },
+    { id:'APT-0242', patient:'Maria Rodriguez', doctor:'Dr. L. Chen',   spec:'Oncology',    date:'Mar 12', day:12, month:'Mar', year:'2026', time:'10:30 AM', type:'Emergency',    status:'today',     fee:200 },
+    { id:'APT-0243', patient:'Ali Khan',        doctor:'Dr. T. Nguyen', spec:'Neurology',   date:'Mar 12', day:12, month:'Mar', year:'2026', time:'11:00 AM', type:'Follow-up',    status:'today',     fee:175 },
+    { id:'APT-0244', patient:'Sarah Williams',  doctor:'Dr. J. Smith',  spec:'Pediatrics',  date:'Mar 12', day:12, month:'Mar', year:'2026', time:'02:00 PM', type:'Routine',      status:'today',     fee:130 },
+    { id:'APT-0245', patient:'Robert Brown',    doctor:'Dr. S. Patel',  spec:'Cardiology',  date:'Mar 13', day:13, month:'Mar', year:'2026', time:'09:30 AM', type:'Consultation', status:'upcoming',  fee:150 },
+    { id:'APT-0246', patient:'Priya Sharma',    doctor:'Dr. J. Smith',  spec:'Pediatrics',  date:'Mar 14', day:14, month:'Mar', year:'2026', time:'11:00 AM', type:'Routine',      status:'upcoming',  fee:130 },
+    { id:'APT-0247', patient:'Carlos Mendes',   doctor:'Dr. M. Wilson', spec:'Orthopedics', date:'Mar 15', day:15, month:'Mar', year:'2026', time:'02:30 PM', type:'Procedure',    status:'upcoming',  fee:160 },
+    { id:'APT-0238', patient:'James Donovan',   doctor:'Dr. S. Patel',  spec:'Cardiology',  date:'Mar 05', day:5,  month:'Mar', year:'2026', time:'09:00 AM', type:'Consultation', status:'past',      fee:150 },
+    { id:'APT-0235', patient:'Emily Carter',    doctor:'Dr. A. Johnson',spec:'General',     date:'Mar 01', day:1,  month:'Mar', year:'2026', time:'10:00 AM', type:'Routine',      status:'cancelled', fee:100 },
+  ];
+
+  /* ===== WIZARD STATE ===== */
+  let wStep = 1;
+  const WSTEPS = 4;
+  let selPatient = null;
+  let selDoctor  = null;
+  let selDate    = null;
+  let selSlot    = null;
+
+  /* ----- Wizard navigation ----- */
+  function wizNext() {
+    if (wStep === 1 && !selPatient) { alert('Please select a patient first.'); return; }
+    if (wStep === 2 && !selDoctor)  { alert('Please select a doctor first.');  return; }
+    if (wStep === 3 && (!selDate || !selSlot)) { alert('Please select a date and time slot.'); return; }
+
+    if (wStep < WSTEPS) {
+      setWizStep(wStep + 1);
+    } else {
+      confirmBooking();
+    }
+  }
+  function wizPrev() { if (wStep > 1) setWizStep(wStep - 1); }
+
+  function setWizStep(n) {
+    // mark previous done
+    if (n > wStep) markWizStep(wStep, 'done');
+    else markWizStep(wStep, 'pending');
+    wStep = n;
+    // show/hide panels
+    document.querySelectorAll('.wizard-step').forEach((p,i) => p.classList.toggle('active', i+1 === n));
+    // update indicators
+    markWizStep(n, 'active');
+    document.getElementById('wizardStepLabel').textContent = `Step ${n} / ${WSTEPS}`;
+    document.getElementById('wizPrev').style.display = n > 1 ? 'inline-flex' : 'none';
+    document.getElementById('wizNext').textContent = n === WSTEPS ? '✅ Confirm Booking' : 'Next →';
+    // populate confirm
+    if (n === 4) populateConfirm();
+  }
+
+  function markWizStep(n, state) {
+    const el = document.getElementById('ws'+n);
+    el.classList.remove('active','done');
+    if (state !== 'pending') el.classList.add(state);
+    if (n < 4) document.getElementById('wl'+n).classList.toggle('done', state === 'done');
+  }
+
+  /* ----- Patient search ----- */
+  function searchPatients(q) {
+    const res = document.getElementById('patientResults');
+    if (!q.trim()) { res.classList.remove('show'); return; }
+    const matches = patients.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || p.id.includes(q) || p.phone.includes(q));
+    if (!matches.length) { res.innerHTML = '<div class="patient-row" style="color:var(--gray-400);">No patients found</div>'; res.classList.add('show'); return; }
+    res.innerHTML = matches.map(p => `
+      <div class="patient-row" onclick="selectPatient('${p.id}')">
+        <div class="avatar avatar-sm avatar-green">${p.name.split(' ').map(x=>x[0]).join('').slice(0,2)}</div>
+        <div>
+          <div style="font-size:.87rem;font-weight:700;">${p.name}</div>
+          <div style="font-size:.75rem;color:var(--gray-400);">${p.id} · ${p.phone}</div>
+        </div>
+        <span class="badge badge-gray" style="margin-left:auto;font-size:.7rem;">🩸 ${p.blood}</span>
+      </div>`).join('');
+    res.classList.add('show');
+  }
+
+  function selectPatient(id) {
+    selPatient = patients.find(p => p.id === id);
+    document.getElementById('patientSearch').value = selPatient.name;
+    document.getElementById('patientResults').classList.remove('show');
+    const ini = selPatient.name.split(' ').map(x=>x[0]).join('').slice(0,2);
+    document.getElementById('spAvatar').textContent = ini;
+    document.getElementById('spName').textContent = selPatient.name;
+    document.getElementById('spId').textContent   = selPatient.id + ' · ' + selPatient.phone;
+    document.getElementById('spBlood').textContent = '🩸 ' + selPatient.blood;
+    document.getElementById('spDoctor').textContent = '👨‍⚕️ ' + selPatient.doctor;
+    document.getElementById('selectedPatientCard').style.display = 'block';
+  }
+  function clearPatient() {
+    selPatient = null;
+    document.getElementById('patientSearch').value = '';
+    document.getElementById('selectedPatientCard').style.display = 'none';
+  }
+
+  /* ----- Doctor list ----- */
+  let docFilter = '';
+  function filterDoctors(spec) { docFilter = spec; renderDoctors(); }
+  function renderDoctors() {
+    const list = document.getElementById('doctorList');
+    const filtered = doctors.filter(d => !docFilter || d.spec === docFilter);
+    list.innerHTML = filtered.map(d => `
+      <div class="doc-card ${selDoctor && selDoctor.id === d.id ? 'selected':''}" onclick="selectDoctor('${d.id}')">
+        <div class="avatar ${d.color}">${d.name.replace('Dr. ','').split(' ').map(x=>x[0]).join('').slice(0,2)}</div>
+        <div class="doc-info">
+          <div class="doc-name">${d.name}</div>
+          <div class="doc-spec">${d.spec}</div>
+          <div class="doc-meta">
+            <span>⭐ ${d.rating}</span>
+            <span>🕐 ${d.exp}y exp</span>
+            <span>💰 $${d.fee}</span>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+  function selectDoctor(id) {
+    selDoctor = doctors.find(d => d.id === id);
+    renderDoctors();
+  }
+
+  /* ----- Calendar strip ----- */
+  function buildCalStrip() {
+    const strip = document.getElementById('calStrip');
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const today = new Date(2026, 2, 12); // March 12 2026
+    strip.innerHTML = '';
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      const isToday = i === 0;
+      const isSun = d.getDay() === 0;
+      const div = document.createElement('div');
+      div.className = `cal-day${isToday?' today':''}${isSun?' disabled':''}`;
+      div.innerHTML = `<div class="cal-dow">${days[d.getDay()]}</div><div class="cal-num">${d.getDate()}</div>`;
+      div.dataset.date = `${months[d.getMonth()]} ${d.getDate()}, 2026`;
+      if (!isSun) div.onclick = function() {
+        document.querySelectorAll('.cal-day').forEach(x => x.classList.remove('selected'));
+        this.classList.add('selected');
+        selDate = this.dataset.date;
+        buildSlots();
+      };
+      strip.appendChild(div);
+    }
+  }
+
+  function buildSlots() {
+    const grid = document.getElementById('slotGrid');
+    if (!selDoctor) { grid.innerHTML = '<p class="text-sm text-muted">Please select a doctor first.</p>'; return; }
+    const booked = ['10:00','13:30'];
+    const allSlots = selDoctor.slots;
+    grid.innerHTML = allSlots.map(s => {
+      const isBooked = booked.includes(s);
+      const isSel = selSlot === s;
+      return `<div class="slot ${isBooked?'booked':''} ${isSel&&!isBooked?'selected':''}"
+                onclick="${isBooked ? '':  `"selectSlot('${s}')"`}">
+                ${s}
+              </div>`;
+    }).join('');
+  }
+
+  // workaround for inline onclick with single quotes
+  document.addEventListener('click', e => {
+    const slot = e.target.closest('.slot:not(.booked)');
+    if (!slot) return;
+    selSlot = slot.textContent.trim();
+    document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+    slot.classList.add('selected');
+  });
+
+  /* ----- Confirm step ----- */
+  function populateConfirm() {
+    document.getElementById('cfPatient').textContent  = selPatient ? selPatient.name : '—';
+    document.getElementById('cfDoctor').textContent   = selDoctor  ? selDoctor.name  : '—';
+    document.getElementById('cfSpec').textContent     = selDoctor  ? selDoctor.spec  : '—';
+    document.getElementById('cfDateTime').textContent = (selDate && selSlot) ? selDate + ' at ' + selSlot : '—';
+    document.getElementById('cfType').textContent     = document.getElementById('apptType')?.value || 'Consultation';
+    document.getElementById('cfFee').textContent      = selDoctor  ? '$' + selDoctor.fee : '—';
+  }
+
+  function confirmBooking() {
+    const id = 'APT-' + (Math.floor(Math.random()*9000)+1000);
+    document.getElementById('newApptId').textContent = id;
+    document.getElementById('bookingSuccess').style.display = 'flex';
+    document.getElementById('wizNext').textContent = '📋 New Booking';
+    document.getElementById('wizNext').onclick = resetWizard;
+  }
+
+  function resetWizard() {
+    selPatient = selDoctor = selDate = selSlot = null;
+    wStep = 1;
+    document.getElementById('bookingSuccess').style.display = 'none';
+    document.getElementById('wizNext').textContent = 'Next →';
+    document.getElementById('wizNext').onclick = wizNext;
+    document.querySelectorAll('.wizard-step').forEach((p,i) => p.classList.toggle('active', i === 0));
+    [1,2,3,4].forEach(n => {
+      const el = document.getElementById('ws'+n);
+      el.classList.remove('active','done');
+      if (n === 1) el.classList.add('active');
+    });
+    [1,2,3].forEach(n => document.getElementById('wl'+n).classList.remove('done'));
+    document.getElementById('wizPrev').style.display = 'none';
+    document.getElementById('wizardStepLabel').textContent = 'Step 1 / 4';
+    clearPatient();
+    renderDoctors();
+  }
+
+  /* ===== APPOINTMENTS LIST ===== */
+  let apptFilter = 'all';
+  const typeBadge = {
+    Routine: 'badge-success', Emergency: 'badge-danger', 'Follow-up': 'badge-accent',
+    Consultation: 'badge-primary', Procedure: 'badge-warning'
+  };
+  const statusColor = { today:'#16a34a', upcoming:'#0369a1', past:'#64748b', cancelled:'#991b1b' };
+
+  function renderAppts() {
+    const list = document.getElementById('apptList');
+    const filtered = appointments.filter(a => apptFilter === 'all' || a.status === apptFilter);
+    if (!filtered.length) { list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-400);">No appointments found</div>'; return; }
+    list.innerHTML = filtered.map(a => `
+      <div class="appt-card">
+        <div class="appt-date-block">
+          <div class="month">${a.month}</div>
+          <div class="day">${a.day}</div>
+          <div class="year">${a.year}</div>
+        </div>
+        <div class="appt-details">
+          <div class="appt-title">${a.patient}</div>
+          <div class="appt-meta">
+            <span>⏰ ${a.time}</span>
+            <span>👨‍⚕️ ${a.doctor}</span>
+            <span>🏥 ${a.spec}</span>
+            <span>💰 $${a.fee}</span>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+            <span class="badge ${typeBadge[a.type] || 'badge-gray'}">${a.type}</span>
+            <span style="font-size:.72rem;font-weight:700;color:${statusColor[a.status]}">
+              ● ${a.status.charAt(0).toUpperCase()+a.status.slice(1)}
+            </span>
+            <span style="font-size:.75rem;color:var(--gray-400);margin-left:4px;font-family:monospace;">${a.id}</span>
+          </div>
+        </div>
+        <div class="appt-actions">
+          <button class="btn btn-sm btn-primary" onclick="viewAppt('${a.id}')">View</button>
+          ${a.status !== 'past' && a.status !== 'cancelled' ? `<button class="btn btn-sm btn-secondary">Reschedule</button>` : ''}
+          ${a.status !== 'past' && a.status !== 'cancelled' ? `<button class="btn btn-sm btn-danger">Cancel</button>` : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  function filterAppts(status, el) {
+    apptFilter = status;
+    document.querySelectorAll('.status-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderAppts();
+  }
+
+  function viewAppt(id) {
+    const a = appointments.find(x => x.id === id);
+    if (!a) return;
+    document.getElementById('apptDetailBody').innerHTML = `
+      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:18px;">
+        <div>
+          <div class="form-label">Appointment ID</div>
+          <p style="font-family:monospace;font-weight:700;">${a.id}</p>
+        </div>
+        <div>
+          <div class="form-label">Status</div>
+          <span class="badge ${a.status==='today'?'badge-success':a.status==='cancelled'?'badge-danger':'badge-primary'}">${a.status}</span>
+        </div>
+      </div>
+      <div class="confirm-section">
+        <div class="confirm-row"><span class="confirm-label">Patient</span><span class="confirm-value">${a.patient}</span></div>
+        <div class="confirm-row"><span class="confirm-label">Doctor</span><span class="confirm-value">${a.doctor}</span></div>
+        <div class="confirm-row"><span class="confirm-label">Specialization</span><span class="confirm-value">${a.spec}</span></div>
+        <div class="confirm-row"><span class="confirm-label">Date</span><span class="confirm-value">${a.date}, ${a.year}</span></div>
+        <div class="confirm-row"><span class="confirm-label">Time</span><span class="confirm-value">${a.time}</span></div>
+        <div class="confirm-row"><span class="confirm-label">Type</span><span class="confirm-value">${a.type}</span></div>
+        <div class="confirm-row"><span class="confirm-label">Consultation Fee</span><span class="confirm-value">$${a.fee}</span></div>
+      </div>`;
+    document.getElementById('apptDetailModal').classList.remove('hidden');
+  }
+
+  function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+  /* ===== INIT ===== */
+  renderDoctors();
+  buildCalStrip();
+  renderAppts();
+</script>
+</body>
+</html>
