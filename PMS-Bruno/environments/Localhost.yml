@@ -1,4 +1,4 @@
-name: Local
+name: Localhost
 variables:
   - name: base
     value: http://localhost:3000/api

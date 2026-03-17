@@ -1,11 +1,17 @@
 info:
-  name: Login
+  name: Register
   type: http
   seq: 1
 
 http:
   method: POST
   url: "{{base}}/register"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Madhan"
+      }
   auth: inherit
 
 settings:

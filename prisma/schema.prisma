@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model appointment {
+  id                                 Int                  @id @default(autoincrement())
+  doctor_id                          Int
+  patient_id                         Int
+  apmt_date                          DateTime             @db.Date
+  start_time                         DateTime             @db.Time(6)
+  end_time                           DateTime             @db.Time(6)
+  status                             apmt_status          @default(PENDING)
+  createdby                          Int
+  createdat                          DateTime             @default(now()) @db.Timestamp(6)
+  updatedby                          Int?
+  updatedat                          DateTime             @default(now()) @db.Timestamp(6)
+  users_appointment_createdbyTousers users                @relation("appointment_createdbyTousers", fields: [createdby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doctors                            doctors              @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  patients                           patients             @relation(fields: [patient_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_appointment_updatedbyTousers users?               @relation("appointment_updatedbyTousers", fields: [updatedby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  appointment_status                 appointment_status[]
+  lab_scan                           lab_scan[]
+}
+
+model appointment_status {
+  id          Int         @id @default(autoincrement())
+  apmt_id     Int
+  status      apmt_status @default(PENDING)
+  description String?
+  createdby   Int
+  createdat   DateTime    @default(now()) @db.Timestamp(6)
+  appointment appointment @relation(fields: [apmt_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users       users       @relation(fields: [createdby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model doctors {
+  id                             Int            @id @default(autoincrement())
+  user_id                        Int
+  name                           String         @db.VarChar(255)
+  description                    String
+  specialization_id              Int
+  time_for_apmt                  Int            @default(15)
+  fees                           Decimal?       @db.Decimal(10, 3)
+  createdby                      Int
+  createdat                      DateTime       @default(now()) @db.Timestamp(6)
+  updatedby                      Int?
+  updatedat                      DateTime       @default(now()) @db.Timestamp(6)
+  appointment                    appointment[]
+  users_doctors_createdbyTousers users          @relation("doctors_createdbyTousers", fields: [createdby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  specialization                 specialization @relation(fields: [specialization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_doctors_updatedbyTousers users?         @relation("doctors_updatedbyTousers", fields: [updatedby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_doctors_user_idTousers   users          @relation("doctors_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model lab_scan {
+  id            Int         @id @default(autoincrement())
+  apmt_id       Int
+  document_type doc_type
+  documents     String?
+  createdby     Int
+  createdat     DateTime    @default(now()) @db.Timestamp(6)
+  appointment   appointment @relation(fields: [apmt_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users         users       @relation(fields: [createdby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model patients {
+  id                              Int           @id @default(autoincrement())
+  user_id                         Int
+  first_name                      String        @db.VarChar(255)
+  last_name                       String        @db.VarChar(255)
+  dob                             DateTime      @db.Date
+  gender                          gender_type
+  blood_type                      String        @db.VarChar(10)
+  allergies                       String[]
+  createdby                       Int
+  createdat                       DateTime      @default(now()) @db.Timestamp(6)
+  updatedby                       Int?
+  updatedat                       DateTime      @default(now()) @db.Timestamp(6)
+  appointment                     appointment[]
+  users_patients_createdbyTousers users         @relation("patients_createdbyTousers", fields: [createdby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_patients_updatedbyTousers users?        @relation("patients_updatedbyTousers", fields: [updatedby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_patients_user_idTousers   users         @relation("patients_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model refresh_token {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  token_hash String    @unique
+  expires_at DateTime  @db.Timestamp(6)
+  usered_at  DateTime? @db.Timestamp(6)
+  created_at DateTime  @default(now()) @db.Timestamp(6)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model specialization {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique @db.VarChar(10)
+  description String?
+  doctors     doctors[]
+}
+
+model users {
+  id                                       Int                  @id @default(autoincrement())
+  name                                     String               @db.VarChar(100)
+  email                                    String               @unique @db.VarChar(255)
+  phone_no                                 String               @unique @db.VarChar(20)
+  role                                     user_role?           @default(patient)
+  is_active                                Boolean              @default(false)
+  createdat                                DateTime?            @default(now()) @db.Timestamp(6)
+  createdby                                Int
+  modifiedat                               DateTime?            @default(now()) @db.Timestamp(6)
+  modifiedby                               Int?
+  appointment_appointment_createdbyTousers appointment[]        @relation("appointment_createdbyTousers")
+  appointment_appointment_updatedbyTousers appointment[]        @relation("appointment_updatedbyTousers")
+  appointment_status                       appointment_status[]
+  doctors_doctors_createdbyTousers         doctors[]            @relation("doctors_createdbyTousers")
+  doctors_doctors_updatedbyTousers         doctors[]            @relation("doctors_updatedbyTousers")
+  doctors_doctors_user_idTousers           doctors[]            @relation("doctors_user_idTousers")
+  lab_scan                                 lab_scan[]
+  patients_patients_createdbyTousers       patients[]           @relation("patients_createdbyTousers")
+  patients_patients_updatedbyTousers       patients[]           @relation("patients_updatedbyTousers")
+  patients_patients_user_idTousers         patients[]           @relation("patients_user_idTousers")
+  refresh_token                            refresh_token[]
+  users_users_createdbyTousers             users                @relation("users_createdbyTousers", fields: [createdby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_users_users_createdbyTousers       users[]              @relation("users_createdbyTousers")
+  users_users_modifiedbyTousers            users?               @relation("users_modifiedbyTousers", fields: [modifiedby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_users_users_modifiedbyTousers      users[]              @relation("users_modifiedbyTousers")
+}
+
+enum apmt_status {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  NO_SHOW      @map("NO-SHOW")
+  IN_PRGRESS   @map("IN-PRGRESS")
+  CANCELED
+  RE_SCHEDULED @map("RE-SCHEDULED")
+}
+
+enum doc_type {
+  LAB
+  SCAN
+  PRESCEIPTION
+}
+
+enum gender_type {
+  M
+  F
+  O
+  PNTS
+}
+
+enum user_role {
+  supeAdmin
+  admin
+  doctor
+  patient
+}
