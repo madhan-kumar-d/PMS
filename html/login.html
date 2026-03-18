@@ -4,179 +4,97 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login — MediCare HMS</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      background: linear-gradient(135deg, #0f172a 0%, #1a3a5c 60%, #0eb199 100%);
-      display: flex; align-items: center; justify-content: center;
-      min-height: 100vh; padding: 20px;
-    }
-    .login-wrap {
-      display: flex; width: 100%; max-width: 920px;
-      border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg);
-    }
-    /* Left branding panel */
-    .login-brand {
-      flex: 1; background: linear-gradient(160deg, #1a6fb5 0%, #0eb199 100%);
-      padding: 52px 44px; display: flex; flex-direction: column;
-      justify-content: space-between; color: var(--white);
-    }
-    .brand-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
-    .brand-logo .logo-box {
-      width: 44px; height: 44px; background: rgba(255,255,255,.2);
-      border-radius: 12px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem;
-    }
-    .brand-logo h1 { font-size: 1.4rem; font-weight: 800; }
-    .brand-tagline { font-size: 1.55rem; font-weight: 700; line-height: 1.35; margin-bottom: 18px; }
-    .brand-tagline span { opacity: .75; font-weight: 400; font-size: 1rem; display: block; margin-top: 6px; }
-    .brand-features { margin-top: 24px; }
-    .brand-feature { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: .9rem; }
-    .brand-feature .icon { width: 28px; height: 28px; background: rgba(255,255,255,.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .brand-footer { font-size: .75rem; opacity: .55; margin-top: 40px; }
-
-    /* Right form panel */
-    .login-form-panel {
-      width: 400px; background: var(--white); padding: 48px 42px;
-      display: flex; flex-direction: column; justify-content: center;
-    }
-    .login-form-panel h2 { color: var(--gray-800); margin-bottom: 4px; }
-    .login-form-panel .subtitle { color: var(--gray-500); font-size: .88rem; margin-bottom: 32px; }
-
-    .form-control-login {
-      width: 100%; padding: 11px 14px 11px 40px;
-      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
-      font-size: .9rem; color: var(--gray-800);
-      transition: border-color var(--transition), box-shadow var(--transition);
-      background: var(--gray-50);
-    }
-    .form-control-login:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,111,181,.12); background: var(--white); }
-
-    .remember-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
-    .checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: .85rem; color: var(--gray-600); }
-    .checkbox-label input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--primary); }
-    .forgot-link { font-size: .85rem; color: var(--primary); font-weight: 600; cursor: pointer; }
-    .forgot-link:hover { text-decoration: underline; }
-
-    .role-select-group { margin-bottom: 22px; }
-    .role-options { display: flex; gap: 8px; }
-    .role-opt {
-      flex: 1; padding: 9px 8px; border-radius: 8px;
-      border: 1.5px solid var(--gray-200); cursor: pointer; text-align: center;
-      font-size: .8rem; font-weight: 600; color: var(--gray-500);
-      transition: all var(--transition);
-    }
-    .role-opt:hover { border-color: var(--primary); color: var(--primary); }
-    .role-opt input { display: none; }
-    .role-opt.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
-
-    .signup-link { text-align: center; margin-top: 24px; font-size: .85rem; color: var(--gray-500); }
-    .signup-link a { color: var(--primary); font-weight: 700; }
-
-    .error-msg { display: none; padding: 10px 14px; background: #fee2e2; color: #991b1b; border-radius: 8px; font-size: .85rem; margin-bottom: 18px; }
-    .error-msg.show { display: block; }
-
-    @media (max-width: 700px) {
-      .login-brand { display: none; }
-      .login-form-panel { width: 100%; padding: 36px 28px; }
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#1a6fb5','primary-dark':'#135292','primary-light':'#e8f2fb',accent:'#0eb199'}}}}</script>
 </head>
-<body>
-  <div class="login-wrap">
+<body class="min-h-screen flex bg-gradient-to-br from-slate-900 via-blue-950 to-teal-900 items-center justify-center p-5">
+
+  <div class="flex w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl">
+
     <!-- Branding Side -->
-    <div class="login-brand">
+    <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-700 to-teal-500 flex-col justify-between p-12 text-white">
       <div>
-        <div class="brand-logo">
-          <div class="logo-box">🏥</div>
-          <h1>MediCare HMS</h1>
+        <div class="flex items-center gap-3 mb-8">
+          <div class="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center text-2xl">🏥</div>
+          <h1 class="text-xl font-extrabold">MediCare HMS</h1>
         </div>
-        <p class="brand-tagline">
-          Smart Hospital Management
-          <span>Streamline patient care, appointments, and hospital workflows in one place.</span>
-        </p>
-        <div class="brand-features">
-          <div class="brand-feature"><div class="icon">📋</div> Patient Records & History</div>
-          <div class="brand-feature"><div class="icon">📅</div> Online Appointment Booking</div>
-          <div class="brand-feature"><div class="icon">👨‍⚕️</div> Doctor & Staff Management</div>
-          <div class="brand-feature"><div class="icon">🔒</div> Role-Based Access Control</div>
+        <p class="text-2xl font-bold leading-snug mb-2">Smart Hospital Management</p>
+        <p class="text-white/70 text-sm mb-8">Streamline patient care, appointments, and hospital workflows in one place.</p>
+        <div class="space-y-4">
+          <div class="flex items-center gap-3 text-sm"><div class="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">📋</div> Patient Records &amp; History</div>
+          <div class="flex items-center gap-3 text-sm"><div class="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">📅</div> Online Appointment Booking</div>
+          <div class="flex items-center gap-3 text-sm"><div class="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">👨‍⚕️</div> Doctor &amp; Staff Management</div>
+          <div class="flex items-center gap-3 text-sm"><div class="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">🔒</div> Role-Based Access Control</div>
         </div>
       </div>
-      <p class="brand-footer">© 2026 MediCare Hospital Management System</p>
+      <p class="text-white/50 text-xs">© 2026 MediCare Hospital Management System</p>
     </div>
 
     <!-- Form Side -->
-    <div class="login-form-panel">
-      <h2>Welcome back</h2>
-      <p class="subtitle">Sign in to access your dashboard</p>
+    <div class="w-full lg:w-1/2 bg-white flex flex-col justify-center p-10">
+      <h2 class="text-2xl font-bold text-slate-800 mb-1">Welcome back</h2>
+      <p class="text-slate-500 text-sm mb-8">Sign in to access your dashboard</p>
 
       <!-- Role Selection -->
-      <div class="role-select-group">
-        <label class="form-label">Sign in as</label>
-        <div class="role-options" id="roleOptions">
-          <div class="role-opt selected" onclick="selectRole(this, 'super_admin')">
-            <input type="radio" name="role" value="super_admin" checked />
-            ⚙️ Super Admin
+      <div class="mb-6">
+        <label class="block text-xs font-semibold text-slate-600 mb-2">Sign in as</label>
+        <div class="grid grid-cols-4 gap-2" id="roleOptions">
+          <div class="role-opt selected flex flex-col items-center gap-1 px-2 py-3 rounded-lg border-2 border-blue-700 bg-blue-50 text-blue-700 cursor-pointer text-xs font-semibold text-center transition" onclick="selectRole(this,'super_admin')">
+            <input type="radio" name="role" value="super_admin" checked class="hidden"/>⚙️ Super Admin
           </div>
-          <div class="role-opt" onclick="selectRole(this, 'admin')">
-            <input type="radio" name="role" value="admin" />
-            🛡️ Admin
+          <div class="role-opt flex flex-col items-center gap-1 px-2 py-3 rounded-lg border-2 border-slate-200 text-slate-500 cursor-pointer text-xs font-semibold text-center hover:border-blue-400 hover:text-blue-600 transition" onclick="selectRole(this,'admin')">
+            <input type="radio" name="role" value="admin" class="hidden"/>🛡️ Admin
           </div>
-          <div class="role-opt" onclick="selectRole(this, 'doctor')">
-            <input type="radio" name="role" value="doctor" />
-            👨‍⚕️ Doctor
+          <div class="role-opt flex flex-col items-center gap-1 px-2 py-3 rounded-lg border-2 border-slate-200 text-slate-500 cursor-pointer text-xs font-semibold text-center hover:border-blue-400 hover:text-blue-600 transition" onclick="selectRole(this,'doctor')">
+            <input type="radio" name="role" value="doctor" class="hidden"/>👨‍⚕️ Doctor
           </div>
-          <div class="role-opt" onclick="selectRole(this, 'patient')">
-            <input type="radio" name="role" value="patient" />
-            🧑 Patient
+          <div class="role-opt flex flex-col items-center gap-1 px-2 py-3 rounded-lg border-2 border-slate-200 text-slate-500 cursor-pointer text-xs font-semibold text-center hover:border-blue-400 hover:text-blue-600 transition" onclick="selectRole(this,'patient')">
+            <input type="radio" name="role" value="patient" class="hidden"/>🧑 Patient
           </div>
         </div>
       </div>
 
-      <div class="error-msg" id="errorMsg">
+      <!-- Error -->
+      <div id="errorMsg" class="hidden mb-4 px-4 py-3 bg-red-50 text-red-700 rounded-lg text-sm border border-red-200">
         ⚠️ Invalid email or password. Please try again.
       </div>
 
-      <form id="loginForm" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <div class="input-group">
-            <span class="input-icon">📧</span>
-            <input type="email" class="form-control-login" id="emailInput" placeholder="you@hospital.com" required />
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Email Address</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">📧</span>
+            <input type="email" id="emailInput" placeholder="you@hospital.com" required
+              class="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white transition" />
           </div>
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <div class="input-group" style="position:relative;">
-            <span class="input-icon">🔑</span>
-            <input type="password" class="form-control-login" id="passInput" placeholder="••••••••" required />
-            <span class="input-icon-right" onclick="togglePass()" id="eyeToggle" style="right:12px;position:absolute;cursor:pointer;">👁️</span>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔑</span>
+            <input type="password" id="passInput" placeholder="••••••••" required
+              class="w-full pl-9 pr-10 py-2.5 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white transition" />
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400" onclick="togglePass()" id="eyeToggle">👁️</span>
           </div>
         </div>
-
-        <div class="remember-row">
-          <label class="checkbox-label">
-            <input type="checkbox" id="remember" />
-            Remember me
+        <div class="flex items-center justify-between">
+          <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-600">
+            <input type="checkbox" id="remember" class="accent-blue-700" /> Remember me
           </label>
-          <span class="forgot-link">Forgot password?</span>
+          <span class="text-sm text-blue-700 font-semibold cursor-pointer hover:underline">Forgot password?</span>
         </div>
-
-        <button type="submit" class="btn btn-primary btn-block btn-lg">
+        <button type="submit" class="w-full py-2.5 bg-blue-700 text-white rounded-lg text-sm font-semibold hover:bg-blue-800 transition">
           🔐 Sign In
         </button>
       </form>
 
-      <div class="signup-link">
-        Need an account? <a href="#">Contact your administrator</a>
-      </div>
+      <p class="text-center text-sm text-slate-500 mt-5">Need an account? <a href="#" class="text-blue-700 font-bold hover:underline">Contact your administrator</a></p>
 
-      <!-- Demo Hint -->
-      <div style="margin-top:28px;padding:14px;background:var(--gray-50);border-radius:10px;border:1px dashed var(--gray-300);">
-        <p style="font-size:.78rem;color:var(--gray-500);font-weight:600;margin-bottom:8px;">DEMO CREDENTIALS</p>
-        <p style="font-size:.8rem;color:var(--gray-600);">📧 admin@medicare.com</p>
-        <p style="font-size:.8rem;color:var(--gray-600);">🔑 admin123</p>
+      <!-- Demo hint -->
+      <div class="mt-6 p-4 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+        <p class="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Demo Credentials</p>
+        <p class="text-xs text-slate-600">📧 admin@medicare.com</p>
+        <p class="text-xs text-slate-600">🔑 admin123</p>
       </div>
     </div>
   </div>
@@ -186,8 +104,12 @@
 
     function selectRole(el, role) {
       selectedRole = role;
-      document.querySelectorAll('.role-opt').forEach(opt => opt.classList.remove('selected'));
-      el.classList.add('selected');
+      document.querySelectorAll('.role-opt').forEach(opt => {
+        opt.classList.remove('border-blue-700','bg-blue-50','text-blue-700');
+        opt.classList.add('border-slate-200','text-slate-500');
+      });
+      el.classList.remove('border-slate-200','text-slate-500');
+      el.classList.add('border-blue-700','bg-blue-50','text-blue-700');
     }
 
     function togglePass() {
@@ -200,18 +122,11 @@
       const email = document.getElementById('emailInput').value;
       const pass  = document.getElementById('passInput').value;
       const errEl = document.getElementById('errorMsg');
-
-      // Demo: accept any non-empty or the demo credential
       if (email && pass.length >= 4) {
-        errEl.classList.remove('show');
-        // Redirect based on role
-        if (selectedRole === 'patient') {
-          window.location.href = 'booking.html';
-        } else {
-          window.location.href = 'dashboard.html';
-        }
+        errEl.classList.add('hidden');
+        window.location.href = selectedRole === 'patient' ? 'booking.html' : 'dashboard.html';
       } else {
-        errEl.classList.add('show');
+        errEl.classList.remove('hidden');
       }
     }
   </script>

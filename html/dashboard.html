@@ -4,456 +4,286 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard — MediCare HMS</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-    .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 22px; }
-
-    /* Activity Feed */
-    .activity-item {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 12px 0; border-bottom: 1px solid var(--gray-100);
-    }
-    .activity-item:last-child { border-bottom: none; }
-    .act-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: .95rem; flex-shrink: 0; }
-    .act-content { flex: 1; }
-    .act-text { font-size: .87rem; color: var(--gray-700); line-height: 1.4; }
-    .act-text strong { color: var(--gray-900); }
-    .act-time { font-size: .75rem; color: var(--gray-400); margin-top: 3px; }
-
-    /* Upcoming appointments */
-    .appt-item {
-      display: flex; align-items: center; gap: 14px;
-      padding: 12px; border-radius: var(--radius); margin-bottom: 10px;
-      border: 1px solid var(--gray-100); transition: background var(--transition);
-    }
-    .appt-item:hover { background: var(--gray-50); }
-    .appt-time-block { text-align: center; min-width: 52px; padding: 6px 8px; background: var(--primary-light); border-radius: 8px; }
-    .appt-time-block .time { font-size: .85rem; font-weight: 800; color: var(--primary); }
-    .appt-time-block .ampm { font-size: .7rem; color: var(--primary); }
-    .appt-info { flex: 1; }
-    .appt-patient { font-size: .88rem; font-weight: 700; color: var(--gray-800); }
-    .appt-doctor  { font-size: .78rem; color: var(--gray-500); margin-top: 2px; }
-    .appt-tag { font-size: .72rem; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
-    .appt-tag.routine { background: #dcfce7; color: #166534; }
-    .appt-tag.urgent  { background: #fee2e2; color: #991b1b; }
-    .appt-tag.followup{ background: #ede9fe; color: #6d28d9; }
-
-    /* Quick action cards */
-    .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
-    .qa-card {
-      background: var(--white); border-radius: var(--radius); padding: 18px 14px;
-      text-align: center; cursor: pointer; border: 1px solid var(--gray-200);
-      transition: all var(--transition); text-decoration: none; display: block;
-    }
-    .qa-card:hover { border-color: var(--primary); box-shadow: var(--shadow); transform: translateY(-2px); }
-    .qa-icon { font-size: 1.6rem; margin-bottom: 8px; }
-    .qa-label { font-size: .82rem; font-weight: 700; color: var(--gray-700); }
-
-    /* Progress bars */
-    .progress { height: 6px; background: var(--gray-100); border-radius: 999px; overflow: hidden; margin-top: 6px; }
-    .progress-bar { height: 100%; border-radius: 999px; }
-    .prog-blue   { background: var(--primary); }
-    .prog-green  { background: var(--success); }
-    .prog-orange { background: #f97316; }
-    .prog-purple { background: #8b5cf6; }
-
-    .dept-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-    .dept-name { font-size: .85rem; color: var(--gray-700); font-weight: 600; width: 130px; flex-shrink: 0; }
-    .dept-bar-wrap { flex: 1; }
-    .dept-count { font-size: .82rem; font-weight: 700; color: var(--gray-600); min-width: 30px; text-align: right; }
-
-    @media (max-width: 900px) {
-      .grid-2, .grid-3 { grid-template-columns: 1fr; }
-      .quick-actions { grid-template-columns: repeat(2, 1fr); }
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#1a6fb5','primary-dark':'#135292','primary-light':'#e8f2fb',accent:'#0eb199'}}}}</script>
 </head>
-<body>
-<div class="layout">
+<body class="bg-slate-100 font-sans">
+<div class="flex">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">🏥</div>
-      <div>
-        <div class="logo-text">MediCare HMS</div>
-        <div class="logo-sub">Hospital Management</div>
+  <aside class="fixed left-0 top-0 h-screen w-64 bg-slate-900 flex flex-col z-30">
+    <div class="p-5 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-xl">🏥</div>
+        <div>
+          <div class="text-white font-bold text-sm">MediCare HMS</div>
+          <div class="text-slate-400 text-xs">Hospital Management</div>
+        </div>
       </div>
     </div>
-
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <a href="dashboard.html" class="nav-item active">
-          <span class="nav-icon">📊</span> Dashboard
-        </a>
-        <a href="booking.html" class="nav-item">
-          <span class="nav-icon">📅</span> Appointments
-          <span class="nav-badge">5</span>
-        </a>
-        <a href="users.html" class="nav-item">
-          <span class="nav-icon">👥</span> Users
-        </a>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-section-title">Clinical</div>
-        <a href="patients.html" class="nav-item">
-          <span class="nav-icon">🧑‍⚕️</span> Patients
-        </a>
-        <a href="doctors.html" class="nav-item">
-          <span class="nav-icon">👨‍⚕️</span> Doctors
-        </a>
-        <a href="wards.html" class="nav-item">
-          <span class="nav-icon">🏨</span> Wards & Beds
-        </a>
-        <a href="pharmacy.html" class="nav-item">
-          <span class="nav-icon">💊</span> Pharmacy
-        </a>
-        <a href="lab.html" class="nav-item">
-          <span class="nav-icon">🧪</span> Lab Results
-        </a>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-section-title">Administration</div>
-        <a href="billing.html" class="nav-item">
-          <span class="nav-icon">💰</span> Billing
-        </a>
-        <a href="reports.html" class="nav-item">
-          <span class="nav-icon">📈</span> Reports
-        </a>
-        <a href="#" class="nav-item">
-          <span class="nav-icon">⚙️</span> Settings
-        </a>
-      </div>
+    <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Main</p>
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium bg-blue-700 text-white">📊 Dashboard</a>
+      <a href="booking.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📅 Appointments <span class="ml-auto text-xs bg-blue-500 text-white rounded-full px-2 py-0.5">5</span></a>
+      <a href="users.html"     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">👥 Users</a>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-4 pb-1">Clinical</p>
+      <a href="patients.html"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🧑‍⚕️ Patients</a>
+      <a href="doctors.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">👨‍⚕️ Doctors</a>
+      <a href="wards.html"     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🏨 Wards &amp; Beds</a>
+      <a href="pharmacy.html"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">💊 Pharmacy</a>
+      <a href="lab.html"       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🧪 Lab Results</a>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-4 pb-1">Administration</p>
+      <a href="billing.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">💰 Billing</a>
+      <a href="reports.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📈 Reports</a>
+      <a href="#"              class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">⚙️ Settings</a>
     </nav>
-
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="avatar avatar-blue">SA</div>
-        <div class="user-info">
-          <div class="user-name">Dr. Sarah Admin</div>
-          <div class="user-role">Super Admin</div>
+    <div class="p-4 border-t border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white">SA</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-white text-sm font-semibold truncate">Dr. Sarah Admin</div>
+          <div class="text-slate-400 text-xs">Super Admin</div>
         </div>
-        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+        <a href="login.html" class="text-slate-400 hover:text-white text-sm">⏏</a>
       </div>
     </div>
   </aside>
 
   <!-- MAIN -->
-  <div class="main">
+  <div class="ml-64 flex-1 min-h-screen">
     <!-- Topbar -->
-    <div class="topbar">
-      <div class="topbar-left">
-        <div>
-          <div class="topbar-title">Dashboard</div>
-          <div class="topbar-breadcrumb">Thursday, 12 March 2026</div>
-        </div>
+    <div class="sticky top-0 z-20 bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <div>
+        <div class="font-bold text-slate-800">Dashboard</div>
+        <div class="text-xs text-slate-400">Thursday, 12 March 2026</div>
       </div>
-      <div class="topbar-right">
-        <div class="topbar-search">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="Search patients, doctors…" />
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+          <input type="text" placeholder="Search patients, doctors…" class="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 w-56" />
         </div>
-        <button class="icon-btn">🔔<span class="dot"></span></button>
-        <button class="icon-btn">✉️</button>
-        <div style="position:relative;" id="userMenuWrap">
-          <div class="avatar avatar-blue" style="cursor:pointer;" onclick="toggleUserMenu()" title="Account">SA</div>
-          <div id="userMenu" style="
-            display:none; position:absolute; right:0; top:calc(100% + 8px);
-            background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius);
-            box-shadow:var(--shadow); min-width:200px; z-index:200;
-          ">
-            <div style="padding:14px 16px; border-bottom:1px solid var(--gray-100);">
-              <div style="font-weight:700;font-size:.88rem;color:var(--gray-800);">Dr. Sarah Admin</div>
-              <div style="font-size:.75rem;color:var(--gray-500);">admin@medicare.com</div>
+        <button class="relative w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-base">🔔<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span></button>
+        <button class="w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-50">✉️</button>
+        <div class="relative" id="userMenuWrap">
+          <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white cursor-pointer" onclick="toggleUserMenu()">SA</div>
+          <div id="userMenu" class="hidden absolute right-0 top-full mt-2 bg-white border border-slate-200 rounded-xl shadow-lg min-w-48 z-50">
+            <div class="px-4 py-3 border-b border-slate-100">
+              <div class="font-bold text-sm text-slate-800">Dr. Sarah Admin</div>
+              <div class="text-xs text-slate-400">admin@medicare.com</div>
             </div>
-            <a href="#" style="display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:.85rem;color:var(--gray-700);transition:background .15s;" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background=''">
-              👤 My Profile
-            </a>
-            <a href="#" style="display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:.85rem;color:var(--gray-700);transition:background .15s;" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background=''">
-              ⚙️ Settings
-            </a>
-            <div style="height:1px;background:var(--gray-100);margin:4px 0;"></div>
-            <a href="login.html" style="display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:.85rem;color:#dc2626;transition:background .15s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background=''">
-              🚪 Logout
-            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50">👤 My Profile</a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50">⚙️ Settings</a>
+            <div class="h-px bg-slate-100 my-1"></div>
+            <a href="login.html" class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50">🚪 Logout</a>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Page Content -->
-    <div class="page-content">
-
-      <!-- Welcome -->
-      <div class="page-header">
+    <div class="p-6">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
         <div>
-          <h2>Good morning, Dr. Sarah 👋</h2>
-          <p>Here's what's happening at the hospital today.</p>
+          <h2 class="text-xl font-bold text-slate-800">Good morning, Dr. Sarah 👋</h2>
+          <p class="text-slate-500 text-sm mt-1">Here's what's happening at the hospital today.</p>
         </div>
         <div class="flex gap-2">
-          <a href="booking.html" class="btn btn-primary">📅 New Appointment</a>
-          <a href="users.html" class="btn btn-secondary">➕ Add User</a>
+          <a href="booking.html" class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-700 text-white rounded-lg text-sm font-semibold hover:bg-blue-800 transition">📅 New Appointment</a>
+          <a href="users.html"   class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition">➕ Add User</a>
         </div>
       </div>
 
       <!-- Quick Actions -->
-      <div class="quick-actions">
-        <a href="users.html#create-patient" class="qa-card">
-          <div class="qa-icon">🧑‍⚕️</div>
-          <div class="qa-label">Register Patient</div>
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <a href="users.html#create-patient" class="bg-white rounded-xl border border-slate-200 p-5 text-center cursor-pointer hover:border-blue-500 hover:shadow-md transition block">
+          <div class="text-2xl mb-2">🧑‍⚕️</div><div class="text-xs font-bold text-slate-700">Register Patient</div>
         </a>
-        <a href="users.html#create-doctor" class="qa-card">
-          <div class="qa-icon">👨‍⚕️</div>
-          <div class="qa-label">Add Doctor</div>
+        <a href="users.html#create-doctor" class="bg-white rounded-xl border border-slate-200 p-5 text-center cursor-pointer hover:border-blue-500 hover:shadow-md transition block">
+          <div class="text-2xl mb-2">👨‍⚕️</div><div class="text-xs font-bold text-slate-700">Add Doctor</div>
         </a>
-        <a href="booking.html" class="qa-card">
-          <div class="qa-icon">📅</div>
-          <div class="qa-label">Book Appointment</div>
+        <a href="booking.html" class="bg-white rounded-xl border border-slate-200 p-5 text-center cursor-pointer hover:border-blue-500 hover:shadow-md transition block">
+          <div class="text-2xl mb-2">📅</div><div class="text-xs font-bold text-slate-700">Book Appointment</div>
         </a>
-        <a href="#" class="qa-card">
-          <div class="qa-icon">🧪</div>
-          <div class="qa-label">Lab Orders</div>
+        <a href="#" class="bg-white rounded-xl border border-slate-200 p-5 text-center cursor-pointer hover:border-blue-500 hover:shadow-md transition block">
+          <div class="text-2xl mb-2">🧪</div><div class="text-xs font-bold text-slate-700">Lab Orders</div>
         </a>
       </div>
 
       <!-- Stats -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon blue">🧑‍⚕️</div>
-          <div class="stat-info">
-            <div class="stat-value">1,248</div>
-            <div class="stat-label">Total Patients</div>
-            <div class="stat-change up">▲ 12% this month</div>
-          </div>
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl flex-shrink-0">🧑‍⚕️</div>
+          <div><div class="text-2xl font-extrabold text-slate-800">1,248</div><div class="text-xs text-slate-500">Total Patients</div><div class="text-xs text-green-600 font-semibold mt-1">▲ 12% this month</div></div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon green">👨‍⚕️</div>
-          <div class="stat-info">
-            <div class="stat-value">64</div>
-            <div class="stat-label">Active Doctors</div>
-            <div class="stat-change up">▲ 3 new this week</div>
-          </div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-2xl flex-shrink-0">👨‍⚕️</div>
+          <div><div class="text-2xl font-extrabold text-slate-800">64</div><div class="text-xs text-slate-500">Active Doctors</div><div class="text-xs text-green-600 font-semibold mt-1">▲ 3 new this week</div></div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon orange">📅</div>
-          <div class="stat-info">
-            <div class="stat-value">38</div>
-            <div class="stat-label">Today's Appointments</div>
-            <div class="stat-change down">▼ 4 cancelled</div>
-          </div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-2xl flex-shrink-0">📅</div>
+          <div><div class="text-2xl font-extrabold text-slate-800">38</div><div class="text-xs text-slate-500">Today's Appointments</div><div class="text-xs text-red-500 font-semibold mt-1">▼ 4 cancelled</div></div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon purple">🏥</div>
-          <div class="stat-info">
-            <div class="stat-value">142</div>
-            <div class="stat-label">Admitted Patients</div>
-            <div class="stat-change up">▲ 87% bed occupancy</div>
-          </div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl flex-shrink-0">🏥</div>
+          <div><div class="text-2xl font-extrabold text-slate-800">142</div><div class="text-xs text-slate-500">Admitted Patients</div><div class="text-xs text-green-600 font-semibold mt-1">▲ 87% bed occupancy</div></div>
         </div>
       </div>
 
       <!-- Main Grid -->
-      <div class="grid-3">
-        <!-- Left: Upcoming Appointments + Activity -->
-        <div>
-          <div class="card mb-6">
-            <div class="card-header">
-              <h3>Today's Appointments</h3>
-              <a href="booking.html" class="btn btn-sm btn-primary">View All</a>
+      <div class="grid grid-cols-3 gap-6">
+        <!-- Left 2/3: Appointments + Activity -->
+        <div class="col-span-2 space-y-6">
+          <!-- Today's Appointments -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 class="font-semibold text-slate-800">Today's Appointments</h3>
+              <a href="booking.html" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-700 text-white rounded-lg text-xs font-semibold hover:bg-blue-800 transition">View All</a>
             </div>
-            <div class="card-body" style="padding-top:14px;padding-bottom:14px;">
-              <div class="appt-item">
-                <div class="appt-time-block"><div class="time">09:00</div><div class="ampm">AM</div></div>
-                <div class="avatar avatar-blue avatar-sm">JD</div>
-                <div class="appt-info">
-                  <div class="appt-patient">James Donovan</div>
-                  <div class="appt-doctor">Dr. Patel — Cardiology</div>
-                </div>
-                <span class="appt-tag routine">Routine</span>
+            <div class="divide-y divide-slate-100">
+              <!-- appointment row helper -->
+              <div class="flex items-center gap-4 px-5 py-3 hover:bg-slate-50 transition">
+                <div class="text-center min-w-14 px-2 py-1.5 bg-blue-50 rounded-lg"><div class="text-sm font-extrabold text-blue-700">09:00</div><div class="text-xs text-blue-600">AM</div></div>
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">JD</div>
+                <div class="flex-1"><div class="text-sm font-bold text-slate-800">James Donovan</div><div class="text-xs text-slate-500">Dr. Patel — Cardiology</div></div>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">Routine</span>
               </div>
-              <div class="appt-item">
-                <div class="appt-time-block"><div class="time">10:30</div><div class="ampm">AM</div></div>
-                <div class="avatar avatar-orange avatar-sm">MR</div>
-                <div class="appt-info">
-                  <div class="appt-patient">Maria Rodriguez</div>
-                  <div class="appt-doctor">Dr. Chen — Oncology</div>
-                </div>
-                <span class="appt-tag urgent">Urgent</span>
+              <div class="flex items-center gap-4 px-5 py-3 hover:bg-slate-50 transition">
+                <div class="text-center min-w-14 px-2 py-1.5 bg-blue-50 rounded-lg"><div class="text-sm font-extrabold text-blue-700">10:30</div><div class="text-xs text-blue-600">AM</div></div>
+                <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">MR</div>
+                <div class="flex-1"><div class="text-sm font-bold text-slate-800">Maria Rodriguez</div><div class="text-xs text-slate-500">Dr. Chen — Oncology</div></div>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700">Urgent</span>
               </div>
-              <div class="appt-item">
-                <div class="appt-time-block"><div class="time">11:00</div><div class="ampm">AM</div></div>
-                <div class="avatar avatar-purple avatar-sm">AK</div>
-                <div class="appt-info">
-                  <div class="appt-patient">Ali Khan</div>
-                  <div class="appt-doctor">Dr. Nguyen — Neurology</div>
-                </div>
-                <span class="appt-tag followup">Follow-up</span>
+              <div class="flex items-center gap-4 px-5 py-3 hover:bg-slate-50 transition">
+                <div class="text-center min-w-14 px-2 py-1.5 bg-blue-50 rounded-lg"><div class="text-sm font-extrabold text-blue-700">11:00</div><div class="text-xs text-blue-600">AM</div></div>
+                <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">AK</div>
+                <div class="flex-1"><div class="text-sm font-bold text-slate-800">Ali Khan</div><div class="text-xs text-slate-500">Dr. Nguyen — Neurology</div></div>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">Follow-up</span>
               </div>
-              <div class="appt-item">
-                <div class="appt-time-block"><div class="time">02:00</div><div class="ampm">PM</div></div>
-                <div class="avatar avatar-green avatar-sm">SW</div>
-                <div class="appt-info">
-                  <div class="appt-patient">Sarah Williams</div>
-                  <div class="appt-doctor">Dr. Smith — Pediatrics</div>
-                </div>
-                <span class="appt-tag routine">Routine</span>
+              <div class="flex items-center gap-4 px-5 py-3 hover:bg-slate-50 transition">
+                <div class="text-center min-w-14 px-2 py-1.5 bg-blue-50 rounded-lg"><div class="text-sm font-extrabold text-blue-700">02:00</div><div class="text-xs text-blue-600">PM</div></div>
+                <div class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">SW</div>
+                <div class="flex-1"><div class="text-sm font-bold text-slate-800">Sarah Williams</div><div class="text-xs text-slate-500">Dr. Smith — Pediatrics</div></div>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">Routine</span>
               </div>
-              <div class="appt-item">
-                <div class="appt-time-block"><div class="time">03:30</div><div class="ampm">PM</div></div>
-                <div class="avatar avatar-blue avatar-sm">RB</div>
-                <div class="appt-info">
-                  <div class="appt-patient">Robert Brown</div>
-                  <div class="appt-doctor">Dr. Patel — Cardiology</div>
-                </div>
-                <span class="appt-tag followup">Follow-up</span>
+              <div class="flex items-center gap-4 px-5 py-3 hover:bg-slate-50 transition">
+                <div class="text-center min-w-14 px-2 py-1.5 bg-blue-50 rounded-lg"><div class="text-sm font-extrabold text-blue-700">03:30</div><div class="text-xs text-blue-600">PM</div></div>
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">RB</div>
+                <div class="flex-1"><div class="text-sm font-bold text-slate-800">Robert Brown</div><div class="text-xs text-slate-500">Dr. Patel — Cardiology</div></div>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">Follow-up</span>
               </div>
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-header">
-              <h3>Recent Activity</h3>
-              <span class="text-xs text-muted">Today</span>
+          <!-- Recent Activity -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 class="font-semibold text-slate-800">Recent Activity</h3>
+              <span class="text-xs text-slate-400">Today</span>
             </div>
-            <div class="card-body" style="padding-top:8px;padding-bottom:8px;">
-              <div class="activity-item">
-                <div class="act-icon" style="background:#dcfce7;">✅</div>
-                <div class="act-content">
-                  <div class="act-text"><strong>Dr. Patel</strong> completed appointment with James Donovan</div>
-                  <div class="act-time">09:45 AM</div>
-                </div>
+            <div class="divide-y divide-slate-100">
+              <div class="flex items-start gap-3 px-5 py-3">
+                <div class="w-9 h-9 rounded-xl bg-green-100 flex items-center justify-center text-base flex-shrink-0">✅</div>
+                <div><p class="text-sm text-slate-700"><strong class="text-slate-900">Dr. Patel</strong> completed appointment with James Donovan</p><p class="text-xs text-slate-400 mt-0.5">09:45 AM</p></div>
               </div>
-              <div class="activity-item">
-                <div class="act-icon" style="background:var(--primary-light);">👤</div>
-                <div class="act-content">
-                  <div class="act-text">New patient <strong>Emily Carter</strong> registered by Admin</div>
-                  <div class="act-time">08:30 AM</div>
-                </div>
+              <div class="flex items-start gap-3 px-5 py-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-base flex-shrink-0">👤</div>
+                <div><p class="text-sm text-slate-700">New patient <strong class="text-slate-900">Emily Carter</strong> registered by Admin</p><p class="text-xs text-slate-400 mt-0.5">08:30 AM</p></div>
               </div>
-              <div class="activity-item">
-                <div class="act-icon" style="background:#fee2e2;">⚠️</div>
-                <div class="act-content">
-                  <div class="act-text"><strong>Appointment #A-0219</strong> was cancelled by patient</div>
-                  <div class="act-time">08:10 AM</div>
-                </div>
+              <div class="flex items-start gap-3 px-5 py-3">
+                <div class="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center text-base flex-shrink-0">⚠️</div>
+                <div><p class="text-sm text-slate-700"><strong class="text-slate-900">Appointment #A-0219</strong> was cancelled by patient</p><p class="text-xs text-slate-400 mt-0.5">08:10 AM</p></div>
               </div>
-              <div class="activity-item">
-                <div class="act-icon" style="background:#fef3c7;">💊</div>
-                <div class="act-content">
-                  <div class="act-text">Prescription issued for <strong>Maria Rodriguez</strong></div>
-                  <div class="act-time">Yesterday</div>
-                </div>
+              <div class="flex items-start gap-3 px-5 py-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center text-base flex-shrink-0">💊</div>
+                <div><p class="text-sm text-slate-700">Prescription issued for <strong class="text-slate-900">Maria Rodriguez</strong></p><p class="text-xs text-slate-400 mt-0.5">Yesterday</p></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Right: Dept stats + Doctors -->
-        <div>
-          <div class="card mb-6">
-            <div class="card-header">
-              <h3>Department Load</h3>
+        <!-- Right 1/3: Dept + Doctors -->
+        <div class="space-y-6">
+          <!-- Department Load -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-5 py-4 border-b border-slate-100">
+              <h3 class="font-semibold text-slate-800">Department Load</h3>
             </div>
-            <div class="card-body">
-              <div class="dept-row">
-                <div class="dept-name">Cardiology</div>
-                <div class="dept-bar-wrap">
-                  <div class="progress"><div class="progress-bar prog-blue" style="width:82%"></div></div>
-                </div>
-                <div class="dept-count">82%</div>
+            <div class="p-5 space-y-4">
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-semibold text-slate-700 w-28 flex-shrink-0">Cardiology</span>
+                <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-1.5 rounded-full bg-blue-600" style="width:82%"></div></div>
+                <span class="text-xs font-bold text-slate-600 w-8 text-right">82%</span>
               </div>
-              <div class="dept-row">
-                <div class="dept-name">Oncology</div>
-                <div class="dept-bar-wrap">
-                  <div class="progress"><div class="progress-bar prog-orange" style="width:75%"></div></div>
-                </div>
-                <div class="dept-count">75%</div>
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-semibold text-slate-700 w-28 flex-shrink-0">Oncology</span>
+                <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-1.5 rounded-full bg-orange-500" style="width:75%"></div></div>
+                <span class="text-xs font-bold text-slate-600 w-8 text-right">75%</span>
               </div>
-              <div class="dept-row">
-                <div class="dept-name">Neurology</div>
-                <div class="dept-bar-wrap">
-                  <div class="progress"><div class="progress-bar prog-purple" style="width:60%"></div></div>
-                </div>
-                <div class="dept-count">60%</div>
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-semibold text-slate-700 w-28 flex-shrink-0">Neurology</span>
+                <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-1.5 rounded-full bg-purple-600" style="width:60%"></div></div>
+                <span class="text-xs font-bold text-slate-600 w-8 text-right">60%</span>
               </div>
-              <div class="dept-row">
-                <div class="dept-name">Pediatrics</div>
-                <div class="dept-bar-wrap">
-                  <div class="progress"><div class="progress-bar prog-green" style="width:45%"></div></div>
-                </div>
-                <div class="dept-count">45%</div>
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-semibold text-slate-700 w-28 flex-shrink-0">Pediatrics</span>
+                <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-1.5 rounded-full bg-green-500" style="width:45%"></div></div>
+                <span class="text-xs font-bold text-slate-600 w-8 text-right">45%</span>
               </div>
-              <div class="dept-row">
-                <div class="dept-name">Orthopedics</div>
-                <div class="dept-bar-wrap">
-                  <div class="progress"><div class="progress-bar prog-blue" style="width:68%"></div></div>
-                </div>
-                <div class="dept-count">68%</div>
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-semibold text-slate-700 w-28 flex-shrink-0">Orthopedics</span>
+                <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-1.5 rounded-full bg-blue-600" style="width:68%"></div></div>
+                <span class="text-xs font-bold text-slate-600 w-8 text-right">68%</span>
               </div>
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-header">
-              <h3>Doctors On Duty</h3>
-              <span class="badge badge-success">● 8 Active</span>
+          <!-- Doctors on Duty -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 class="font-semibold text-slate-800">Doctors On Duty</h3>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">● 8 Active</span>
             </div>
-            <div class="card-body" style="padding-top:12px;padding-bottom:12px;">
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-                <div class="avatar avatar-blue">SP</div>
-                <div style="flex:1;">
-                  <div style="font-size:.88rem;font-weight:700;">Dr. S. Patel</div>
-                  <div style="font-size:.75rem;color:var(--gray-500);">Cardiology</div>
-                </div>
-                <span class="badge badge-success">Available</span>
+            <div class="p-4 space-y-3">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white">SP</div>
+                <div class="flex-1"><div class="text-sm font-bold text-slate-800">Dr. S. Patel</div><div class="text-xs text-slate-500">Cardiology</div></div>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">Available</span>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-                <div class="avatar avatar-orange">LC</div>
-                <div style="flex:1;">
-                  <div style="font-size:.88rem;font-weight:700;">Dr. L. Chen</div>
-                  <div style="font-size:.75rem;color:var(--gray-500);">Oncology</div>
-                </div>
-                <span class="badge badge-warning">Busy</span>
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center text-xs font-bold text-white">LC</div>
+                <div class="flex-1"><div class="text-sm font-bold text-slate-800">Dr. L. Chen</div><div class="text-xs text-slate-500">Oncology</div></div>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Busy</span>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-                <div class="avatar avatar-purple">TN</div>
-                <div style="flex:1;">
-                  <div style="font-size:.88rem;font-weight:700;">Dr. T. Nguyen</div>
-                  <div style="font-size:.75rem;color:var(--gray-500);">Neurology</div>
-                </div>
-                <span class="badge badge-success">Available</span>
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-purple-600 flex items-center justify-center text-xs font-bold text-white">TN</div>
+                <div class="flex-1"><div class="text-sm font-bold text-slate-800">Dr. T. Nguyen</div><div class="text-xs text-slate-500">Neurology</div></div>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">Available</span>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div class="avatar avatar-green">JS</div>
-                <div style="flex:1;">
-                  <div style="font-size:.88rem;font-weight:700;">Dr. J. Smith</div>
-                  <div style="font-size:.75rem;color:var(--gray-500);">Pediatrics</div>
-                </div>
-                <span class="badge badge-gray">On Break</span>
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-green-600 flex items-center justify-center text-xs font-bold text-white">JS</div>
+                <div class="flex-1"><div class="text-sm font-bold text-slate-800">Dr. J. Smith</div><div class="text-xs text-slate-500">Pediatrics</div></div>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">On Break</span>
               </div>
             </div>
-            <div class="card-footer" style="text-align:center;">
-              <a href="users.html" class="btn btn-sm btn-secondary">View All Doctors</a>
+            <div class="px-5 py-3 border-t border-slate-100 text-center">
+              <a href="users.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">View All Doctors</a>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
-    </div><!-- /page-content -->
-  </div><!-- /main -->
-</div><!-- /layout -->
 <script>
   function toggleUserMenu() {
     const menu = document.getElementById('userMenu');
-    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    menu.classList.toggle('hidden');
   }
   document.addEventListener('click', function(e) {
     if (!document.getElementById('userMenuWrap').contains(e.target)) {
-      document.getElementById('userMenu').style.display = 'none';
+      document.getElementById('userMenu').classList.add('hidden');
     }
   });
 </script>

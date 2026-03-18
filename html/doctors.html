@@ -4,142 +4,159 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Doctors — MediCare HMS</title>
-  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#1a6fb5','primary-dark':'#135292','primary-light':'#e8f2fb',accent:'#0eb199'}}}}</script>
   <style>
-    .doctor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
-    .doctor-card {
-      background: var(--white); border-radius: var(--radius);
-      border: 1px solid var(--gray-200); padding: 22px;
-      transition: box-shadow var(--transition), transform var(--transition);
-    }
-    .doctor-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
-    .doctor-card-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
-    .doctor-card-info { flex: 1; }
-    .doctor-name { font-weight: 700; font-size: .95rem; color: var(--gray-800); }
-    .doctor-spec { font-size: .8rem; color: var(--gray-500); margin-top: 2px; }
-    .doctor-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .doctor-stat { background: var(--gray-50); border-radius: 8px; padding: 10px 12px; text-align: center; }
-    .doctor-stat .val { font-size: 1.1rem; font-weight: 800; color: var(--gray-800); }
-    .doctor-stat .lbl { font-size: .72rem; color: var(--gray-500); margin-top: 2px; }
-    .doctor-card-footer { display: flex; gap: 8px; }
-    .doctor-card-footer .btn { flex: 1; justify-content: center; }
-
-    .list-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
-    .search-input-wrap { position: relative; flex: 1; min-width: 200px; }
-    .search-input-wrap input {
-      width: 100%; padding: 9px 12px 9px 36px;
-      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
-      font-size: .88rem; background: var(--gray-50);
-    }
-    .search-input-wrap input:focus { outline: none; border-color: var(--primary); background: var(--white); }
-    .search-input-wrap .ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
-
-    .view-toggle { display: flex; gap: 4px; }
-    .view-btn { width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid var(--gray-200); background: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: .95rem; transition: all .15s; }
-    .view-btn.active { border-color: var(--primary); background: var(--primary-light); }
+    .day-toggle { position:relative;width:38px;height:20px;flex-shrink:0; }
+    .day-toggle input { opacity:0;width:0;height:0; }
+    .day-toggle-track { position:absolute;inset:0;background:#cbd5e1;border-radius:20px;cursor:pointer;transition:.2s; }
+    .day-toggle input:checked + .day-toggle-track { background:#1a6fb5; }
+    .day-toggle-track::after { content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;background:white;border-radius:50%;transition:.2s; }
+    .day-toggle input:checked + .day-toggle-track::after { left:21px; }
   </style>
 </head>
-<body>
-<div class="layout">
+<body class="bg-slate-100 font-sans">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">🏥</div>
-      <div>
-        <div class="logo-text">MediCare HMS</div>
-        <div class="logo-sub">Hospital Management</div>
+  <aside class="fixed left-0 top-0 h-screen w-64 bg-slate-900 flex flex-col z-30">
+    <div class="p-5 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="text-2xl">🏥</div>
+        <div>
+          <div class="text-white font-bold text-base leading-tight">MediCare HMS</div>
+          <div class="text-slate-400 text-xs">Hospital Management</div>
+        </div>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-        <a href="booking.html"   class="nav-item"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
-        <a href="users.html"     class="nav-item"><span class="nav-icon">👥</span> Users</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Clinical</div>
-        <a href="patients.html"  class="nav-item"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
-        <a href="doctors.html"   class="nav-item active"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
-        <a href="wards.html"     class="nav-item"><span class="nav-icon">🏨</span> Wards & Beds</a>
-        <a href="pharmacy.html"  class="nav-item"><span class="nav-icon">💊</span> Pharmacy</a>
-        <a href="lab.html"       class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Administration</div>
-        <a href="billing.html" class="nav-item"><span class="nav-icon">💰</span> Billing</a>
-        <a href="reports.html" class="nav-item"><span class="nav-icon">📈</span> Reports</a>
-        <a href="#" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
-      </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-4 flex flex-col gap-1">
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Main</p>
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+        <span>📊</span> Dashboard
+      </a>
+      <a href="booking.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+        <span>📅</span> Appointments
+        <span class="ml-auto text-xs bg-blue-500 text-white rounded-full px-2 py-0.5">5</span>
+      </a>
+      <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+        <span>👥</span> Users
+      </a>
+
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Clinical</p>
+      <a href="patients.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+        <span>🧑‍⚕️</span> Patients
+      </a>
+      <a href="doctors.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium bg-blue-700 text-white">
+        <span>👨‍⚕️</span> Doctors
+      </a>
+      <a href="wards.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+        <span>🏨</span> Wards &amp; Beds
+      </a>
+      <a href="pharmacy.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+        <span>💊</span> Pharmacy
+      </a>
+      <a href="lab.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+        <span>🧪</span> Lab Results
+      </a>
+
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Administration</p>
+      <a href="billing.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+        <span>💰</span> Billing
+      </a>
+      <a href="reports.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+        <span>📈</span> Reports
+      </a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">
+        <span>⚙️</span> Settings
+      </a>
     </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="avatar avatar-blue">SA</div>
-        <div class="user-info">
-          <div class="user-name">Dr. Sarah Admin</div>
-          <div class="user-role">Super Admin</div>
+    <div class="p-4 border-t border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">SA</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-semibold text-white truncate">Dr. Sarah Admin</div>
+          <div class="text-xs text-slate-400 truncate">Super Admin</div>
         </div>
-        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+        <a href="login.html" title="Logout" class="text-slate-400 hover:text-white text-sm transition">⏏</a>
       </div>
     </div>
   </aside>
 
   <!-- MAIN -->
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-left">
-        <div>
-          <div class="topbar-title">Doctors</div>
-          <div class="topbar-breadcrumb">Clinical / Doctors</div>
-        </div>
+  <div class="ml-64 flex-1 min-h-screen">
+
+    <!-- TOPBAR -->
+    <div class="sticky top-0 z-20 bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <div>
+        <div class="font-bold text-slate-800 text-base">Doctors</div>
+        <div class="text-xs text-slate-400">Clinical / Doctors</div>
       </div>
-      <div class="topbar-right">
-        <div class="topbar-search">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="Search doctors…" />
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+          <input type="text" placeholder="Search doctors…" class="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white w-56" />
         </div>
-        <button class="icon-btn">🔔<span class="dot"></span></button>
-        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+        <button class="relative w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-base hover:bg-slate-50 transition">
+          🔔
+          <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+        </button>
+        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white cursor-pointer">SA</div>
       </div>
     </div>
 
-    <div class="page-content">
-      <div class="page-header">
+    <!-- PAGE CONTENT -->
+    <div class="p-6">
+
+      <!-- Page Header -->
+      <div class="flex items-center justify-between mb-6">
         <div>
-          <h2>Doctors</h2>
-          <p>Clinical staff directory and availability</p>
+          <h2 class="text-xl font-bold text-slate-800">Doctors</h2>
+          <p class="text-sm text-slate-500 mt-0.5">Clinical staff directory and availability</p>
         </div>
-        <button class="btn btn-primary">➕ Add Doctor</button>
+        <button class="px-4 py-2 bg-blue-700 text-white text-sm font-semibold rounded-lg hover:bg-blue-800 transition" onclick="openAddDoctor()">➕ Add Doctor</button>
       </div>
 
       <!-- Stats -->
-      <div class="stats-grid" style="margin-bottom:22px;">
-        <div class="stat-card">
-          <div class="stat-icon blue">👨‍⚕️</div>
-          <div class="stat-info"><div class="stat-value">64</div><div class="stat-label">Total Doctors</div><div class="stat-change up">▲ 3 new this week</div></div>
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4">
+          <div class="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center text-xl flex-shrink-0">👨‍⚕️</div>
+          <div>
+            <div class="text-2xl font-extrabold text-slate-800">64</div>
+            <div class="text-xs text-slate-500 mt-0.5">Total Doctors</div>
+            <div class="text-xs text-green-600 font-semibold mt-0.5">▲ 3 new this week</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon green">✅</div>
-          <div class="stat-info"><div class="stat-value">48</div><div class="stat-label">Available Now</div><div class="stat-change up">▲ 75% on duty</div></div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4">
+          <div class="w-11 h-11 rounded-xl bg-green-100 flex items-center justify-center text-xl flex-shrink-0">✅</div>
+          <div>
+            <div class="text-2xl font-extrabold text-slate-800">48</div>
+            <div class="text-xs text-slate-500 mt-0.5">Available Now</div>
+            <div class="text-xs text-green-600 font-semibold mt-0.5">▲ 75% on duty</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon orange">⏳</div>
-          <div class="stat-info"><div class="stat-value">12</div><div class="stat-label">In Consultation</div></div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4">
+          <div class="w-11 h-11 rounded-xl bg-orange-100 flex items-center justify-center text-xl flex-shrink-0">⏳</div>
+          <div>
+            <div class="text-2xl font-extrabold text-slate-800">12</div>
+            <div class="text-xs text-slate-500 mt-0.5">In Consultation</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon purple">☕</div>
-          <div class="stat-info"><div class="stat-value">4</div><div class="stat-label">On Break / Off</div></div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4">
+          <div class="w-11 h-11 rounded-xl bg-purple-100 flex items-center justify-center text-xl flex-shrink-0">☕</div>
+          <div>
+            <div class="text-2xl font-extrabold text-slate-800">4</div>
+            <div class="text-xs text-slate-500 mt-0.5">On Break / Off</div>
+          </div>
         </div>
       </div>
 
       <!-- Toolbar -->
-      <div class="list-toolbar">
-        <div class="search-input-wrap">
-          <span class="ico">🔍</span>
-          <input type="text" placeholder="Search by name or specialty…" oninput="filterDoctors(this.value)" />
+      <div class="flex items-center gap-3 flex-wrap mb-6">
+        <div class="relative flex-1 min-w-48">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+          <input type="text" placeholder="Search by name or specialty…" oninput="filterDoctors(this.value)"
+            class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" />
         </div>
-        <select class="form-select" style="width:auto;" onchange="filterBySpec(this.value)">
+        <select onchange="filterBySpec(this.value)" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500">
           <option value="">All Specialties</option>
           <option>Cardiology</option>
           <option>Neurology</option>
@@ -148,51 +165,155 @@
           <option>Orthopedics</option>
           <option>General Medicine</option>
         </select>
-        <select class="form-select" style="width:auto;" onchange="filterByStatus(this.value)">
+        <select onchange="filterByStatus(this.value)" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500">
           <option value="">All Status</option>
           <option value="available">Available</option>
           <option value="busy">In Consultation</option>
           <option value="break">On Break</option>
           <option value="off">Off Duty</option>
         </select>
-        <div class="view-toggle">
-          <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')" title="Grid view">⊞</button>
-          <button class="view-btn" id="listViewBtn" onclick="setView('list')" title="List view">☰</button>
+        <div class="flex gap-1">
+          <button class="w-9 h-9 rounded-lg border border-slate-200 bg-blue-50 border-blue-600 flex items-center justify-center text-base cursor-pointer transition hover:border-blue-400" id="gridViewBtn" onclick="setView('grid')" title="Grid view">⊞</button>
+          <button class="w-9 h-9 rounded-lg border border-slate-200 bg-white flex items-center justify-center text-base cursor-pointer transition hover:border-blue-400" id="listViewBtn" onclick="setView('list')" title="List view">☰</button>
         </div>
       </div>
 
-      <!-- Grid view -->
-      <div id="gridView" class="doctor-grid"></div>
+      <!-- Grid View -->
+      <div id="gridView" class="grid grid-cols-3 gap-5"></div>
 
-      <!-- List view -->
-      <div id="listView" style="display:none;">
-        <div class="card">
-          <div class="card-body" style="padding:0;">
-            <div class="table-wrap">
-              <table id="doctorTable">
-                <thead>
-                  <tr>
-                    <th>Doctor</th>
-                    <th>Specialty</th>
-                    <th>Experience</th>
-                    <th>Patients Today</th>
-                    <th>Consultation Fee</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="doctorListBody"></tbody>
-              </table>
-            </div>
+      <!-- List View -->
+      <div id="listView" class="hidden">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-slate-200">
+                  <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Doctor</th>
+                  <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Specialty</th>
+                  <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Experience</th>
+                  <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Patients Today</th>
+                  <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Consultation Fee</th>
+                  <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                  <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="doctorListBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
 
     </div>
   </div>
+
+<!-- Add Doctor Modal -->
+<div id="addDoctorModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4" onclick="if(event.target===this)closeAddDoctor()">
+  <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[92vh] flex flex-col shadow-2xl">
+
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
+      <h3 class="text-base font-bold text-slate-800 m-0">👨‍⚕️ Add New Doctor</h3>
+      <button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500" onclick="closeAddDoctor()">✕</button>
+    </div>
+
+    <div class="flex gap-1 px-6 pt-3 border-b border-slate-200 flex-shrink-0">
+      <button class="modal-tab px-4 py-2 rounded-t-lg border-b-2 border-blue-600 bg-blue-50 text-sm font-semibold text-blue-600 transition" data-tab="info" onclick="switchTab('info')">① Doctor Info</button>
+      <button class="modal-tab px-4 py-2 rounded-t-lg border-b-2 border-transparent text-sm font-semibold text-slate-500 hover:text-blue-600 transition" data-tab="schedule" onclick="switchTab('schedule')">② Weekly Schedule</button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-6 py-5">
+
+      <!-- Tab: Doctor Info -->
+      <div id="tabInfo">
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-600">Full Name *</label>
+            <input type="text" id="dName" placeholder="e.g. Dr. Riya Sharma"
+              class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-600">Specialty *</label>
+            <select id="dSpec" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
+              <option value="">Select…</option>
+              <option>Cardiology</option>
+              <option>Neurology</option>
+              <option>Oncology</option>
+              <option>Pediatrics</option>
+              <option>Orthopedics</option>
+              <option>General Medicine</option>
+              <option>Dermatology</option>
+              <option>Radiology</option>
+              <option>Psychiatry</option>
+              <option>ENT</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-600">Experience (years)</label>
+            <input type="number" id="dExp" min="0" placeholder="e.g. 10"
+              class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-600">Consultation Fee ($)</label>
+            <input type="number" id="dFee" min="0" placeholder="e.g. 150"
+              class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-600">Status</label>
+            <select id="dStatus" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
+              <option value="available">Available</option>
+              <option value="off">Off Duty</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-600">Email</label>
+            <input type="email" id="dEmail" placeholder="doctor@hospital.com"
+              class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-600">Phone</label>
+            <input type="tel" id="dPhone" placeholder="+1 555 000 0000"
+              class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" />
+          </div>
+        </div>
+        <div class="flex flex-col gap-1.5 mb-4">
+          <label class="text-xs font-semibold text-slate-600">Notes / Bio</label>
+          <textarea id="dNotes" rows="3" placeholder="Brief bio or notes…" style="resize:vertical;"
+            class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white"></textarea>
+        </div>
+        <div class="text-right">
+          <button class="px-4 py-2 bg-blue-700 text-white text-sm font-semibold rounded-lg hover:bg-blue-800 transition" onclick="switchTab('schedule')">Next: Set Schedule →</button>
+        </div>
+      </div>
+
+      <!-- Tab: Weekly Schedule -->
+      <div id="tabSchedule" class="hidden">
+        <p class="text-xs text-slate-500 mb-4">
+          Toggle a day on, then <strong>Add Block</strong> to define consultation slots or breaks.
+          Consultation blocks are auto-split into individual time slots.
+        </p>
+        <div id="scheduleWrap"></div>
+      </div>
+
+    </div>
+
+    <div class="px-6 py-4 border-t border-slate-200 flex justify-end gap-3 flex-shrink-0">
+      <button class="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-50 transition" onclick="closeAddDoctor()">Cancel</button>
+      <button class="px-4 py-2 bg-blue-700 text-white text-sm font-semibold rounded-lg hover:bg-blue-800 transition" onclick="saveDoctor()">💾 Save Doctor</button>
+    </div>
+  </div>
 </div>
 
 <script>
+  const avatarColorMap = {
+    'avatar-blue':   'bg-blue-600',
+    'avatar-orange': 'bg-orange-500',
+    'avatar-purple': 'bg-purple-600',
+    'avatar-green':  'bg-green-600',
+  };
+
   const doctors = [
     { id:'DR-001', name:'Dr. Sanjay Patel',   spec:'Cardiology',      exp:14, today:8,  fee:200, status:'available', avatar:'SP', color:'avatar-blue'   },
     { id:'DR-002', name:'Dr. Linda Chen',      spec:'Oncology',        exp:11, today:5,  fee:250, status:'busy',      avatar:'LC', color:'avatar-orange' },
@@ -204,8 +325,13 @@
     { id:'DR-008', name:'Dr. Grace Okonkwo',   spec:'Neurology',       exp:10, today:7,  fee:190, status:'available', avatar:'GO', color:'avatar-green'  },
   ];
 
-  const statusBadge = { available:'badge-success', busy:'badge-warning', break:'badge-gray', off:'badge-gray' };
-  const statusLabel  = { available:'✅ Available',  busy:'⏳ Busy',       break:'☕ Break',    off:'🔴 Off Duty' };
+  const statusBadge = {
+    available: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700',
+    busy:      'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700',
+    break:     'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600',
+    off:       'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600',
+  };
+  const statusLabel = { available:'✅ Available', busy:'⏳ Busy', break:'☕ Break', off:'🔴 Off Duty' };
 
   let filtered = [...doctors];
   let currentSearch = '';
@@ -229,10 +355,28 @@
 
   function setView(v) {
     currentView = v;
-    document.getElementById('gridView').style.display = v === 'grid' ? 'grid' : 'none';
-    document.getElementById('listView').style.display = v === 'list' ? 'block' : 'none';
-    document.getElementById('gridViewBtn').classList.toggle('active', v === 'grid');
-    document.getElementById('listViewBtn').classList.toggle('active', v === 'list');
+    const gridEl = document.getElementById('gridView');
+    const listEl = document.getElementById('listView');
+    if (v === 'grid') {
+      gridEl.classList.remove('hidden');
+      listEl.classList.add('hidden');
+    } else {
+      gridEl.classList.add('hidden');
+      listEl.classList.remove('hidden');
+    }
+    const gridBtn = document.getElementById('gridViewBtn');
+    const listBtn = document.getElementById('listViewBtn');
+    if (v === 'grid') {
+      gridBtn.classList.add('border-blue-600','bg-blue-50');
+      gridBtn.classList.remove('bg-white','border-slate-200');
+      listBtn.classList.remove('border-blue-600','bg-blue-50');
+      listBtn.classList.add('bg-white','border-slate-200');
+    } else {
+      listBtn.classList.add('border-blue-600','bg-blue-50');
+      listBtn.classList.remove('bg-white','border-slate-200');
+      gridBtn.classList.remove('border-blue-600','bg-blue-50');
+      gridBtn.classList.add('bg-white','border-slate-200');
+    }
     renderView();
   }
 
@@ -243,60 +387,300 @@
 
   function renderGrid() {
     const el = document.getElementById('gridView');
-    if (!filtered.length) { el.innerHTML = '<p class="text-muted" style="padding:40px;text-align:center;">No doctors found</p>'; return; }
-    el.innerHTML = filtered.map(d => `
-      <div class="doctor-card">
-        <div class="doctor-card-top">
-          <div class="avatar avatar-lg ${d.color}">${d.avatar}</div>
-          <div class="doctor-card-info">
-            <div class="doctor-name">${d.name}</div>
-            <div class="doctor-spec">${d.spec}</div>
-            <span class="badge ${statusBadge[d.status]}" style="margin-top:6px;">${statusLabel[d.status]}</span>
+    if (!filtered.length) {
+      el.innerHTML = '<p class="col-span-3 text-center text-slate-400 py-10">No doctors found</p>';
+      return;
+    }
+    el.innerHTML = filtered.map(d => {
+      const avatarBg = avatarColorMap[d.color] || 'bg-blue-600';
+      return `
+      <div class="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all">
+        <div class="flex items-start gap-3 mb-4">
+          <div class="w-14 h-14 rounded-full ${avatarBg} flex items-center justify-center text-sm font-bold text-white flex-shrink-0">${d.avatar}</div>
+          <div class="flex-1 min-w-0">
+            <div class="font-bold text-sm text-slate-800">${d.name}</div>
+            <div class="text-xs text-slate-500 mt-0.5">${d.spec}</div>
+            <span class="${statusBadge[d.status]} mt-1.5 inline-flex">${statusLabel[d.status]}</span>
           </div>
         </div>
-        <div class="doctor-stats">
-          <div class="doctor-stat"><div class="val">${d.exp}</div><div class="lbl">Yrs Experience</div></div>
-          <div class="doctor-stat"><div class="val">${d.today}</div><div class="lbl">Patients Today</div></div>
+        <div class="grid grid-cols-2 gap-2 mb-4">
+          <div class="bg-slate-50 rounded-lg p-2.5 text-center"><div class="text-lg font-extrabold text-slate-800">${d.exp}</div><div class="text-xs text-slate-500 mt-0.5">Yrs Experience</div></div>
+          <div class="bg-slate-50 rounded-lg p-2.5 text-center"><div class="text-lg font-extrabold text-slate-800">${d.today}</div><div class="text-xs text-slate-500 mt-0.5">Patients Today</div></div>
         </div>
-        <div style="font-size:.8rem;color:var(--gray-500);margin-bottom:14px;">Consultation Fee: <strong style="color:var(--gray-800);">$${d.fee}</strong></div>
-        <div class="doctor-card-footer">
-          <a href="booking.html" class="btn btn-sm btn-primary">📅 Book</a>
-          <button class="btn btn-sm btn-secondary">👁️ Profile</button>
+        <div class="text-xs text-slate-500 mb-4">Consultation Fee: <strong class="text-slate-800">$${d.fee}</strong></div>
+        <div class="flex gap-2">
+          <a href="booking.html" class="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-blue-700 text-white text-xs font-semibold rounded-lg hover:bg-blue-800 transition">📅 Book</a>
+          <button class="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition">👁️ Profile</button>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   }
 
   function renderList() {
     const tbody = document.getElementById('doctorListBody');
-    if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--gray-400);">No doctors found</td></tr>'; return; }
-    tbody.innerHTML = filtered.map(d => `
-      <tr>
-        <td>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div class="avatar ${d.color}">${d.avatar}</div>
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-slate-400">No doctors found</td></tr>';
+      return;
+    }
+    tbody.innerHTML = filtered.map(d => {
+      const avatarBg = avatarColorMap[d.color] || 'bg-blue-600';
+      return `
+      <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full ${avatarBg} flex items-center justify-center text-xs font-bold text-white flex-shrink-0">${d.avatar}</div>
             <div>
-              <div style="font-weight:700;font-size:.88rem;">${d.name}</div>
-              <div style="font-size:.75rem;color:var(--gray-400);">${d.id}</div>
+              <div class="font-bold text-sm text-slate-800">${d.name}</div>
+              <div class="text-xs text-slate-400">${d.id}</div>
             </div>
           </div>
         </td>
-        <td style="font-size:.85rem;">${d.spec}</td>
-        <td style="font-size:.85rem;">${d.exp} years</td>
-        <td style="font-size:.85rem;">${d.today} patients</td>
-        <td style="font-size:.85rem;font-weight:700;">$${d.fee}</td>
-        <td><span class="badge ${statusBadge[d.status]}">${statusLabel[d.status]}</span></td>
-        <td>
-          <div style="display:flex;gap:6px;">
-            <button style="width:30px;height:30px;border-radius:7px;border:1px solid var(--gray-200);cursor:pointer;background:var(--white);" title="View">👁️</button>
-            <button style="width:30px;height:30px;border-radius:7px;border:1px solid var(--gray-200);cursor:pointer;background:var(--white);" title="Schedule">📅</button>
+        <td class="px-4 py-3 text-sm text-slate-600">${d.spec}</td>
+        <td class="px-4 py-3 text-sm text-slate-600">${d.exp} years</td>
+        <td class="px-4 py-3 text-sm text-slate-600">${d.today} patients</td>
+        <td class="px-4 py-3 text-sm font-bold text-slate-800">$${d.fee}</td>
+        <td class="px-4 py-3"><span class="${statusBadge[d.status]}">${statusLabel[d.status]}</span></td>
+        <td class="px-4 py-3">
+          <div class="flex gap-1.5">
+            <button class="w-8 h-8 rounded-lg border border-slate-200 bg-white flex items-center justify-center text-sm hover:bg-slate-50 transition cursor-pointer" title="View">👁️</button>
+            <button class="w-8 h-8 rounded-lg border border-slate-200 bg-white flex items-center justify-center text-sm hover:bg-slate-50 transition cursor-pointer" title="Schedule">📅</button>
           </div>
         </td>
-      </tr>
-    `).join('');
+      </tr>`;
+    }).join('');
   }
 
   renderGrid();
+
+  // ─── Add Doctor Modal ───────────────────────────────────────────────────────
+
+  const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+  let schedule = {};
+
+  function initSchedule() {
+    schedule = {};
+    DAYS.forEach(d => schedule[d] = []);
+  }
+
+  function openAddDoctor() {
+    initSchedule();
+    renderScheduleUI();
+    const modal = document.getElementById('addDoctorModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    switchTab('info');
+  }
+
+  function closeAddDoctor() {
+    const modal = document.getElementById('addDoctorModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  function switchTab(tab) {
+    document.getElementById('tabInfo').classList.toggle('hidden', tab !== 'info');
+    document.getElementById('tabSchedule').classList.toggle('hidden', tab !== 'schedule');
+    document.querySelectorAll('.modal-tab').forEach(t => {
+      const isActive = t.dataset.tab === tab;
+      t.classList.toggle('text-blue-600', isActive);
+      t.classList.toggle('border-blue-600', isActive);
+      t.classList.toggle('bg-blue-50', isActive);
+      t.classList.toggle('text-slate-500', !isActive);
+      t.classList.toggle('border-transparent', !isActive);
+    });
+  }
+
+  // ── Schedule rendering ───────────────────────────────────────────────────────
+
+  function renderScheduleUI() {
+    const wrap = document.getElementById('scheduleWrap');
+    wrap.innerHTML = DAYS.map(day => buildDayCard(day)).join('');
+  }
+
+  function buildDayCard(day) {
+    const blocks = schedule[day];
+    const active = blocks.length > 0;
+    const slots  = expandBlocks(blocks);
+    const summary = slots.length
+      ? `${slots.filter(s=>s.type==='consultation').length} consultation slots · ${slots.filter(s=>s.type==='break').length ? slots.filter(s=>s.type==='break').length+' break' : 'no break'}`
+      : 'No slots defined';
+
+    return `
+    <div class="day-card border border-slate-200 rounded-xl mb-3 overflow-hidden" id="day-${day}">
+      <div class="flex items-center gap-3 px-4 py-2.5 bg-slate-50 border-b border-slate-200">
+        <label class="day-toggle">
+          <input type="checkbox" ${active?'checked':''} onchange="toggleDay('${day}',this.checked)">
+          <span class="day-toggle-track"></span>
+        </label>
+        <span class="font-bold text-sm text-slate-800 min-w-[90px]">${day}</span>
+        <span class="text-xs text-slate-500 flex-1" id="sum-${day}">${summary}</span>
+        ${active ? `<button class="px-2 py-1 text-xs font-semibold bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition" onclick="clearDay('${day}')">Clear</button>` : ''}
+      </div>
+      <div class="px-4 py-3" id="body-${day}" ${active?'':'style="display:none"'}>
+        <div class="flex flex-wrap gap-1.5 mb-3 min-h-8" id="slots-${day}">
+          ${renderSlotChips(day, slots)}
+        </div>
+        <div id="addForm-${day}"></div>
+        <button class="px-2 py-1 text-xs font-semibold bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition" onclick="showAddBlockForm('${day}')">＋ Add Block</button>
+      </div>
+    </div>`;
+  }
+
+  function expandBlocks(blocks) {
+    const result = [];
+    blocks.forEach(b => {
+      if (b.type === 'break') {
+        result.push({ type:'break', start:b.start, end:b.end });
+      } else {
+        const slots = splitIntoSlots(b.start, b.end, b.slotMin);
+        slots.forEach(s => result.push({ type:'consultation', start:s.start, end:s.end }));
+      }
+    });
+    return result;
+  }
+
+  function splitIntoSlots(startStr, endStr, minDur) {
+    const slots = [];
+    let cur = timeToMins(startStr);
+    const endM = timeToMins(endStr);
+    while (cur + minDur <= endM) {
+      slots.push({ start: minsToTime(cur), end: minsToTime(cur + minDur) });
+      cur += minDur;
+    }
+    return slots;
+  }
+
+  function timeToMins(t) { const [h,m] = t.split(':').map(Number); return h*60+m; }
+  function minsToTime(m) { return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+
+  function renderSlotChips(day, slots) {
+    if (!slots.length) return '<span class="text-xs text-slate-400">No time blocks yet</span>';
+    return slots.map((s,i) => {
+      if (s.type === 'break') {
+        return `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-yellow-50 text-yellow-700 border border-yellow-200" title="break">${s.start}–${s.end} ☕</span>`;
+      } else {
+        return `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200" title="consultation">${s.start}–${s.end}</span>`;
+      }
+    }).join('');
+  }
+
+  function refreshDay(day) {
+    const el = document.getElementById('day-'+day);
+    if (!el) return;
+    el.outerHTML = buildDayCard(day);
+  }
+
+  function toggleDay(day, on) {
+    if (!on) schedule[day] = [];
+    refreshDay(day);
+  }
+
+  function clearDay(day) {
+    schedule[day] = [];
+    refreshDay(day);
+  }
+
+  function showAddBlockForm(day) {
+    const formEl = document.getElementById('addForm-'+day);
+    if (!formEl) return;
+    const inputCls = 'px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white';
+    formEl.innerHTML = `
+      <div class="border-2 border-dashed border-slate-300 rounded-lg p-3 bg-slate-50 mb-3">
+        <div class="grid grid-cols-2 gap-4 mb-3">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-600">Type</label>
+            <select id="btype-${day}" onchange="toggleSlotDur('${day}')" class="${inputCls}">
+              <option value="consultation">Consultation</option>
+              <option value="break">Break</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1.5" id="slotDurGroup-${day}">
+            <label class="text-xs font-semibold text-slate-600">Slot Duration</label>
+            <select id="slotDur-${day}" class="${inputCls}">
+              <option value="15">15 min</option>
+              <option value="20">20 min</option>
+              <option value="30" selected>30 min</option>
+              <option value="45">45 min</option>
+              <option value="60">60 min</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-3">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-600">Start Time</label>
+            <input type="time" id="bstart-${day}" value="09:00" class="${inputCls}">
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-600">End Time</label>
+            <input type="time" id="bend-${day}" value="12:00" class="${inputCls}">
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button class="px-3 py-1.5 bg-blue-700 text-white text-xs font-semibold rounded-lg hover:bg-blue-800 transition" onclick="addBlock('${day}')">Add</button>
+          <button class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition" onclick="cancelAddBlock('${day}')">Cancel</button>
+        </div>
+      </div>`;
+  }
+
+  function toggleSlotDur(day) {
+    const type = document.getElementById('btype-'+day).value;
+    document.getElementById('slotDurGroup-'+day).style.visibility = type === 'consultation' ? 'visible' : 'hidden';
+  }
+
+  function cancelAddBlock(day) {
+    const el = document.getElementById('addForm-'+day);
+    if (el) el.innerHTML = '';
+  }
+
+  function addBlock(day) {
+    const type    = document.getElementById('btype-'+day).value;
+    const start   = document.getElementById('bstart-'+day).value;
+    const end     = document.getElementById('bend-'+day).value;
+    const slotMin = parseInt(document.getElementById('slotDur-'+day)?.value || 30);
+
+    if (!start || !end || timeToMins(end) <= timeToMins(start)) {
+      alert('End time must be after start time.'); return;
+    }
+    if (type === 'consultation' && (timeToMins(end) - timeToMins(start)) < slotMin) {
+      alert('Time range is shorter than the slot duration.'); return;
+    }
+
+    schedule[day].push({ type, start, end, slotMin });
+    schedule[day].sort((a,b) => timeToMins(a.start) - timeToMins(b.start));
+    refreshDay(day);
+  }
+
+  // ── Save doctor ──────────────────────────────────────────────────────────────
+
+  function saveDoctor() {
+    const name   = document.getElementById('dName').value.trim();
+    const spec   = document.getElementById('dSpec').value.trim();
+    const exp    = document.getElementById('dExp').value;
+    const fee    = document.getElementById('dFee').value;
+    const email  = document.getElementById('dEmail').value.trim();
+    const phone  = document.getElementById('dPhone').value.trim();
+
+    if (!name || !spec) { alert('Name and specialty are required.'); switchTab('info'); return; }
+
+    const totalSlots = DAYS.reduce((acc,d) => acc + expandBlocks(schedule[d]).filter(s=>s.type==='consultation').length, 0);
+
+    const colors = ['avatar-blue','avatar-orange','avatar-purple','avatar-green'];
+    const initials = name.split(' ').filter(w=>/^[A-Za-z]/.test(w)).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const newDoc = {
+      id: 'DR-' + String(doctors.length + 1).padStart(3,'0'),
+      name, spec, exp: parseInt(exp)||0, today: 0, fee: parseInt(fee)||0,
+      status: 'available',
+      avatar: initials || 'DR',
+      color: colors[doctors.length % colors.length],
+      schedule
+    };
+    doctors.push(newDoc);
+    filtered = [...doctors];
+    renderView();
+    closeAddDoctor();
+  }
 </script>
+
 </body>
 </html>

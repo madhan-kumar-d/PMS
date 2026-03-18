@@ -4,319 +4,288 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Management — MediCare HMS</title>
-  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#1a6fb5','primary-dark':'#135292','primary-light':'#e8f2fb',accent:'#0eb199'}}}}</script>
   <style>
-    /* Filter tabs */
-    .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-    .filter-tab {
-      padding: 7px 16px; border-radius: 999px; font-size: .82rem; font-weight: 700;
-      cursor: pointer; border: 1.5px solid var(--gray-200); color: var(--gray-600);
-      transition: all .15s;
-    }
-    .filter-tab:hover { border-color: var(--primary); color: var(--primary); }
-    .filter-tab.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
-
-    /* User list row actions */
-    .action-btns { display: flex; gap: 6px; }
-    .action-btn {
-      width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--gray-200);
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      font-size: .88rem; background: var(--white); transition: all .15s;
-    }
-    .action-btn:hover { background: var(--gray-100); }
-    .action-btn.danger:hover { background: #fee2e2; border-color: #fca5a5; }
-
-    /* Modal role content */
-    .role-fields { display: none; }
-    .role-fields.show { display: block; }
-
-    /* Specialty tags */
-    .spec-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-    .spec-chip {
-      padding: 4px 12px; border-radius: 999px; background: var(--primary-light);
-      color: var(--primary); font-size: .78rem; font-weight: 600;
-      display: flex; align-items: center; gap: 4px; cursor: pointer;
-    }
-    .spec-chip:hover { background: #bfdbfe; }
-
-    /* Availability toggle */
-    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+    /* Toggle switch */
     .toggle {
-      width: 44px; height: 24px; background: var(--gray-300); border-radius: 999px;
-      position: relative; cursor: pointer; transition: background .2s;
+      width: 44px; height: 24px; background: #cbd5e1; border-radius: 999px;
+      position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0;
     }
-    .toggle.on { background: var(--primary); }
+    .toggle.on { background: #1d4ed8; }
     .toggle::after {
       content: ''; position: absolute; width: 18px; height: 18px;
-      background: var(--white); border-radius: 50%; top: 3px; left: 3px;
-      transition: transform .2s; box-shadow: var(--shadow-sm);
+      background: #fff; border-radius: 50%; top: 3px; left: 3px;
+      transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.15);
     }
     .toggle.on::after { transform: translateX(20px); }
-    .toggle-label { font-size: .85rem; color: var(--gray-600); }
-
-    /* Working hours grid */
-    .hours-grid { display: grid; grid-template-columns: 100px 1fr 1fr auto; gap: 8px; align-items: center; }
-    .hours-grid .hdr { font-size: .75rem; font-weight: 700; color: var(--gray-500); text-transform: uppercase; }
-
-    /* Search + filter bar */
-    .list-toolbar {
-      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-      margin-bottom: 18px;
-    }
-    .search-input-wrap { position: relative; flex: 1; min-width: 200px; }
-    .search-input-wrap input {
-      width: 100%; padding: 9px 12px 9px 36px;
-      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
-      font-size: .88rem; background: var(--gray-50);
-    }
-    .search-input-wrap input:focus { outline: none; border-color: var(--primary); background: var(--white); }
-    .search-input-wrap .ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+    /* Role fields hidden by default */
+    .role-fields { display: none; }
+    .role-fields.show { display: block; }
   </style>
 </head>
-<body>
-<div class="layout">
+<body class="bg-slate-100 font-sans">
+
+<div class="flex">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">🏥</div>
-      <div>
-        <div class="logo-text">MediCare HMS</div>
-        <div class="logo-sub">Hospital Management</div>
+  <aside class="fixed left-0 top-0 h-screen w-64 bg-slate-900 flex flex-col z-30">
+    <!-- Logo -->
+    <div class="p-5 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-xl">🏥</div>
+        <div>
+          <div class="text-white font-bold text-sm">MediCare HMS</div>
+          <div class="text-slate-400 text-xs">Hospital Management</div>
+        </div>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-        <a href="booking.html"   class="nav-item"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
-        <a href="users.html"     class="nav-item active"><span class="nav-icon">👥</span> Users</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Clinical</div>
-        <a href="patients.html" class="nav-item"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
-        <a href="doctors.html" class="nav-item"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
-        <a href="wards.html" class="nav-item"><span class="nav-icon">🏨</span> Wards & Beds</a>
-        <a href="pharmacy.html" class="nav-item"><span class="nav-icon">💊</span> Pharmacy</a>
-        <a href="lab.html" class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Administration</div>
-        <a href="billing.html" class="nav-item"><span class="nav-icon">💰</span> Billing</a>
-        <a href="reports.html" class="nav-item"><span class="nav-icon">📈</span> Reports</a>
-        <a href="#" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
-      </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Main</p>
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📊 Dashboard</a>
+      <a href="booking.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📅 Appointments <span class="ml-auto text-xs bg-blue-500 text-white rounded-full px-2 py-0.5">5</span></a>
+      <a href="users.html"     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium bg-blue-700 text-white">👥 Users</a>
+
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Clinical</p>
+      <a href="patients.html"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🧑‍⚕️ Patients</a>
+      <a href="doctors.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">👨‍⚕️ Doctors</a>
+      <a href="wards.html"     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🏨 Wards &amp; Beds</a>
+      <a href="pharmacy.html"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">💊 Pharmacy</a>
+      <a href="lab.html"       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🧪 Lab Results</a>
+
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Administration</p>
+      <a href="billing.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">💰 Billing</a>
+      <a href="reports.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📈 Reports</a>
+      <a href="#"              class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">⚙️ Settings</a>
     </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="avatar avatar-blue">SA</div>
-        <div class="user-info">
-          <div class="user-name">Dr. Sarah Admin</div>
-          <div class="user-role">Super Admin</div>
+
+    <!-- Footer -->
+    <div class="p-4 border-t border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white">SA</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-white text-sm font-semibold truncate">Dr. Sarah Admin</div>
+          <div class="text-slate-400 text-xs">Super Admin</div>
         </div>
-        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+        <a href="login.html" class="text-slate-400 hover:text-white text-sm">⏏</a>
       </div>
     </div>
   </aside>
 
   <!-- MAIN -->
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-left">
-        <div>
-          <div class="topbar-title">User Management</div>
-          <div class="topbar-breadcrumb">Admin / Users</div>
-        </div>
+  <div class="ml-64 flex-1 min-h-screen">
+
+    <!-- Topbar -->
+    <div class="sticky top-0 z-20 bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <div>
+        <div class="font-bold text-slate-800 text-base">User Management</div>
+        <div class="text-xs text-slate-400">Admin / Users</div>
       </div>
-      <div class="topbar-right">
-        <div class="topbar-search">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="Search users…" />
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+          <input type="text" placeholder="Search users…" class="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 w-48" />
         </div>
-        <button class="icon-btn">🔔<span class="dot"></span></button>
-        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+        <button class="relative w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-lg transition">
+          🔔
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button>
+        <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white cursor-pointer">SA</div>
       </div>
     </div>
 
-    <div class="page-content">
-      <!-- Header -->
-      <div class="page-header">
+    <!-- Page content -->
+    <div class="p-6">
+
+      <!-- Page header -->
+      <div class="flex items-center justify-between mb-6">
         <div>
-          <h2>Users</h2>
-          <p>Manage doctors, patients and admin accounts</p>
+          <h2 class="text-xl font-bold text-slate-800">Users</h2>
+          <p class="text-sm text-slate-500">Manage doctors, patients and admin accounts</p>
         </div>
-        <button class="btn btn-primary" onclick="openModal('createModal')">➕ Add New User</button>
+        <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-700 text-white rounded-lg text-sm font-semibold hover:bg-blue-800 transition" onclick="openModal('createModal')">➕ Add New User</button>
       </div>
 
       <!-- Stats -->
-      <div class="stats-grid" style="margin-bottom:22px;">
-        <div class="stat-card">
-          <div class="stat-icon blue">👥</div>
-          <div class="stat-info"><div class="stat-value">1,378</div><div class="stat-label">Total Users</div></div>
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl flex-shrink-0">👥</div>
+          <div><div class="text-2xl font-extrabold text-slate-800">1,378</div><div class="text-xs text-slate-500">Total Users</div></div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon green">👨‍⚕️</div>
-          <div class="stat-info"><div class="stat-value">64</div><div class="stat-label">Doctors</div></div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-2xl flex-shrink-0">👨‍⚕️</div>
+          <div><div class="text-2xl font-extrabold text-slate-800">64</div><div class="text-xs text-slate-500">Doctors</div></div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon orange">🧑‍⚕️</div>
-          <div class="stat-info"><div class="stat-value">1,248</div><div class="stat-label">Patients</div></div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-2xl flex-shrink-0">🧑‍⚕️</div>
+          <div><div class="text-2xl font-extrabold text-slate-800">1,248</div><div class="text-xs text-slate-500">Patients</div></div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon purple">🛡️</div>
-          <div class="stat-info"><div class="stat-value">66</div><div class="stat-label">Admins</div></div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl flex-shrink-0">🛡️</div>
+          <div><div class="text-2xl font-extrabold text-slate-800">66</div><div class="text-xs text-slate-500">Admins</div></div>
         </div>
       </div>
 
       <!-- Table card -->
-      <div class="card">
-        <div class="card-header">
-          <div class="filter-tabs" id="filterTabs">
-            <div class="filter-tab active" onclick="setFilter('all',this)">All Users</div>
-            <div class="filter-tab" onclick="setFilter('doctor',this)">👨‍⚕️ Doctors</div>
-            <div class="filter-tab" onclick="setFilter('patient',this)">🧑 Patients</div>
-            <div class="filter-tab" onclick="setFilter('admin',this)">🛡️ Admins</div>
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+
+        <!-- Card header -->
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-3">
+          <div class="flex gap-2 flex-wrap" id="filterTabs">
+            <div class="filter-tab px-4 py-1.5 rounded-full text-xs font-bold border border-blue-700 bg-blue-700 text-white cursor-pointer transition" onclick="setFilter('all',this)">All Users</div>
+            <div class="filter-tab px-4 py-1.5 rounded-full text-xs font-bold border border-slate-200 text-slate-600 cursor-pointer hover:border-blue-500 hover:text-blue-600 transition" onclick="setFilter('doctor',this)">👨‍⚕️ Doctors</div>
+            <div class="filter-tab px-4 py-1.5 rounded-full text-xs font-bold border border-slate-200 text-slate-600 cursor-pointer hover:border-blue-500 hover:text-blue-600 transition" onclick="setFilter('patient',this)">🧑 Patients</div>
+            <div class="filter-tab px-4 py-1.5 rounded-full text-xs font-bold border border-slate-200 text-slate-600 cursor-pointer hover:border-blue-500 hover:text-blue-600 transition" onclick="setFilter('admin',this)">🛡️ Admins</div>
           </div>
           <div class="flex gap-2">
-            <button class="btn btn-sm btn-secondary">⬇️ Export</button>
+            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">⬇️ Export</button>
           </div>
         </div>
 
-        <div class="card-body" style="padding:0;">
-          <!-- Toolbar -->
-          <div style="padding:16px 20px;border-bottom:1px solid var(--gray-100);">
-            <div class="list-toolbar">
-              <div class="search-input-wrap">
-                <span class="ico">🔍</span>
-                <input type="text" placeholder="Search by name, email or ID…" oninput="filterTable(this.value)" />
-              </div>
-              <select class="form-select" style="width:auto;" onchange="filterByDept(this.value)">
-                <option value="">All Departments</option>
-                <option>Cardiology</option>
-                <option>Neurology</option>
-                <option>Oncology</option>
-                <option>Pediatrics</option>
-                <option>Orthopedics</option>
-                <option>General</option>
-              </select>
-              <select class="form-select" style="width:auto;">
-                <option value="">Status: All</option>
-                <option>Active</option>
-                <option>Inactive</option>
-                <option>Pending</option>
-              </select>
+        <!-- Toolbar -->
+        <div class="px-5 py-3 border-b border-slate-100">
+          <div class="flex gap-3 flex-wrap">
+            <div class="relative flex-1 min-w-48">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+              <input type="text" placeholder="Search by name, email or ID…" oninput="filterTable(this.value)" class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500" />
             </div>
-          </div>
-
-          <div class="table-wrap">
-            <table id="userTable">
-              <thead>
-                <tr>
-                  <th><input type="checkbox" onchange="toggleAll(this)" /></th>
-                  <th>User</th>
-                  <th>Role</th>
-                  <th>Department / Info</th>
-                  <th>Contact</th>
-                  <th>Joined</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="userBody">
-                <!-- rows injected by JS -->
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Pagination -->
-          <div style="padding:14px 20px;border-top:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;">
-            <span class="text-sm text-muted">Showing 1–8 of 1,378 users</span>
-            <div class="flex gap-2">
-              <button class="btn btn-sm btn-secondary">← Prev</button>
-              <button class="btn btn-sm btn-primary">Next →</button>
-            </div>
+            <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500" onchange="filterByDept(this.value)">
+              <option value="">All Departments</option>
+              <option>Cardiology</option>
+              <option>Neurology</option>
+              <option>Oncology</option>
+              <option>Pediatrics</option>
+              <option>Orthopedics</option>
+              <option>General</option>
+            </select>
+            <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500">
+              <option value="">Status: All</option>
+              <option>Active</option>
+              <option>Inactive</option>
+              <option>Pending</option>
+            </select>
           </div>
         </div>
-      </div>
-    </div><!-- /page-content -->
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm" id="userTable">
+            <thead class="bg-slate-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"><input type="checkbox" onchange="toggleAll(this)" /></th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">User</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Role</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Department / Info</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Joined</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="userBody">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="px-5 py-3 border-t border-slate-100 flex items-center justify-between">
+          <span class="text-sm text-slate-500">Showing 1–8 of 1,378 users</span>
+          <div class="flex gap-2">
+            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">← Prev</button>
+            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-700 text-white rounded-lg text-xs font-semibold hover:bg-blue-800 transition">Next →</button>
+          </div>
+        </div>
+
+      </div><!-- /table card -->
+
+    </div><!-- /page content -->
   </div><!-- /main -->
-</div><!-- /layout -->
+</div><!-- /flex layout -->
+
 
 <!-- ===== CREATE USER MODAL ===== -->
-<div class="modal-overlay hidden" id="createModal">
-  <div class="modal modal-lg">
-    <div class="modal-header">
+<div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden" id="createModal">
+  <div class="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl">
+
+    <!-- Modal header -->
+    <div class="flex items-start justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
       <div>
-        <h3>➕ Create New User</h3>
-        <p class="text-sm text-muted" style="margin-top:3px;">Fill in details to create a doctor, patient or admin account.</p>
+        <h3 class="font-bold text-slate-800 text-base">➕ Create New User</h3>
+        <p class="text-sm text-slate-500 mt-0.5">Fill in details to create a doctor, patient or admin account.</p>
       </div>
-      <button class="modal-close" onclick="closeModal('createModal')">✕</button>
+      <button class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition" onclick="closeModal('createModal')">✕</button>
     </div>
-    <div class="modal-body">
+
+    <!-- Modal body -->
+    <div class="flex-1 overflow-y-auto px-6 py-5">
 
       <!-- Step indicator -->
-      <div class="steps" id="formSteps">
-        <div class="step-item active" id="step1-ind">
-          <div class="step-circle">1</div>
-          <div class="step-label">Role & Basic Info</div>
+      <div class="flex items-center mb-6" id="formSteps">
+        <div class="flex flex-col items-center" id="step1-ind">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-blue-700 text-white">1</div>
+          <div class="text-xs text-slate-500 mt-1 text-center whitespace-nowrap">Role &amp; Basic Info</div>
         </div>
-        <div class="step-line" id="line1"></div>
-        <div class="step-item" id="step2-ind">
-          <div class="step-circle">2</div>
-          <div class="step-label">Role Details</div>
+        <div class="flex-1 h-0.5 bg-slate-200 mx-2 mt-[-12px]" id="line1"></div>
+        <div class="flex flex-col items-center" id="step2-ind">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-slate-200 text-slate-500">2</div>
+          <div class="text-xs text-slate-500 mt-1 text-center whitespace-nowrap">Role Details</div>
         </div>
-        <div class="step-line" id="line2"></div>
-        <div class="step-item" id="step3-ind">
-          <div class="step-circle">3</div>
-          <div class="step-label">Access & Password</div>
+        <div class="flex-1 h-0.5 bg-slate-200 mx-2 mt-[-12px]" id="line2"></div>
+        <div class="flex flex-col items-center" id="step3-ind">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-slate-200 text-slate-500">3</div>
+          <div class="text-xs text-slate-500 mt-1 text-center whitespace-nowrap">Access &amp; Password</div>
         </div>
       </div>
 
       <!-- Step 1: Role + basic -->
       <div id="stepPanel1">
-        <div class="role-tabs" id="roleTabs">
-          <div class="role-tab selected" onclick="selectUserRole('doctor', this)">
-            <div class="role-icon">👨‍⚕️</div>
-            <div class="role-name">Doctor</div>
+        <!-- Role tabs -->
+        <div class="grid grid-cols-4 gap-3 mb-5" id="roleTabs">
+          <div class="role-tab flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-blue-600 bg-blue-50 cursor-pointer hover:border-blue-400 transition" onclick="selectUserRole('doctor', this)">
+            <div class="text-2xl">👨‍⚕️</div>
+            <div class="text-xs font-semibold text-slate-600">Doctor</div>
           </div>
-          <div class="role-tab" onclick="selectUserRole('patient', this)">
-            <div class="role-icon">🧑</div>
-            <div class="role-name">Patient</div>
+          <div class="role-tab flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-blue-400 transition" onclick="selectUserRole('patient', this)">
+            <div class="text-2xl">🧑</div>
+            <div class="text-xs font-semibold text-slate-600">Patient</div>
           </div>
-          <div class="role-tab" onclick="selectUserRole('admin', this)">
-            <div class="role-icon">🛡️</div>
-            <div class="role-name">Admin</div>
+          <div class="role-tab flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-blue-400 transition" onclick="selectUserRole('admin', this)">
+            <div class="text-2xl">🛡️</div>
+            <div class="text-xs font-semibold text-slate-600">Admin</div>
           </div>
-          <div class="role-tab" onclick="selectUserRole('super_admin', this)">
-            <div class="role-icon">⚙️</div>
-            <div class="role-name">Super Admin</div>
+          <div class="role-tab flex flex-col items-center gap-1 p-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-blue-400 transition" onclick="selectUserRole('super_admin', this)">
+            <div class="text-2xl">⚙️</div>
+            <div class="text-xs font-semibold text-slate-600">Super Admin</div>
           </div>
         </div>
 
-        <div class="form-grid-2">
-          <div class="form-group">
-            <label class="form-label">First Name *</label>
-            <input type="text" class="form-control" placeholder="John" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">First Name *</label>
+            <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="John" />
           </div>
-          <div class="form-group">
-            <label class="form-label">Last Name *</label>
-            <input type="text" class="form-control" placeholder="Doe" />
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">Last Name *</label>
+            <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="Doe" />
           </div>
-          <div class="form-group">
-            <label class="form-label">Email Address *</label>
-            <input type="email" class="form-control" placeholder="john@hospital.com" />
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">Email Address *</label>
+            <input type="email" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="john@hospital.com" />
           </div>
-          <div class="form-group">
-            <label class="form-label">Phone Number *</label>
-            <input type="tel" class="form-control" placeholder="+1 (555) 000-0000" />
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">Phone Number *</label>
+            <input type="tel" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="+1 (555) 000-0000" />
           </div>
-          <div class="form-group">
-            <label class="form-label">Date of Birth</label>
-            <input type="date" class="form-control" />
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">Date of Birth</label>
+            <input type="date" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" />
           </div>
-          <div class="form-group">
-            <label class="form-label">Gender</label>
-            <select class="form-select">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">Gender</label>
+            <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
               <option value="">Select gender</option>
               <option>Male</option>
               <option>Female</option>
@@ -324,28 +293,29 @@
               <option>Prefer not to say</option>
             </select>
           </div>
-          <div class="form-group col-span-2">
-            <label class="form-label">Address</label>
-            <input type="text" class="form-control" placeholder="123 Main Street, City, State" />
+          <div class="col-span-2 flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">Address</label>
+            <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="123 Main Street, City, State" />
           </div>
         </div>
       </div>
 
       <!-- Step 2: Role-specific fields -->
       <div id="stepPanel2" style="display:none;">
+
         <!-- Doctor fields -->
         <div class="role-fields show" id="fields-doctor">
-          <div class="alert alert-info" style="margin-bottom:18px;">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-700 mb-4">
             👨‍⚕️ Fill in the doctor's professional details below.
           </div>
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Medical License No. *</label>
-              <input type="text" class="form-control" placeholder="ML-2024-XXXXX" />
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Medical License No. *</label>
+              <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="ML-2024-XXXXX" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Specialization *</label>
-              <select class="form-select">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Specialization *</label>
+              <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
                 <option value="">Select specialization</option>
                 <option>Cardiology</option>
                 <option>Neurology</option>
@@ -359,9 +329,9 @@
                 <option>Radiology</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Department</label>
-              <select class="form-select">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Department</label>
+              <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
                 <option value="">Select department</option>
                 <option>Cardiology</option>
                 <option>Neurology</option>
@@ -372,34 +342,34 @@
                 <option>ICU</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Years of Experience</label>
-              <input type="number" class="form-control" placeholder="e.g. 8" min="0" />
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Years of Experience</label>
+              <input type="number" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="e.g. 8" min="0" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Consultation Fee ($)</label>
-              <input type="number" class="form-control" placeholder="150" />
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Consultation Fee ($)</label>
+              <input type="number" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="150" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Consultation Duration (min)</label>
-              <select class="form-select">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Consultation Duration (min)</label>
+              <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
                 <option>15</option><option>20</option><option selected>30</option><option>45</option><option>60</option>
               </select>
             </div>
-            <div class="form-group col-span-2">
-              <label class="form-label">Qualifications</label>
-              <input type="text" class="form-control" placeholder="MBBS, MD, FRCS …" />
+            <div class="col-span-2 flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Qualifications</label>
+              <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="MBBS, MD, FRCS …" />
             </div>
           </div>
 
-          <!-- Working Hours -->
-          <div class="form-group" style="margin-top:8px;">
-            <label class="form-label">Working Days & Hours</label>
-            <div class="hours-grid" style="margin-bottom:6px;">
-              <span class="hdr">Day</span>
-              <span class="hdr">Start</span>
-              <span class="hdr">End</span>
-              <span class="hdr">Active</span>
+          <!-- Working hours -->
+          <div class="flex flex-col gap-1 mt-4">
+            <label class="text-xs font-semibold text-slate-600">Working Days &amp; Hours</label>
+            <div class="grid grid-cols-4 gap-2 items-center mb-1">
+              <span class="text-xs font-bold text-slate-500 uppercase">Day</span>
+              <span class="text-xs font-bold text-slate-500 uppercase">Start</span>
+              <span class="text-xs font-bold text-slate-500 uppercase">End</span>
+              <span class="text-xs font-bold text-slate-500 uppercase">Active</span>
             </div>
             <div id="hoursRows"></div>
           </div>
@@ -407,13 +377,13 @@
 
         <!-- Patient fields -->
         <div class="role-fields" id="fields-patient">
-          <div class="alert alert-info" style="margin-bottom:18px;">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-700 mb-4">
             🧑 Fill in the patient's medical background information.
           </div>
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Blood Group</label>
-              <select class="form-select">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Blood Group</label>
+              <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
                 <option value="">Unknown</option>
                 <option>A+</option><option>A-</option>
                 <option>B+</option><option>B-</option>
@@ -421,48 +391,48 @@
                 <option>O+</option><option>O-</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Height (cm)</label>
-              <input type="number" class="form-control" placeholder="175" />
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Height (cm)</label>
+              <input type="number" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="175" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Weight (kg)</label>
-              <input type="number" class="form-control" placeholder="70" />
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Weight (kg)</label>
+              <input type="number" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="70" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Marital Status</label>
-              <select class="form-select">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Marital Status</label>
+              <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
                 <option value="">Select</option>
                 <option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option>
               </select>
             </div>
-            <div class="form-group col-span-2">
-              <label class="form-label">Allergies</label>
-              <input type="text" class="form-control" placeholder="e.g. Penicillin, Peanuts, Latex" />
+            <div class="col-span-2 flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Allergies</label>
+              <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="e.g. Penicillin, Peanuts, Latex" />
             </div>
-            <div class="form-group col-span-2">
-              <label class="form-label">Chronic Conditions</label>
-              <input type="text" class="form-control" placeholder="e.g. Diabetes Type 2, Hypertension" />
+            <div class="col-span-2 flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Chronic Conditions</label>
+              <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="e.g. Diabetes Type 2, Hypertension" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Emergency Contact Name</label>
-              <input type="text" class="form-control" placeholder="Jane Doe" />
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Emergency Contact Name</label>
+              <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="Jane Doe" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Emergency Contact Phone</label>
-              <input type="tel" class="form-control" placeholder="+1 (555) 000-0001" />
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Emergency Contact Phone</label>
+              <input type="tel" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="+1 (555) 000-0001" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Insurance Provider</label>
-              <input type="text" class="form-control" placeholder="Blue Cross Blue Shield" />
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Insurance Provider</label>
+              <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="Blue Cross Blue Shield" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Insurance Policy No.</label>
-              <input type="text" class="form-control" placeholder="BCB-2024-XXXXXX" />
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Insurance Policy No.</label>
+              <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="BCB-2024-XXXXXX" />
             </div>
-            <div class="form-group col-span-2">
-              <label class="form-label">Assign Primary Doctor</label>
-              <select class="form-select">
+            <div class="col-span-2 flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Assign Primary Doctor</label>
+              <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
                 <option value="">— Unassigned —</option>
                 <option>Dr. S. Patel (Cardiology)</option>
                 <option>Dr. L. Chen (Oncology)</option>
@@ -475,26 +445,26 @@
 
         <!-- Admin fields -->
         <div class="role-fields" id="fields-admin">
-          <div class="alert alert-info" style="margin-bottom:18px;">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-700 mb-4">
             🛡️ Set the admin's access level and responsible departments.
           </div>
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Admin Level</label>
-              <select class="form-select">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Admin Level</label>
+              <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
                 <option>Department Admin</option>
                 <option>Hospital Admin</option>
                 <option>Finance Admin</option>
                 <option>HR Admin</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Employee ID</label>
-              <input type="text" class="form-control" placeholder="EMP-2024-XXX" />
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Employee ID</label>
+              <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="EMP-2024-XXX" />
             </div>
-            <div class="form-group col-span-2">
-              <label class="form-label">Responsible Departments</label>
-              <select class="form-select" multiple style="height:90px;">
+            <div class="col-span-2 flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Responsible Departments</label>
+              <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" multiple style="height:90px;">
                 <option>Cardiology</option>
                 <option>Neurology</option>
                 <option>Oncology</option>
@@ -502,50 +472,51 @@
                 <option>Finance</option>
                 <option>HR</option>
               </select>
-              <span class="text-xs text-muted mt-1">Hold Ctrl/Cmd to select multiple</span>
+              <span class="text-xs text-slate-400 mt-1">Hold Ctrl/Cmd to select multiple</span>
             </div>
           </div>
         </div>
 
         <!-- Super Admin fields -->
         <div class="role-fields" id="fields-super_admin">
-          <div class="alert alert-warning" style="margin-bottom:18px;">
+          <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-3 text-sm text-yellow-700 mb-4">
             ⚙️ Super Admin has <strong>full system access</strong>. Assign this role with caution.
           </div>
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label">Employee ID</label>
-              <input type="text" class="form-control" placeholder="EMP-2024-XXX" />
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Employee ID</label>
+              <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="EMP-2024-XXX" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Designation</label>
-              <input type="text" class="form-control" placeholder="Chief Medical Officer" />
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-semibold text-slate-600">Designation</label>
+              <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="Chief Medical Officer" />
             </div>
           </div>
         </div>
-      </div>
+
+      </div><!-- /stepPanel2 -->
 
       <!-- Step 3: Password + Permissions -->
       <div id="stepPanel3" style="display:none;">
-        <div class="form-grid-2">
-          <div class="form-group">
-            <label class="form-label">Username *</label>
-            <input type="text" class="form-control" placeholder="john.doe" />
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">Username *</label>
+            <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="john.doe" />
           </div>
-          <div class="form-group">
-            <label class="form-label">Initial Password *</label>
-            <div class="input-group" style="position:relative;">
-              <input type="password" class="form-control" id="newPass" placeholder="Min 8 characters" />
-              <span onclick="toggleNewPass()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--gray-400);">👁️</span>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">Initial Password *</label>
+            <div class="relative">
+              <input type="password" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white w-full" id="newPass" placeholder="Min 8 characters" />
+              <span onclick="toggleNewPass()" class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400">👁️</span>
             </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Confirm Password *</label>
-            <input type="password" class="form-control" placeholder="Repeat password" />
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">Confirm Password *</label>
+            <input type="password" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="Repeat password" />
           </div>
-          <div class="form-group">
-            <label class="form-label">Account Status</label>
-            <select class="form-select">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-slate-600">Account Status</label>
+            <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
               <option value="active">Active (Immediate Access)</option>
               <option value="pending">Pending (Send Invite)</option>
               <option value="inactive">Inactive</option>
@@ -553,71 +524,56 @@
           </div>
         </div>
 
-        <div class="divider"></div>
+        <hr class="my-4 border-slate-100" />
 
-        <label class="form-label">Permissions</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
-            <input type="checkbox" checked /> View Patients
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
-            <input type="checkbox" checked /> Manage Appointments
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
-            <input type="checkbox" /> Manage Users
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
-            <input type="checkbox" /> View Reports
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
-            <input type="checkbox" /> Manage Billing
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;">
-            <input type="checkbox" /> System Settings
-          </label>
+        <label class="text-xs font-semibold text-slate-600 block mb-2">Permissions</label>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" checked /> View Patients</label>
+          <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" checked /> Manage Appointments</label>
+          <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" /> Manage Users</label>
+          <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" /> View Reports</label>
+          <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" /> Manage Billing</label>
+          <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" /> System Settings</label>
         </div>
 
-        <div class="form-group mt-3">
-          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.9rem;">
-            <input type="checkbox" checked />
-            Send welcome email with login credentials
-          </label>
-        </div>
-        <div class="form-group">
-          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:.9rem;">
-            <input type="checkbox" checked />
-            Force password change on first login
-          </label>
+        <div class="flex flex-col gap-2 mt-3">
+          <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" checked /> Send welcome email with login credentials</label>
+          <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" checked /> Force password change on first login</label>
         </div>
 
-        <div class="alert alert-success mt-3" id="successAlert" style="display:none;">
+        <div class="bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-700 mt-4 hidden" id="successAlert">
           ✅ User created successfully! A welcome email has been sent.
         </div>
       </div>
 
+    </div><!-- /modal body -->
+
+    <!-- Modal footer -->
+    <div class="px-6 py-4 border-t border-slate-200 flex items-center justify-end gap-3 flex-shrink-0">
+      <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition" id="prevBtn" onclick="prevStep()" style="display:none;">← Back</button>
+      <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition" onclick="closeModal('createModal')">Cancel</button>
+      <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-700 text-white rounded-lg text-sm font-semibold hover:bg-blue-800 transition" id="nextBtn" onclick="nextStep()">Next →</button>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" id="prevBtn" onclick="prevStep()" style="display:none;">← Back</button>
-      <button class="btn btn-secondary" onclick="closeModal('createModal')">Cancel</button>
-      <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next →</button>
+
+  </div>
+</div>
+
+
+<!-- VIEW USER MODAL -->
+<div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden" id="viewModal">
+  <div class="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl">
+    <div class="flex items-start justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
+      <h3 class="font-bold text-slate-800 text-base" id="viewModalTitle">User Profile</h3>
+      <button class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition" onclick="closeModal('viewModal')">✕</button>
+    </div>
+    <div class="flex-1 overflow-y-auto px-6 py-5" id="viewModalBody"></div>
+    <div class="px-6 py-4 border-t border-slate-200 flex items-center justify-end gap-3 flex-shrink-0">
+      <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition" onclick="closeModal('viewModal')">Close</button>
+      <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-700 text-white rounded-lg text-sm font-semibold hover:bg-blue-800 transition">Edit User</button>
     </div>
   </div>
 </div>
 
-<!-- VIEW USER MODAL -->
-<div class="modal-overlay hidden" id="viewModal">
-  <div class="modal modal-lg">
-    <div class="modal-header">
-      <h3 id="viewModalTitle">User Profile</h3>
-      <button class="modal-close" onclick="closeModal('viewModal')">✕</button>
-    </div>
-    <div class="modal-body" id="viewModalBody"></div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('viewModal')">Close</button>
-      <button class="btn btn-primary">Edit User</button>
-    </div>
-  </div>
-</div>
 
 <script>
   /* ---- Sample Data ---- */
@@ -632,9 +588,18 @@
     { id:'USR-008', name:'Emily Carter',        role:'patient', dept:'—',           email:'e.carter@m.com',    phone:'+1 555-0203', joined:'Mar 07, 2026', status:'pending'  },
   ];
 
-  const roleBadge = { doctor:'badge-accent', patient:'badge-primary', admin:'badge-warning', super_admin:'badge-danger' };
+  const roleBadge = {
+    doctor:      'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-cyan-100 text-cyan-700',
+    patient:     'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700',
+    admin:       'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700',
+    super_admin: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700'
+  };
   const roleLabel = { doctor:'👨‍⚕️ Doctor', patient:'🧑 Patient', admin:'🛡️ Admin', super_admin:'⚙️ Super Admin' };
-  const statusBadge = { active:'badge-success', inactive:'badge-gray', pending:'badge-warning' };
+  const statusBadge = {
+    active:   'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700',
+    inactive: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600',
+    pending:  'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700'
+  };
 
   let currentFilter = 'all';
   let currentSearch = '';
@@ -650,47 +615,51 @@
       return matchRole && matchSearch;
     });
     tbody.innerHTML = filtered.map(u => `
-      <tr>
-        <td><input type="checkbox" /></td>
-        <td>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div class="avatar ${getAvatarColor(u.role)}">${initials(u.name)}</div>
+      <tr class="border-t border-slate-100 hover:bg-slate-50 transition">
+        <td class="px-4 py-3"><input type="checkbox" /></td>
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white ${getAvatarColor(u.role)}">${initials(u.name)}</div>
             <div>
-              <div style="font-weight:700;font-size:.88rem;">${u.name}</div>
-              <div style="font-size:.75rem;color:var(--gray-400);">${u.id}</div>
+              <div class="font-bold text-sm text-slate-800">${u.name}</div>
+              <div class="text-xs text-slate-400">${u.id}</div>
             </div>
           </div>
         </td>
-        <td><span class="badge ${roleBadge[u.role]}">${roleLabel[u.role]}</span></td>
-        <td style="color:var(--gray-600);font-size:.85rem;">${u.dept}</td>
-        <td>
-          <div style="font-size:.85rem;">${u.email}</div>
-          <div style="font-size:.78rem;color:var(--gray-400);">${u.phone}</div>
+        <td class="px-4 py-3"><span class="${roleBadge[u.role]}">${roleLabel[u.role]}</span></td>
+        <td class="px-4 py-3 text-slate-600 text-sm">${u.dept}</td>
+        <td class="px-4 py-3">
+          <div class="text-sm text-slate-700">${u.email}</div>
+          <div class="text-xs text-slate-400">${u.phone}</div>
         </td>
-        <td style="font-size:.85rem;color:var(--gray-500);">${u.joined}</td>
-        <td><span class="badge ${statusBadge[u.status]}">${u.status.charAt(0).toUpperCase()+u.status.slice(1)}</span></td>
-        <td>
-          <div class="action-btns">
-            <button class="action-btn" title="View" onclick="viewUser('${u.id}')">👁️</button>
-            <button class="action-btn" title="Edit">✏️</button>
-            <button class="action-btn danger" title="Delete">🗑️</button>
+        <td class="px-4 py-3 text-sm text-slate-500">${u.joined}</td>
+        <td class="px-4 py-3"><span class="${statusBadge[u.status]}">${u.status.charAt(0).toUpperCase()+u.status.slice(1)}</span></td>
+        <td class="px-4 py-3">
+          <div class="flex gap-1.5">
+            <button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-sm transition" title="View" onclick="viewUser('${u.id}')">👁️</button>
+            <button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-sm transition" title="Edit">✏️</button>
+            <button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-red-50 hover:border-red-200 flex items-center justify-center text-sm transition" title="Delete">🗑️</button>
           </div>
         </td>
       </tr>
-    `).join('') || `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray-400);">No users found</td></tr>`;
+    `).join('') || `<tr><td colspan="8" class="px-4 py-10 text-center text-slate-400">No users found</td></tr>`;
   }
 
   function initials(name) {
     return name.replace('Dr. ','').split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase();
   }
   function getAvatarColor(role) {
-    return {doctor:'avatar-blue',patient:'avatar-green',admin:'avatar-orange',super_admin:'avatar-purple'}[role] || 'avatar-blue';
+    return {doctor:'bg-blue-600', patient:'bg-green-600', admin:'bg-orange-500', super_admin:'bg-purple-600'}[role] || 'bg-blue-600';
   }
 
   function setFilter(role, el) {
     currentFilter = role;
-    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
+    document.querySelectorAll('.filter-tab').forEach(t => {
+      t.classList.remove('border-blue-700','bg-blue-700','text-white');
+      t.classList.add('border-slate-200','text-slate-600');
+    });
+    el.classList.remove('border-slate-200','text-slate-600');
+    el.classList.add('border-blue-700','bg-blue-700','text-white');
     renderTable();
   }
   function filterTable(val) {
@@ -714,20 +683,20 @@
     if (!u) return;
     document.getElementById('viewModalTitle').textContent = u.name + ' — Profile';
     document.getElementById('viewModalBody').innerHTML = `
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-        <div class="avatar avatar-lg ${getAvatarColor(u.role)}">${initials(u.name)}</div>
+      <div class="flex items-center gap-4 mb-5">
+        <div class="w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold text-white ${getAvatarColor(u.role)}">${initials(u.name)}</div>
         <div>
-          <h3>${u.name}</h3>
-          <span class="badge ${roleBadge[u.role]}">${roleLabel[u.role]}</span>
+          <h3 class="font-bold text-slate-800 text-base">${u.name}</h3>
+          <span class="${roleBadge[u.role]}">${roleLabel[u.role]}</span>
         </div>
       </div>
-      <div class="form-grid-2">
-        <div><label class="form-label">Email</label><p>${u.email}</p></div>
-        <div><label class="form-label">Phone</label><p>${u.phone}</p></div>
-        <div><label class="form-label">Department</label><p>${u.dept}</p></div>
-        <div><label class="form-label">Member Since</label><p>${u.joined}</p></div>
-        <div><label class="form-label">Status</label><p><span class="badge ${statusBadge[u.status]}">${u.status}</span></p></div>
-        <div><label class="form-label">User ID</label><p style="font-family:monospace;">${u.id}</p></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs font-semibold text-slate-600 block">Email</label><p class="text-sm text-slate-700 mt-0.5">${u.email}</p></div>
+        <div><label class="text-xs font-semibold text-slate-600 block">Phone</label><p class="text-sm text-slate-700 mt-0.5">${u.phone}</p></div>
+        <div><label class="text-xs font-semibold text-slate-600 block">Department</label><p class="text-sm text-slate-700 mt-0.5">${u.dept}</p></div>
+        <div><label class="text-xs font-semibold text-slate-600 block">Member Since</label><p class="text-sm text-slate-700 mt-0.5">${u.joined}</p></div>
+        <div><label class="text-xs font-semibold text-slate-600 block">Status</label><p class="mt-0.5"><span class="${statusBadge[u.status]}">${u.status}</span></p></div>
+        <div><label class="text-xs font-semibold text-slate-600 block">User ID</label><p class="text-sm text-slate-700 mt-0.5 font-mono">${u.id}</p></div>
       </div>`;
     openModal('viewModal');
   }
@@ -735,8 +704,12 @@
   /* ---- Multi-step form ---- */
   function selectUserRole(role, el) {
     selectedUserRole = role;
-    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('selected'));
-    el.classList.add('selected');
+    document.querySelectorAll('.role-tab').forEach(t => {
+      t.classList.remove('border-blue-600','bg-blue-50');
+      t.classList.add('border-slate-200');
+    });
+    el.classList.remove('border-slate-200');
+    el.classList.add('border-blue-600','bg-blue-50');
   }
 
   function nextStep() {
@@ -746,7 +719,7 @@
       showStep(currentStep);
     } else {
       // Submit
-      document.getElementById('successAlert').style.display = 'flex';
+      document.getElementById('successAlert').classList.remove('hidden');
       document.getElementById('nextBtn').textContent = '✅ Done';
       document.getElementById('nextBtn').onclick = () => closeModal('createModal');
     }
@@ -774,12 +747,26 @@
     }
   }
   function markStep(n, state) {
-    const el = document.getElementById('step'+n+'-ind');
-    el.classList.remove('active','done');
-    if (state !== 'pending') el.classList.add(state);
+    const ind = document.getElementById('step'+n+'-ind');
+    const circle = ind.querySelector('div');
+    // Reset circle classes
+    circle.classList.remove('bg-blue-700','text-white','bg-green-500','bg-slate-200','text-slate-500');
+    if (state === 'active') {
+      circle.classList.add('bg-blue-700','text-white');
+    } else if (state === 'done') {
+      circle.classList.add('bg-green-500','text-white');
+    } else {
+      circle.classList.add('bg-slate-200','text-slate-500');
+    }
     if (n < 3) {
       const line = document.getElementById('line'+n);
-      line.classList.toggle('done', state === 'done');
+      if (state === 'done') {
+        line.classList.add('bg-blue-500');
+        line.classList.remove('bg-slate-200');
+      } else {
+        line.classList.remove('bg-blue-500');
+        line.classList.add('bg-slate-200');
+      }
     }
   }
 
@@ -789,12 +776,12 @@
     const wrap = document.getElementById('hoursRows');
     if (!wrap || wrap.children.length > 0) return;
     wrap.innerHTML = days.map((d,i) => `
-      <div class="hours-grid" style="margin-bottom:8px;">
-        <span style="font-size:.85rem;font-weight:600;color:var(--gray-700);">${d}</span>
-        <input type="time" class="form-control" value="09:00" ${i>=5?'disabled':''} style="padding:7px 10px;" />
-        <input type="time" class="form-control" value="17:00" ${i>=5?'disabled':''} style="padding:7px 10px;" />
+      <div class="grid grid-cols-4 gap-2 items-center mb-2">
+        <span class="text-sm font-semibold text-slate-700">${d}</span>
+        <input type="time" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" value="09:00" ${i>=5?'disabled':''} />
+        <input type="time" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" value="17:00" ${i>=5?'disabled':''} />
         <div class="toggle ${i<5?'on':''}" onclick="this.classList.toggle('on');
-          const inputs=this.closest('.hours-grid').querySelectorAll('input[type=time]');
+          const inputs=this.closest('.grid').querySelectorAll('input[type=time]');
           inputs.forEach(inp=>inp.disabled=!this.classList.contains('on'));"></div>
       </div>`).join('');
   }

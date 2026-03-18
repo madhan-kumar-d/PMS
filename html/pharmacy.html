@@ -4,213 +4,131 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pharmacy — MediCare HMS</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-200); margin-bottom: 24px; }
-    .tab-btn {
-      padding: 10px 22px; font-size: .88rem; font-weight: 600; cursor: pointer;
-      border: none; background: none; color: var(--gray-500);
-      border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s;
-    }
-    .tab-btn:hover { color: var(--primary); }
-    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    .stock-level { height: 6px; background: var(--gray-100); border-radius: 999px; overflow: hidden; width: 80px; display: inline-block; vertical-align: middle; margin-left: 8px; }
-    .stock-bar { height: 100%; border-radius: 999px; }
-
-    .action-btn {
-      width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--gray-200);
-      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-      font-size: .88rem; background: var(--white); transition: all .15s;
-    }
-    .action-btn:hover { background: var(--gray-100); }
-
-    .list-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
-    .search-input-wrap { position: relative; flex: 1; min-width: 200px; }
-    .search-input-wrap input {
-      width: 100%; padding: 9px 12px 9px 36px;
-      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
-      font-size: .88rem; background: var(--gray-50);
-    }
-    .search-input-wrap input:focus { outline: none; border-color: var(--primary); background: var(--white); }
-    .search-input-wrap .ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#1a6fb5','primary-dark':'#135292','primary-light':'#e8f2fb',accent:'#0eb199'}}}}</script>
 </head>
-<body>
-<div class="layout">
+<body class="bg-slate-100 font-sans">
+<div class="flex">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">🏥</div>
-      <div>
-        <div class="logo-text">MediCare HMS</div>
-        <div class="logo-sub">Hospital Management</div>
+  <aside class="fixed left-0 top-0 h-screen w-64 bg-slate-900 flex flex-col z-30">
+    <div class="p-5 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-xl">🏥</div>
+        <div><div class="text-white font-bold text-sm">MediCare HMS</div><div class="text-slate-400 text-xs">Hospital Management</div></div>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-        <a href="booking.html"   class="nav-item"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
-        <a href="users.html"     class="nav-item"><span class="nav-icon">👥</span> Users</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Clinical</div>
-        <a href="patients.html"  class="nav-item"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
-        <a href="doctors.html"   class="nav-item"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
-        <a href="wards.html"     class="nav-item"><span class="nav-icon">🏨</span> Wards & Beds</a>
-        <a href="pharmacy.html"  class="nav-item active"><span class="nav-icon">💊</span> Pharmacy</a>
-        <a href="lab.html"       class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Administration</div>
-        <a href="billing.html" class="nav-item"><span class="nav-icon">💰</span> Billing</a>
-        <a href="reports.html" class="nav-item"><span class="nav-icon">📈</span> Reports</a>
-        <a href="#" class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
-      </div>
+    <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Main</p>
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📊 Dashboard</a>
+      <a href="booking.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📅 Appointments <span class="ml-auto text-xs bg-blue-500 text-white rounded-full px-2 py-0.5">5</span></a>
+      <a href="users.html"     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">👥 Users</a>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-4 pb-1">Clinical</p>
+      <a href="patients.html"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🧑‍⚕️ Patients</a>
+      <a href="doctors.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">👨‍⚕️ Doctors</a>
+      <a href="wards.html"     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🏨 Wards &amp; Beds</a>
+      <a href="pharmacy.html"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium bg-blue-700 text-white">💊 Pharmacy</a>
+      <a href="lab.html"       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🧪 Lab Results</a>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-4 pb-1">Administration</p>
+      <a href="billing.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">💰 Billing</a>
+      <a href="reports.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📈 Reports</a>
+      <a href="#"              class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">⚙️ Settings</a>
     </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="avatar avatar-blue">SA</div>
-        <div class="user-info">
-          <div class="user-name">Dr. Sarah Admin</div>
-          <div class="user-role">Super Admin</div>
-        </div>
-        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+    <div class="p-4 border-t border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white">SA</div>
+        <div class="flex-1 min-w-0"><div class="text-white text-sm font-semibold truncate">Dr. Sarah Admin</div><div class="text-slate-400 text-xs">Super Admin</div></div>
+        <a href="login.html" class="text-slate-400 hover:text-white text-sm">⏏</a>
       </div>
     </div>
   </aside>
 
   <!-- MAIN -->
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-left">
-        <div>
-          <div class="topbar-title">Pharmacy</div>
-          <div class="topbar-breadcrumb">Clinical / Pharmacy</div>
-        </div>
-      </div>
-      <div class="topbar-right">
-        <div class="topbar-search">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="Search drugs or prescriptions…" />
-        </div>
-        <button class="icon-btn">🔔<span class="dot"></span></button>
-        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+  <div class="ml-64 flex-1 min-h-screen">
+    <div class="sticky top-0 z-20 bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <div><div class="font-bold text-slate-800">Pharmacy</div><div class="text-xs text-slate-400">Clinical / Pharmacy</div></div>
+      <div class="flex items-center gap-3">
+        <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span><input type="text" placeholder="Search drugs or prescriptions…" class="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 w-52" /></div>
+        <button class="relative w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-50">🔔<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span></button>
+        <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white cursor-pointer">SA</div>
       </div>
     </div>
 
-    <div class="page-content">
-      <div class="page-header">
-        <div>
-          <h2>Pharmacy</h2>
-          <p>Drug inventory and prescription management</p>
-        </div>
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div><h2 class="text-xl font-bold text-slate-800">Pharmacy</h2><p class="text-sm text-slate-500 mt-1">Drug inventory and prescription management</p></div>
         <div class="flex gap-2">
-          <button class="btn btn-secondary">📦 Restock</button>
-          <button class="btn btn-primary">💊 New Prescription</button>
+          <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition">📦 Restock</button>
+          <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-700 text-white rounded-lg text-sm font-semibold hover:bg-blue-800 transition">💊 New Prescription</button>
         </div>
       </div>
 
       <!-- Stats -->
-      <div class="stats-grid" style="margin-bottom:22px;">
-        <div class="stat-card">
-          <div class="stat-icon blue">💊</div>
-          <div class="stat-info"><div class="stat-value">842</div><div class="stat-label">Drug Items in Stock</div></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon orange">⚠️</div>
-          <div class="stat-info"><div class="stat-value">14</div><div class="stat-label">Low Stock Alerts</div><div class="stat-change down">▼ Requires attention</div></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon green">📋</div>
-          <div class="stat-info"><div class="stat-value">58</div><div class="stat-label">Prescriptions Today</div><div class="stat-change up">▲ 12 dispensed</div></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon purple">📅</div>
-          <div class="stat-info"><div class="stat-value">6</div><div class="stat-label">Expiring This Month</div></div>
-        </div>
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl flex-shrink-0">💊</div><div><div class="text-2xl font-extrabold text-slate-800">842</div><div class="text-xs text-slate-500">Drug Items in Stock</div></div></div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-2xl flex-shrink-0">⚠️</div><div><div class="text-2xl font-extrabold text-slate-800">14</div><div class="text-xs text-slate-500">Low Stock Alerts</div><div class="text-xs text-red-500 font-semibold mt-1">▼ Requires attention</div></div></div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-2xl flex-shrink-0">📋</div><div><div class="text-2xl font-extrabold text-slate-800">58</div><div class="text-xs text-slate-500">Prescriptions Today</div><div class="text-xs text-green-600 font-semibold mt-1">▲ 12 dispensed</div></div></div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl flex-shrink-0">📅</div><div><div class="text-2xl font-extrabold text-slate-800">6</div><div class="text-xs text-slate-500">Expiring This Month</div></div></div>
       </div>
 
       <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('inventory', this)">📦 Inventory</button>
-        <button class="tab-btn" onclick="switchTab('prescriptions', this)">📋 Prescriptions</button>
+      <div class="flex border-b-2 border-slate-200 mb-6">
+        <button class="tab-btn px-6 py-2.5 text-sm font-semibold text-blue-700 border-b-2 border-blue-700 -mb-0.5 transition" onclick="switchTab('inventory',this)">📦 Inventory</button>
+        <button class="tab-btn px-6 py-2.5 text-sm font-semibold text-slate-500 border-b-2 border-transparent -mb-0.5 hover:text-blue-600 transition" onclick="switchTab('prescriptions',this)">📋 Prescriptions</button>
       </div>
 
       <!-- Inventory Tab -->
-      <div id="tab-inventory" class="tab-panel active">
-        <div class="card">
-          <div class="card-header">
-            <h3>Drug Inventory</h3>
+      <div id="tab-inventory">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-semibold text-slate-800">Drug Inventory</h3>
             <div class="flex gap-2">
-              <select class="form-select" style="width:auto;font-size:.85rem;">
-                <option>All Categories</option>
-                <option>Antibiotics</option>
-                <option>Analgesics</option>
-                <option>Cardiovascular</option>
-                <option>Oncology</option>
-                <option>Neurology</option>
-              </select>
-              <button class="btn btn-sm btn-secondary">⬇️ Export</button>
+              <select class="px-3 py-1.5 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500"><option>All Categories</option><option>Antibiotics</option><option>Analgesics</option><option>Cardiovascular</option><option>Oncology</option><option>Neurology</option></select>
+              <button class="inline-flex items-center gap-1 px-3 py-1.5 bg-white text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">⬇️ Export</button>
             </div>
           </div>
-          <div class="card-body" style="padding:0;">
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Drug Name</th>
-                    <th>Category</th>
-                    <th>Stock</th>
-                    <th>Unit</th>
-                    <th>Unit Price</th>
-                    <th>Expiry</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="inventoryBody"></tbody>
-              </table>
-            </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Drug Name</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Category</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Stock</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Unit</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Unit Price</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Expiry</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
 
       <!-- Prescriptions Tab -->
-      <div id="tab-prescriptions" class="tab-panel">
-        <div class="card">
-          <div class="card-header">
-            <h3>Prescriptions</h3>
-            <div class="flex gap-2">
-              <select class="form-select" style="width:auto;font-size:.85rem;">
-                <option>All Status</option>
-                <option>Pending</option>
-                <option>Dispensed</option>
-                <option>Cancelled</option>
-              </select>
-            </div>
+      <div id="tab-prescriptions" class="hidden">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-semibold text-slate-800">Prescriptions</h3>
+            <select class="px-3 py-1.5 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500"><option>All Status</option><option>Pending</option><option>Dispensed</option><option>Cancelled</option></select>
           </div>
-          <div class="card-body" style="padding:0;">
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Rx ID</th>
-                    <th>Patient</th>
-                    <th>Prescribed By</th>
-                    <th>Drugs</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="rxBody"></tbody>
-              </table>
-            </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Rx ID</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Patient</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Prescribed By</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Drugs</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rxBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -242,59 +160,67 @@
     { id:'RX-2026-0206', patient:'Carlos Mendes',   doctor:'Dr. Patel',   drugs:'Ceftriaxone 1g, Morphine 10mg/ml',   date:'Mar 09, 2026', status:'cancelled' },
   ];
 
-  const rxStatus = { pending:'badge-warning', dispensed:'badge-success', cancelled:'badge-gray' };
-  const rxLabel  = { pending:'⏳ Pending',    dispensed:'✅ Dispensed',  cancelled:'❌ Cancelled' };
+  const rxStatus = { pending:'bg-amber-100 text-amber-700', dispensed:'bg-green-100 text-green-700', cancelled:'bg-slate-100 text-slate-600' };
+  const rxLabel  = { pending:'⏳ Pending', dispensed:'✅ Dispensed', cancelled:'❌ Cancelled' };
 
   function renderInventory() {
     const tbody = document.getElementById('inventoryBody');
     const MAX = 600;
     tbody.innerHTML = drugs.map(d => {
       const pct = Math.min(100, Math.round((d.stock / MAX) * 100));
-      const barColor = d.low ? '#ef4444' : pct > 30 ? '#22c55e' : '#f97316';
+      const barColor = d.low ? 'bg-red-500' : pct > 30 ? 'bg-green-500' : 'bg-orange-500';
+      const rowCls = d.low ? 'bg-red-50' : '';
       return `
-        <tr>
-          <td style="font-weight:600;font-size:.88rem;">💊 ${d.name}</td>
-          <td><span class="badge badge-primary">${d.cat}</span></td>
-          <td>
-            <span style="font-weight:700;font-size:.88rem;color:${d.low ? 'var(--danger)' : 'var(--gray-800)'};">${d.stock}</span>
-            <div class="stock-level"><div class="stock-bar" style="width:${pct}%;background:${barColor};"></div></div>
+        <tr class="hover:bg-slate-50 transition ${rowCls}">
+          <td class="px-4 py-3 border-t border-slate-100 font-semibold text-sm ${d.low ? 'border-l-4 border-l-red-400' : ''}">💊 ${d.name}</td>
+          <td class="px-4 py-3 border-t border-slate-100"><span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">${d.cat}</span></td>
+          <td class="px-4 py-3 border-t border-slate-100">
+            <span class="font-bold text-sm ${d.low ? 'text-red-600' : 'text-slate-800'}">${d.stock}</span>
+            <div class="inline-block w-20 h-1.5 bg-slate-200 rounded-full overflow-hidden ml-2 align-middle"><div class="h-1.5 rounded-full ${barColor}" style="width:${pct}%"></div></div>
           </td>
-          <td style="font-size:.85rem;color:var(--gray-500);">${d.unit}</td>
-          <td style="font-size:.85rem;font-weight:700;">$${d.price.toFixed(2)}</td>
-          <td style="font-size:.85rem;color:var(--gray-500);">${d.expiry}</td>
-          <td>${d.low ? '<span class="badge badge-danger">⚠️ Low Stock</span>' : '<span class="badge badge-success">✅ Adequate</span>'}</td>
-          <td>
-            <button class="action-btn" title="Edit">✏️</button>
-            <button class="action-btn" title="Restock" style="margin-left:4px;">📦</button>
+          <td class="px-4 py-3 border-t border-slate-100 text-sm text-slate-500">${d.unit}</td>
+          <td class="px-4 py-3 border-t border-slate-100 font-bold text-sm">$${d.price.toFixed(2)}</td>
+          <td class="px-4 py-3 border-t border-slate-100 text-sm text-slate-500">${d.expiry}</td>
+          <td class="px-4 py-3 border-t border-slate-100">${d.low ? '<span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700">⚠️ Low Stock</span>' : '<span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">✅ Adequate</span>'}</td>
+          <td class="px-4 py-3 border-t border-slate-100">
+            <div class="flex gap-1.5">
+              <button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 flex items-center justify-center text-sm transition">✏️</button>
+              <button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 flex items-center justify-center text-sm transition">📦</button>
+            </div>
           </td>
-        </tr>
-      `;
+        </tr>`;
     }).join('');
   }
 
   function renderPrescriptions() {
     const tbody = document.getElementById('rxBody');
     tbody.innerHTML = rxs.map(r => `
-      <tr>
-        <td style="font-family:monospace;font-size:.82rem;color:var(--primary);">${r.id}</td>
-        <td style="font-weight:600;font-size:.88rem;">${r.patient}</td>
-        <td style="font-size:.85rem;color:var(--gray-600);">${r.doctor}</td>
-        <td style="font-size:.82rem;color:var(--gray-600);max-width:200px;">${r.drugs}</td>
-        <td style="font-size:.85rem;color:var(--gray-500);">${r.date}</td>
-        <td><span class="badge ${rxStatus[r.status]}">${rxLabel[r.status]}</span></td>
-        <td>
-          <button class="action-btn" title="View">👁️</button>
-          ${r.status === 'pending' ? '<button class="action-btn" title="Dispense" style="margin-left:4px;">✅</button>' : ''}
+      <tr class="hover:bg-slate-50 transition">
+        <td class="px-4 py-3 border-t border-slate-100 font-mono text-xs text-blue-700">${r.id}</td>
+        <td class="px-4 py-3 border-t border-slate-100 font-semibold text-sm">${r.patient}</td>
+        <td class="px-4 py-3 border-t border-slate-100 text-sm text-slate-600">${r.doctor}</td>
+        <td class="px-4 py-3 border-t border-slate-100 text-xs text-slate-600 max-w-48">${r.drugs}</td>
+        <td class="px-4 py-3 border-t border-slate-100 text-sm text-slate-500">${r.date}</td>
+        <td class="px-4 py-3 border-t border-slate-100"><span class="text-xs font-semibold px-2 py-0.5 rounded-full ${rxStatus[r.status]}">${rxLabel[r.status]}</span></td>
+        <td class="px-4 py-3 border-t border-slate-100">
+          <div class="flex gap-1.5">
+            <button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 flex items-center justify-center text-sm transition">👁️</button>
+            ${r.status === 'pending' ? '<button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 flex items-center justify-center text-sm transition">✅</button>' : ''}
+          </div>
         </td>
-      </tr>
-    `).join('');
+      </tr>`).join('');
   }
 
   function switchTab(name, el) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('tab-' + name).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.remove('text-blue-700','border-blue-700');
+      b.classList.add('text-slate-500','border-transparent');
+    });
+    el.classList.remove('text-slate-500','border-transparent');
+    el.classList.add('text-blue-700','border-blue-700');
+    document.getElementById('tab-inventory').classList.add('hidden');
+    document.getElementById('tab-prescriptions').classList.add('hidden');
+    document.getElementById('tab-' + name).classList.remove('hidden');
   }
 
   renderInventory();

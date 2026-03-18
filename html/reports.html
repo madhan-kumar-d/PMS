@@ -4,209 +4,185 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reports — MediCare HMS</title>
-  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#1a6fb5','primary-dark':'#135292','primary-light':'#e8f2fb',accent:'#0eb199'}}}}</script>
   <style>
-    .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin-bottom: 28px; }
-    .report-card {
-      background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-200);
-      padding: 22px; cursor: pointer; transition: all var(--transition);
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .report-card:hover { box-shadow: var(--shadow); border-color: var(--primary); transform: translateY(-2px); }
-    .report-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-    .report-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
-    .report-title { font-weight: 700; font-size: .95rem; color: var(--gray-800); }
-    .report-desc  { font-size: .82rem; color: var(--gray-500); line-height: 1.5; }
-    .report-meta  { display: flex; align-items: center; justify-content: space-between; font-size: .78rem; color: var(--gray-400); padding-top: 10px; border-top: 1px solid var(--gray-100); }
-
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 28px; }
-    .kpi-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-200); padding: 18px; text-align: center; }
-    .kpi-val  { font-size: 1.5rem; font-weight: 800; color: var(--gray-800); }
-    .kpi-lbl  { font-size: .78rem; color: var(--gray-500); margin-top: 4px; }
-    .kpi-chg  { font-size: .75rem; font-weight: 600; margin-top: 6px; }
-    .kpi-up   { color: var(--success); }
-    .kpi-down { color: var(--danger); }
-
     .bar-chart { display: flex; align-items: flex-end; gap: 10px; height: 160px; padding: 0 4px; }
     .bar-col   { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .bar-fill  { width: 100%; border-radius: 6px 6px 0 0; transition: height .5s; min-width: 28px; }
-    .bar-lbl   { font-size: .72rem; color: var(--gray-500); font-weight: 600; white-space: nowrap; }
-    .bar-val   { font-size: .72rem; color: var(--gray-600); font-weight: 700; }
+    .bar-lbl   { font-size: .72rem; color: #64748b; font-weight: 600; white-space: nowrap; }
+    .bar-val   { font-size: .72rem; color: #475569; font-weight: 700; }
 
-    .horiz-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .horiz-bar-label { font-size: .83rem; color: var(--gray-700); font-weight: 600; min-width: 120px; }
-    .horiz-bar-track { flex: 1; height: 10px; background: var(--gray-100); border-radius: 999px; overflow: hidden; }
+    .horiz-bar       { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .horiz-bar-label { font-size: .83rem; color: #334155; font-weight: 600; min-width: 120px; }
+    .horiz-bar-track { flex: 1; height: 10px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
     .horiz-bar-fill  { height: 100%; border-radius: 999px; transition: width .5s; }
-    .horiz-bar-val   { font-size: .82rem; font-weight: 700; color: var(--gray-600); min-width: 40px; text-align: right; }
-
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+    .horiz-bar-val   { font-size: .82rem; font-weight: 700; color: #475569; min-width: 40px; text-align: right; }
   </style>
 </head>
-<body>
-<div class="layout">
+<body class="bg-slate-100 font-sans">
+<div class="flex">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">🏥</div>
-      <div>
-        <div class="logo-text">MediCare HMS</div>
-        <div class="logo-sub">Hospital Management</div>
+  <aside class="fixed left-0 top-0 h-screen w-64 bg-slate-900 flex flex-col z-30">
+    <div class="p-5 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-xl">🏥</div>
+        <div>
+          <div class="text-white font-bold text-sm">MediCare HMS</div>
+          <div class="text-slate-400 text-xs">Hospital Management</div>
+        </div>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-        <a href="booking.html"   class="nav-item"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
-        <a href="users.html"     class="nav-item"><span class="nav-icon">👥</span> Users</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Clinical</div>
-        <a href="patients.html"  class="nav-item"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
-        <a href="doctors.html"   class="nav-item"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
-        <a href="wards.html"     class="nav-item"><span class="nav-icon">🏨</span> Wards & Beds</a>
-        <a href="pharmacy.html"  class="nav-item"><span class="nav-icon">💊</span> Pharmacy</a>
-        <a href="lab.html"       class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Administration</div>
-        <a href="billing.html"   class="nav-item"><span class="nav-icon">💰</span> Billing</a>
-        <a href="reports.html"   class="nav-item active"><span class="nav-icon">📈</span> Reports</a>
-        <a href="#"              class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
-      </div>
+    <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Main</p>
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📊 Dashboard</a>
+      <a href="booking.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📅 Appointments <span class="ml-auto text-xs bg-blue-500 text-white rounded-full px-2 py-0.5">5</span></a>
+      <a href="users.html"     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">👥 Users</a>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-4 pb-1">Clinical</p>
+      <a href="patients.html"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🧑‍⚕️ Patients</a>
+      <a href="doctors.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">👨‍⚕️ Doctors</a>
+      <a href="wards.html"     class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🏨 Wards &amp; Beds</a>
+      <a href="pharmacy.html"  class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">💊 Pharmacy</a>
+      <a href="lab.html"       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🧪 Lab Results</a>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-4 pb-1">Administration</p>
+      <a href="billing.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">💰 Billing</a>
+      <a href="reports.html"   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium bg-blue-700 text-white">📈 Reports</a>
+      <a href="#"              class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">⚙️ Settings</a>
     </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="avatar avatar-blue">SA</div>
-        <div class="user-info">
-          <div class="user-name">Dr. Sarah Admin</div>
-          <div class="user-role">Super Admin</div>
+    <div class="p-4 border-t border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white">SA</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-white text-sm font-semibold truncate">Dr. Sarah Admin</div>
+          <div class="text-slate-400 text-xs">Super Admin</div>
         </div>
-        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+        <a href="login.html" class="text-slate-400 hover:text-white text-sm">⏏</a>
       </div>
     </div>
   </aside>
 
   <!-- MAIN -->
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-left">
-        <div>
-          <div class="topbar-title">Reports</div>
-          <div class="topbar-breadcrumb">Administration / Reports</div>
-        </div>
+  <div class="ml-64 flex-1 min-h-screen">
+
+    <!-- Topbar -->
+    <div class="sticky top-0 z-20 bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <div>
+        <div class="font-bold text-slate-800">Reports</div>
+        <div class="text-xs text-slate-400">Administration / Reports</div>
       </div>
-      <div class="topbar-right">
-        <div class="topbar-search">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="Search reports…" />
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+          <input type="text" placeholder="Search reports…" class="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 w-56" />
         </div>
-        <button class="icon-btn">🔔<span class="dot"></span></button>
-        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+        <button class="relative w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-base">🔔<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span></button>
+        <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white cursor-pointer">SA</div>
       </div>
     </div>
 
-    <div class="page-content">
-      <div class="page-header">
+    <!-- Page Content -->
+    <div class="p-6">
+
+      <!-- Page Header -->
+      <div class="flex items-center justify-between mb-6">
         <div>
-          <h2>Reports & Analytics</h2>
-          <p>Hospital performance metrics and downloadable reports</p>
+          <h2 class="text-xl font-bold text-slate-800">Reports &amp; Analytics</h2>
+          <p class="text-sm text-slate-500 mt-0.5">Hospital performance metrics and downloadable reports</p>
         </div>
-        <div class="flex gap-2">
-          <select class="form-select" style="width:auto;">
+        <div class="flex items-center gap-2">
+          <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 focus:outline-none focus:border-blue-500">
             <option>March 2026</option>
             <option>February 2026</option>
             <option>January 2026</option>
             <option>Q1 2026</option>
           </select>
-          <button class="btn btn-primary">⬇️ Export All</button>
+          <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-700 text-white rounded-lg text-sm font-semibold hover:bg-blue-800 transition">⬇️ Export All</button>
         </div>
       </div>
 
       <!-- KPI Strip -->
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-val">1,248</div>
-          <div class="kpi-lbl">Total Patients</div>
-          <div class="kpi-chg kpi-up">▲ 12%</div>
+      <div class="grid grid-cols-3 md:grid-cols-6 gap-4 mb-7">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 text-center">
+          <div class="text-2xl font-extrabold text-slate-800">1,248</div>
+          <div class="text-xs text-slate-500 mt-1">Total Patients</div>
+          <div class="text-xs font-semibold mt-1.5 text-green-600">▲ 12%</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-val">64</div>
-          <div class="kpi-lbl">Active Doctors</div>
-          <div class="kpi-chg kpi-up">▲ 3 new</div>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 text-center">
+          <div class="text-2xl font-extrabold text-slate-800">64</div>
+          <div class="text-xs text-slate-500 mt-1">Active Doctors</div>
+          <div class="text-xs font-semibold mt-1.5 text-green-600">▲ 3 new</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-val">842</div>
-          <div class="kpi-lbl">Appointments</div>
-          <div class="kpi-chg kpi-up">▲ 7%</div>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 text-center">
+          <div class="text-2xl font-extrabold text-slate-800">842</div>
+          <div class="text-xs text-slate-500 mt-1">Appointments</div>
+          <div class="text-xs font-semibold mt-1.5 text-green-600">▲ 7%</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-val">87%</div>
-          <div class="kpi-lbl">Bed Occupancy</div>
-          <div class="kpi-chg kpi-down">▼ 2%</div>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 text-center">
+          <div class="text-2xl font-extrabold text-slate-800">87%</div>
+          <div class="text-xs text-slate-500 mt-1">Bed Occupancy</div>
+          <div class="text-xs font-semibold mt-1.5 text-red-500">▼ 2%</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-val">$284K</div>
-          <div class="kpi-lbl">Revenue</div>
-          <div class="kpi-chg kpi-up">▲ 9%</div>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 text-center">
+          <div class="text-2xl font-extrabold text-slate-800">$284K</div>
+          <div class="text-xs text-slate-500 mt-1">Revenue</div>
+          <div class="text-xs font-semibold mt-1.5 text-green-600">▲ 9%</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-val">4.7</div>
-          <div class="kpi-lbl">Patient Satisfaction</div>
-          <div class="kpi-chg kpi-up">▲ 0.2</div>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 text-center">
+          <div class="text-2xl font-extrabold text-slate-800">4.7</div>
+          <div class="text-xs text-slate-500 mt-1">Patient Satisfaction</div>
+          <div class="text-xs font-semibold mt-1.5 text-green-600">▲ 0.2</div>
         </div>
       </div>
 
-      <!-- Charts Row -->
-      <div class="two-col" style="margin-bottom:28px;">
+      <!-- Charts Row 1 -->
+      <div class="grid grid-cols-2 gap-5 mb-7">
 
-        <!-- Appointments by month -->
-        <div class="card">
-          <div class="card-header">
-            <h3>Appointments per Week</h3>
-            <span class="badge badge-success">● Live</span>
+        <!-- Appointments per Week -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-semibold text-slate-800 text-sm">Appointments per Week</h3>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">● Live</span>
           </div>
-          <div class="card-body">
+          <div class="px-5 py-4">
             <div class="bar-chart" id="apptChart"></div>
           </div>
         </div>
 
-        <!-- Revenue by dept -->
-        <div class="card">
-          <div class="card-header">
-            <h3>Revenue by Department</h3>
-            <span class="text-xs text-muted">March 2026</span>
+        <!-- Revenue by Department -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-semibold text-slate-800 text-sm">Revenue by Department</h3>
+            <span class="text-xs text-slate-400">March 2026</span>
           </div>
-          <div class="card-body">
+          <div class="px-5 py-4">
             <div id="revenueChart"></div>
           </div>
         </div>
 
       </div>
 
-      <!-- Second Row -->
-      <div class="two-col" style="margin-bottom:28px;">
+      <!-- Charts Row 2 -->
+      <div class="grid grid-cols-2 gap-5 mb-7">
 
-        <!-- Top diagnoses -->
-        <div class="card">
-          <div class="card-header">
-            <h3>Top Diagnoses</h3>
-            <span class="text-xs text-muted">This month</span>
+        <!-- Top Diagnoses -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-semibold text-slate-800 text-sm">Top Diagnoses</h3>
+            <span class="text-xs text-slate-400">This month</span>
           </div>
-          <div class="card-body">
+          <div class="px-5 py-4">
             <div id="diagChart"></div>
           </div>
         </div>
 
-        <!-- Doctor performance -->
-        <div class="card">
-          <div class="card-header">
-            <h3>Doctor Performance</h3>
-            <span class="text-xs text-muted">Patients seen this month</span>
+        <!-- Doctor Performance -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-semibold text-slate-800 text-sm">Doctor Performance</h3>
+            <span class="text-xs text-slate-400">Patients seen this month</span>
           </div>
-          <div class="card-body" style="padding-top:16px;padding-bottom:16px;">
+          <div class="px-5 py-4">
             <div id="doctorPerf"></div>
           </div>
         </div>
@@ -214,8 +190,8 @@
       </div>
 
       <!-- Available Reports -->
-      <h3 style="margin-bottom:16px;color:var(--gray-700);">Available Reports</h3>
-      <div class="report-grid" id="reportGrid"></div>
+      <h3 class="text-sm font-bold text-slate-700 mb-4">Available Reports</h3>
+      <div class="grid grid-cols-3 gap-5" id="reportGrid"></div>
 
     </div>
   </div>
@@ -239,18 +215,18 @@
     return `
       <div class="bar-col">
         <div class="bar-val">${w.val}</div>
-        <div class="bar-fill" style="height:${h}px;background:${isLast ? 'var(--primary)' : 'var(--primary-light)'};border:1.5px solid ${isLast ? 'var(--primary-dark)' : 'var(--gray-200)'};"></div>
+        <div class="bar-fill" style="height:${h}px;background:${isLast ? '#1a6fb5' : '#e8f2fb'};border:1.5px solid ${isLast ? '#135292' : '#e2e8f0'};"></div>
         <div class="bar-lbl">${w.lbl}</div>
       </div>`;
   }).join('');
 
   /* --- Horizontal bar: Revenue by dept --- */
   const depts = [
-    { name:'Cardiology',     rev:84200, color:'var(--primary)'  },
-    { name:'Oncology',       rev:72600, color:'#8b5cf6'         },
-    { name:'Surgery',        rev:61400, color:'#f97316'         },
-    { name:'Neurology',      rev:38900, color:'var(--accent)'   },
-    { name:'Pediatrics',     rev:27220, color:'#22c55e'         },
+    { name:'Cardiology',     rev:84200, color:'#1a6fb5'  },
+    { name:'Oncology',       rev:72600, color:'#8b5cf6'  },
+    { name:'Surgery',        rev:61400, color:'#f97316'  },
+    { name:'Neurology',      rev:38900, color:'#0eb199'  },
+    { name:'Pediatrics',     rev:27220, color:'#22c55e'  },
   ];
   const maxRev = Math.max(...depts.map(d => d.rev));
   document.getElementById('revenueChart').innerHTML = depts.map(d => `
@@ -263,12 +239,12 @@
 
   /* --- Horizontal bar: Top diagnoses --- */
   const diags = [
-    { name:'Hypertension',     count:148, color:'var(--primary)'  },
-    { name:'Diabetes Type 2',  count:112, color:'#f97316'         },
-    { name:'Cardiac Disease',  count:98,  color:'var(--danger)'   },
-    { name:'Respiratory',      count:76,  color:'var(--accent)'   },
-    { name:'Neurological',     count:64,  color:'#8b5cf6'         },
-    { name:'Oncology',         count:52,  color:'#ec4899'         },
+    { name:'Hypertension',     count:148, color:'#1a6fb5'  },
+    { name:'Diabetes Type 2',  count:112, color:'#f97316'  },
+    { name:'Cardiac Disease',  count:98,  color:'#ef4444'  },
+    { name:'Respiratory',      count:76,  color:'#0eb199'  },
+    { name:'Neurological',     count:64,  color:'#8b5cf6'  },
+    { name:'Oncology',         count:52,  color:'#ec4899'  },
   ];
   const maxDiag = Math.max(...diags.map(d => d.count));
   document.getElementById('diagChart').innerHTML = diags.map(d => `
@@ -281,17 +257,17 @@
 
   /* --- Doctor performance table --- */
   const docPerf = [
-    { name:'Dr. S. Patel',  spec:'Cardiology', patients:68, rating:4.9, color:'avatar-blue',   av:'SP' },
-    { name:'Dr. L. Chen',   spec:'Oncology',   patients:54, rating:4.8, color:'avatar-orange', av:'LC' },
-    { name:'Dr. T. Nguyen', spec:'Neurology',  patients:47, rating:4.7, color:'avatar-purple', av:'TN' },
-    { name:'Dr. J. Smith',  spec:'Pediatrics', patients:82, rating:4.6, color:'avatar-green',  av:'JS' },
+    { name:'Dr. S. Patel',  spec:'Cardiology', patients:68, rating:4.9, bgClass:'bg-blue-600',   av:'SP' },
+    { name:'Dr. L. Chen',   spec:'Oncology',   patients:54, rating:4.8, bgClass:'bg-orange-500', av:'LC' },
+    { name:'Dr. T. Nguyen', spec:'Neurology',  patients:47, rating:4.7, bgClass:'bg-purple-600', av:'TN' },
+    { name:'Dr. J. Smith',  spec:'Pediatrics', patients:82, rating:4.6, bgClass:'bg-green-600',  av:'JS' },
   ];
   document.getElementById('doctorPerf').innerHTML = docPerf.map(d => `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-      <div class="avatar ${d.color}">${d.av}</div>
+      <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white ${d.bgClass}">${d.av}</div>
       <div style="flex:1;">
         <div style="font-weight:700;font-size:.88rem;">${d.name}</div>
-        <div style="font-size:.75rem;color:var(--gray-500);">${d.spec}</div>
+        <div style="font-size:.75rem;color:#64748b;">${d.spec}</div>
       </div>
       <div style="text-align:right;">
         <div style="font-weight:700;font-size:.9rem;">${d.patients} pts</div>
@@ -302,31 +278,31 @@
 
   /* --- Available reports list --- */
   const reports = [
-    { icon:'👤', bg:'var(--primary-light)', title:'Patient Summary Report',      desc:'Demographics, admission rates, diagnosis distribution and discharge stats.',   updated:'Mar 12, 2026', format:'PDF / CSV' },
-    { icon:'👨‍⚕️', bg:'#ede9fe',             title:'Doctor Activity Report',       desc:'Consultations, patient load, and performance ratings per doctor.',              updated:'Mar 12, 2026', format:'PDF / XLSX' },
-    { icon:'💰', bg:'#dcfce7',              title:'Financial Statement',           desc:'Revenue, expenses, outstanding invoices and collection rates by department.',   updated:'Mar 12, 2026', format:'PDF / XLSX' },
-    { icon:'🏨', bg:'#ffedd5',              title:'Bed Occupancy Report',          desc:'Ward-level bed usage, peak occupancy times and average length of stay.',        updated:'Mar 11, 2026', format:'PDF' },
-    { icon:'📅', bg:'#fef3c7',              title:'Appointment Analytics',         desc:'Booking trends, cancellation rates, no-shows and slot utilisation by doctor.',  updated:'Mar 12, 2026', format:'PDF / CSV' },
-    { icon:'💊', bg:'#f0fdf4',              title:'Pharmacy & Drug Usage Report',  desc:'Drug consumption, stock turnover, low-stock alerts and prescription trends.',   updated:'Mar 10, 2026', format:'PDF / CSV' },
-    { icon:'🧪', bg:'#f0f9ff',              title:'Lab Test Volume Report',        desc:'Test volumes, turnaround times, abnormal result rates by test category.',       updated:'Mar 11, 2026', format:'PDF' },
-    { icon:'⭐', bg:'#fdf4ff',              title:'Patient Satisfaction Report',   desc:'Survey scores, feedback themes, and department-level satisfaction ratings.',    updated:'Mar 09, 2026', format:'PDF' },
+    { icon:'👤', bg:'#e8f2fb',  title:'Patient Summary Report',      desc:'Demographics, admission rates, diagnosis distribution and discharge stats.',   updated:'Mar 12, 2026', format:'PDF / CSV' },
+    { icon:'👨‍⚕️', bg:'#ede9fe', title:'Doctor Activity Report',       desc:'Consultations, patient load, and performance ratings per doctor.',              updated:'Mar 12, 2026', format:'PDF / XLSX' },
+    { icon:'💰', bg:'#dcfce7',  title:'Financial Statement',           desc:'Revenue, expenses, outstanding invoices and collection rates by department.',   updated:'Mar 12, 2026', format:'PDF / XLSX' },
+    { icon:'🏨', bg:'#ffedd5',  title:'Bed Occupancy Report',          desc:'Ward-level bed usage, peak occupancy times and average length of stay.',        updated:'Mar 11, 2026', format:'PDF' },
+    { icon:'📅', bg:'#fef3c7',  title:'Appointment Analytics',         desc:'Booking trends, cancellation rates, no-shows and slot utilisation by doctor.',  updated:'Mar 12, 2026', format:'PDF / CSV' },
+    { icon:'💊', bg:'#f0fdf4',  title:'Pharmacy & Drug Usage Report',  desc:'Drug consumption, stock turnover, low-stock alerts and prescription trends.',   updated:'Mar 10, 2026', format:'PDF / CSV' },
+    { icon:'🧪', bg:'#f0f9ff',  title:'Lab Test Volume Report',        desc:'Test volumes, turnaround times, abnormal result rates by test category.',       updated:'Mar 11, 2026', format:'PDF' },
+    { icon:'⭐', bg:'#fdf4ff',  title:'Patient Satisfaction Report',   desc:'Survey scores, feedback themes, and department-level satisfaction ratings.',    updated:'Mar 09, 2026', format:'PDF' },
   ];
   document.getElementById('reportGrid').innerHTML = reports.map(r => `
-    <div class="report-card" onclick="">
-      <div class="report-card-top">
-        <div style="display:flex;align-items:flex-start;gap:12px;">
-          <div class="report-icon" style="background:${r.bg};">${r.icon}</div>
+    <div class="bg-white rounded-xl border border-slate-200 p-5 cursor-pointer hover:shadow-md hover:border-blue-400 hover:-translate-y-0.5 transition-all flex flex-col gap-3" onclick="">
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex items-start gap-3">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style="background:${r.bg};">${r.icon}</div>
           <div>
-            <div class="report-title">${r.title}</div>
-            <div class="report-desc">${r.desc}</div>
+            <div class="font-bold text-sm text-slate-800">${r.title}</div>
+            <div class="text-xs text-slate-500 leading-relaxed mt-0.5">${r.desc}</div>
           </div>
         </div>
       </div>
-      <div class="report-meta">
+      <div class="flex items-center justify-between text-xs text-slate-400 pt-2.5 border-t border-slate-100">
         <span>🗓️ Updated ${r.updated}</span>
-        <div style="display:flex;gap:8px;">
-          <span style="font-size:.75rem;background:var(--gray-100);padding:3px 10px;border-radius:999px;font-weight:600;color:var(--gray-600);">${r.format}</span>
-          <button class="btn btn-sm btn-primary" style="padding:4px 12px;font-size:.78rem;">⬇️ Download</button>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600">${r.format}</span>
+          <button class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-700 text-white rounded-lg text-xs font-semibold hover:bg-blue-800 transition">⬇️ Download</button>
         </div>
       </div>
     </div>

@@ -4,181 +4,138 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Billing — MediCare HMS</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-200); margin-bottom: 24px; }
-    .tab-btn {
-      padding: 10px 22px; font-size: .88rem; font-weight: 600; cursor: pointer;
-      border: none; background: none; color: var(--gray-500);
-      border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s;
-    }
-    .tab-btn:hover { color: var(--primary); }
-    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    .action-btn {
-      width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--gray-200);
-      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-      font-size: .88rem; background: var(--white); transition: all .15s;
-    }
-    .action-btn:hover { background: var(--gray-100); }
-    .action-btn.danger:hover { background: #fee2e2; border-color: #fca5a5; }
-
-    .list-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
-    .search-input-wrap { position: relative; flex: 1; min-width: 200px; }
-    .search-input-wrap input {
-      width: 100%; padding: 9px 12px 9px 36px;
-      border: 1.5px solid var(--gray-200); border-radius: var(--radius);
-      font-size: .88rem; background: var(--gray-50);
-    }
-    .search-input-wrap input:focus { outline: none; border-color: var(--primary); background: var(--white); }
-    .search-input-wrap .ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
-
-    .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-    .filter-tab {
-      padding: 7px 16px; border-radius: 999px; font-size: .82rem; font-weight: 700;
-      cursor: pointer; border: 1.5px solid var(--gray-200); color: var(--gray-600); transition: all .15s;
-    }
-    .filter-tab:hover { border-color: var(--primary); color: var(--primary); }
-    .filter-tab.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
-
-    .amount-positive { color: #16a34a; font-weight: 700; }
-    .amount-negative { color: var(--danger); font-weight: 700; }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:'#1a6fb5','primary-dark':'#135292','primary-light':'#e8f2fb',accent:'#0eb199'}}}}</script>
 </head>
-<body>
-<div class="layout">
+<body class="bg-slate-100 font-sans">
+<div class="flex">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">🏥</div>
-      <div>
-        <div class="logo-text">MediCare HMS</div>
-        <div class="logo-sub">Hospital Management</div>
+  <aside class="fixed left-0 top-0 h-screen w-64 bg-slate-900 flex flex-col z-30">
+    <div class="p-5 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-xl">🏥</div>
+        <div>
+          <div class="text-white font-bold text-sm">MediCare HMS</div>
+          <div class="text-slate-400 text-xs">Hospital Management</div>
+        </div>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-        <a href="booking.html"   class="nav-item"><span class="nav-icon">📅</span> Appointments <span class="nav-badge">5</span></a>
-        <a href="users.html"     class="nav-item"><span class="nav-icon">👥</span> Users</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Clinical</div>
-        <a href="patients.html"  class="nav-item"><span class="nav-icon">🧑‍⚕️</span> Patients</a>
-        <a href="doctors.html"   class="nav-item"><span class="nav-icon">👨‍⚕️</span> Doctors</a>
-        <a href="wards.html"     class="nav-item"><span class="nav-icon">🏨</span> Wards & Beds</a>
-        <a href="pharmacy.html"  class="nav-item"><span class="nav-icon">💊</span> Pharmacy</a>
-        <a href="lab.html"       class="nav-item"><span class="nav-icon">🧪</span> Lab Results</a>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Administration</div>
-        <a href="billing.html"   class="nav-item active"><span class="nav-icon">💰</span> Billing</a>
-        <a href="reports.html"   class="nav-item"><span class="nav-icon">📈</span> Reports</a>
-        <a href="#"              class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
-      </div>
+    <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Main</p>
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📊 Dashboard</a>
+      <a href="booking.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📅 Appointments <span class="ml-auto text-xs bg-blue-500 text-white rounded-full px-2 py-0.5">5</span></a>
+      <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">👥 Users</a>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Clinical</p>
+      <a href="patients.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🧑‍⚕️ Patients</a>
+      <a href="doctors.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">👨‍⚕️ Doctors</a>
+      <a href="wards.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🏨 Wards &amp; Beds</a>
+      <a href="pharmacy.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">💊 Pharmacy</a>
+      <a href="lab.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">🧪 Lab Results</a>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 pt-3 pb-1">Administration</p>
+      <a href="billing.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium bg-blue-700 text-white">💰 Billing</a>
+      <a href="reports.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">📈 Reports</a>
+      <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition">⚙️ Settings</a>
     </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="avatar avatar-blue">SA</div>
-        <div class="user-info">
-          <div class="user-name">Dr. Sarah Admin</div>
-          <div class="user-role">Super Admin</div>
+    <div class="p-4 border-t border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white">SA</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-white text-sm font-semibold truncate">Dr. Sarah Admin</div>
+          <div class="text-slate-400 text-xs">Super Admin</div>
         </div>
-        <a href="login.html" title="Logout" style="color:var(--gray-500);font-size:.9rem;">⏏</a>
+        <a href="login.html" class="text-slate-400 hover:text-white text-sm">⏏</a>
       </div>
     </div>
   </aside>
 
   <!-- MAIN -->
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-left">
+  <div class="ml-64 flex-1 min-h-screen">
+    <div class="sticky top-0 z-20 bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-4">
         <div>
-          <div class="topbar-title">Billing</div>
-          <div class="topbar-breadcrumb">Administration / Billing</div>
+          <div class="text-base font-bold text-slate-800">Billing</div>
+          <div class="text-xs text-slate-400">Administration / Billing</div>
         </div>
       </div>
-      <div class="topbar-right">
-        <div class="topbar-search">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="Search invoices…" />
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+          <input type="text" placeholder="Search invoices…" class="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 w-52" />
         </div>
-        <button class="icon-btn">🔔<span class="dot"></span></button>
-        <div class="avatar avatar-blue" style="cursor:pointer;">SA</div>
+        <button class="relative w-9 h-9 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-lg transition">🔔<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span></button>
+        <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white cursor-pointer">SA</div>
       </div>
     </div>
 
-    <div class="page-content">
-      <div class="page-header">
+    <div class="p-6">
+      <!-- Page Header -->
+      <div class="flex items-center justify-between mb-6">
         <div>
-          <h2>Billing</h2>
-          <p>Invoice management and payment tracking</p>
+          <h2 class="text-xl font-extrabold text-slate-800">Billing</h2>
+          <p class="text-sm text-slate-500 mt-0.5">Invoice management and payment tracking</p>
         </div>
-        <div class="flex gap-2">
-          <button class="btn btn-secondary">⬇️ Export</button>
-          <button class="btn btn-primary" onclick="openModal('invoiceModal')">➕ New Invoice</button>
+        <div class="flex items-center gap-2">
+          <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition">⬇️ Export</button>
+          <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-700 text-white rounded-lg text-sm font-semibold hover:bg-blue-800 transition" onclick="openModal('invoiceModal')">➕ New Invoice</button>
         </div>
       </div>
 
       <!-- Stats -->
-      <div class="stats-grid" style="margin-bottom:22px;">
-        <div class="stat-card">
-          <div class="stat-icon blue">💵</div>
-          <div class="stat-info">
-            <div class="stat-value">$284,320</div>
-            <div class="stat-label">Total Revenue (Mar)</div>
-            <div class="stat-change up">▲ 9% vs last month</div>
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl flex-shrink-0">💵</div>
+          <div>
+            <div class="text-2xl font-extrabold text-slate-800">$284,320</div>
+            <div class="text-xs text-slate-500">Total Revenue (Mar)</div>
+            <div class="text-xs text-green-600 font-semibold mt-1">▲ 9% vs last month</div>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon green">✅</div>
-          <div class="stat-info">
-            <div class="stat-value">$198,740</div>
-            <div class="stat-label">Collected</div>
-            <div class="stat-change up">▲ 70% collection rate</div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-2xl flex-shrink-0">✅</div>
+          <div>
+            <div class="text-2xl font-extrabold text-slate-800">$198,740</div>
+            <div class="text-xs text-slate-500">Collected</div>
+            <div class="text-xs text-green-600 font-semibold mt-1">▲ 70% collection rate</div>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon orange">⏳</div>
-          <div class="stat-info">
-            <div class="stat-value">$62,480</div>
-            <div class="stat-label">Pending</div>
-            <div class="stat-change down">▼ 48 invoices</div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-2xl flex-shrink-0">⏳</div>
+          <div>
+            <div class="text-2xl font-extrabold text-slate-800">$62,480</div>
+            <div class="text-xs text-slate-500">Pending</div>
+            <div class="text-xs text-red-500 font-semibold mt-1">▼ 48 invoices</div>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon purple">🔴</div>
-          <div class="stat-info">
-            <div class="stat-value">$23,100</div>
-            <div class="stat-label">Overdue</div>
-            <div class="stat-change down">▼ 12 invoices</div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl flex-shrink-0">🔴</div>
+          <div>
+            <div class="text-2xl font-extrabold text-slate-800">$23,100</div>
+            <div class="text-xs text-slate-500">Overdue</div>
+            <div class="text-xs text-red-500 font-semibold mt-1">▼ 12 invoices</div>
           </div>
         </div>
       </div>
 
       <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('invoices', this)">🧾 Invoices</button>
-        <button class="tab-btn" onclick="switchTab('payments', this)">💳 Payments</button>
+      <div class="flex border-b-2 border-slate-200 mb-6">
+        <button class="tab-btn px-5 py-2.5 text-sm font-semibold cursor-pointer border-b-2 -mb-0.5 text-blue-600 border-blue-600 transition" onclick="switchTab('invoices', this)">🧾 Invoices</button>
+        <button class="tab-btn px-5 py-2.5 text-sm font-semibold cursor-pointer border-b-2 border-transparent -mb-0.5 text-slate-500 hover:text-blue-600 transition" onclick="switchTab('payments', this)">💳 Payments</button>
       </div>
 
       <!-- Invoices Tab -->
-      <div id="tab-invoices" class="tab-panel active">
-        <div class="card">
-          <div class="card-header">
-            <div class="filter-tabs" id="filterTabs">
-              <div class="filter-tab active" onclick="setFilter('all',this)">All</div>
-              <div class="filter-tab" onclick="setFilter('paid',this)">✅ Paid</div>
-              <div class="filter-tab" onclick="setFilter('pending',this)">⏳ Pending</div>
-              <div class="filter-tab" onclick="setFilter('overdue',this)">🔴 Overdue</div>
-              <div class="filter-tab" onclick="setFilter('cancelled',this)">❌ Cancelled</div>
+      <div id="tab-invoices" class="block">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-4 flex-wrap">
+            <div class="flex gap-2 flex-wrap" id="filterTabs">
+              <div class="filter-tab px-4 py-1.5 rounded-full text-xs font-bold border border-blue-700 bg-blue-700 text-white cursor-pointer transition" onclick="setFilter('all',this)">All</div>
+              <div class="filter-tab px-4 py-1.5 rounded-full text-xs font-bold border border-slate-200 bg-white text-slate-600 cursor-pointer hover:border-blue-500 hover:text-blue-600 transition" onclick="setFilter('paid',this)">✅ Paid</div>
+              <div class="filter-tab px-4 py-1.5 rounded-full text-xs font-bold border border-slate-200 bg-white text-slate-600 cursor-pointer hover:border-blue-500 hover:text-blue-600 transition" onclick="setFilter('pending',this)">⏳ Pending</div>
+              <div class="filter-tab px-4 py-1.5 rounded-full text-xs font-bold border border-slate-200 bg-white text-slate-600 cursor-pointer hover:border-blue-500 hover:text-blue-600 transition" onclick="setFilter('overdue',this)">🔴 Overdue</div>
+              <div class="filter-tab px-4 py-1.5 rounded-full text-xs font-bold border border-slate-200 bg-white text-slate-600 cursor-pointer hover:border-blue-500 hover:text-blue-600 transition" onclick="setFilter('cancelled',this)">❌ Cancelled</div>
             </div>
-            <div class="flex gap-2">
-              <select class="form-select" style="width:auto;font-size:.85rem;">
+            <div class="flex items-center gap-2">
+              <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
                 <option>All Departments</option>
                 <option>Cardiology</option>
                 <option>Oncology</option>
@@ -187,64 +144,58 @@
               </select>
             </div>
           </div>
-          <div class="card-body" style="padding:0;">
-            <div style="padding:16px 20px;border-bottom:1px solid var(--gray-100);">
-              <div class="list-toolbar" style="margin-bottom:0;">
-                <div class="search-input-wrap">
-                  <span class="ico">🔍</span>
-                  <input type="text" placeholder="Search by patient, invoice ID…" oninput="filterInvoices(this.value)" />
-                </div>
-              </div>
+          <div class="px-5 py-3 border-b border-slate-100">
+            <div class="relative flex-1 min-w-48">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+              <input type="text" placeholder="Search by patient, invoice ID…" oninput="filterInvoices(this.value)" class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500" />
             </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Invoice ID</th>
-                    <th>Patient</th>
-                    <th>Services</th>
-                    <th>Amount</th>
-                    <th>Insurance</th>
-                    <th>Due Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="invoiceBody"></tbody>
-              </table>
-            </div>
-            <div style="padding:14px 20px;border-top:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;">
-              <span class="text-sm text-muted">Showing 1–10 of 312 invoices</span>
-              <div class="flex gap-2">
-                <button class="btn btn-sm btn-secondary">← Prev</button>
-                <button class="btn btn-sm btn-primary">Next →</button>
-              </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Invoice ID</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Patient</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Services</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Insurance</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Due Date</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="invoiceBody"></tbody>
+            </table>
+          </div>
+          <div class="px-5 py-3 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-sm text-slate-500">Showing 1–10 of 312 invoices</span>
+            <div class="flex items-center gap-2">
+              <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-50 transition">← Prev</button>
+              <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-700 text-white rounded-lg text-xs font-semibold hover:bg-blue-800 transition">Next →</button>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Payments Tab -->
-      <div id="tab-payments" class="tab-panel">
-        <div class="card">
-          <div class="card-body" style="padding:0;">
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Txn ID</th>
-                    <th>Patient</th>
-                    <th>Invoice</th>
-                    <th>Method</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="paymentsBody"></tbody>
-              </table>
-            </div>
+      <div id="tab-payments" class="hidden">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Txn ID</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Patient</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Invoice</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Method</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="paymentsBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -253,20 +204,20 @@
 </div>
 
 <!-- NEW INVOICE MODAL -->
-<div class="modal-overlay hidden" id="invoiceModal">
-  <div class="modal modal-lg">
-    <div class="modal-header">
+<div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden" id="invoiceModal">
+  <div class="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
       <div>
-        <h3>➕ New Invoice</h3>
-        <p class="text-sm text-muted" style="margin-top:3px;">Create a billing invoice for a patient.</p>
+        <h3 class="text-base font-bold text-slate-800">➕ New Invoice</h3>
+        <p class="text-sm text-slate-500 mt-0.5">Create a billing invoice for a patient.</p>
       </div>
-      <button class="modal-close" onclick="closeModal('invoiceModal')">✕</button>
+      <button class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition" onclick="closeModal('invoiceModal')">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="form-grid-2">
-        <div class="form-group col-span-2">
-          <label class="form-label">Patient *</label>
-          <select class="form-select">
+    <div class="flex-1 overflow-y-auto px-6 py-5">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="col-span-2 flex flex-col gap-1">
+          <label class="text-xs font-semibold text-slate-600">Patient *</label>
+          <select class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white">
             <option value="">— Select Patient —</option>
             <option>James Donovan (PT-001)</option>
             <option>Maria Rodriguez (PT-002)</option>
@@ -275,50 +226,50 @@
             <option>Robert Brown (PT-005)</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">Invoice Date *</label>
-          <input type="date" class="form-control" />
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-slate-600">Invoice Date *</label>
+          <input type="date" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" />
         </div>
-        <div class="form-group">
-          <label class="form-label">Due Date *</label>
-          <input type="date" class="form-control" />
-        </div>
-      </div>
-      <div class="divider"></div>
-      <label class="form-label">Line Items</label>
-      <div id="lineItems">
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:10px;">
-          <div><input type="text" class="form-control" placeholder="Service description" /></div>
-          <div><input type="number" class="form-control" placeholder="Qty" value="1" min="1" /></div>
-          <div><input type="number" class="form-control" placeholder="Unit price ($)" /></div>
-          <button onclick="this.closest('div[style]').remove()" style="width:32px;height:42px;border-radius:8px;border:1px solid #fca5a5;background:#fee2e2;cursor:pointer;font-size:1rem;">✕</button>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-slate-600">Due Date *</label>
+          <input type="date" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" />
         </div>
       </div>
-      <button onclick="addLineItem()" class="btn btn-sm btn-secondary" style="margin-top:4px;">+ Add Item</button>
-      <div class="divider"></div>
-      <div class="form-grid-2">
-        <div class="form-group">
-          <label class="form-label">Insurance Provider</label>
-          <input type="text" class="form-control" placeholder="Blue Cross Blue Shield" />
+      <hr class="my-4 border-slate-100">
+      <label class="text-xs font-semibold text-slate-600">Line Items</label>
+      <div id="lineItems" class="grid gap-3 mt-2">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end;">
+          <div><input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white w-full" placeholder="Service description" /></div>
+          <div><input type="number" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white w-full" placeholder="Qty" value="1" min="1" /></div>
+          <div><input type="number" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white w-full" placeholder="Unit price ($)" /></div>
+          <button onclick="this.closest('div[style]').remove()" class="w-8 h-10 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 flex items-center justify-center text-sm cursor-pointer transition">✕</button>
         </div>
-        <div class="form-group">
-          <label class="form-label">Insurance Coverage ($)</label>
-          <input type="number" class="form-control" placeholder="0.00" />
+      </div>
+      <button onclick="addLineItem()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold hover:bg-slate-50 transition mt-3">+ Add Item</button>
+      <hr class="my-4 border-slate-100">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-slate-600">Insurance Provider</label>
+          <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="Blue Cross Blue Shield" />
         </div>
-        <div class="form-group">
-          <label class="form-label">Discount (%)</label>
-          <input type="number" class="form-control" placeholder="0" min="0" max="100" />
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-slate-600">Insurance Coverage ($)</label>
+          <input type="number" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="0.00" />
         </div>
-        <div class="form-group">
-          <label class="form-label">Notes</label>
-          <input type="text" class="form-control" placeholder="Optional notes" />
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-slate-600">Discount (%)</label>
+          <input type="number" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="0" min="0" max="100" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold text-slate-600">Notes</label>
+          <input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white" placeholder="Optional notes" />
         </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('invoiceModal')">Cancel</button>
-      <button class="btn btn-secondary">💾 Save Draft</button>
-      <button class="btn btn-primary">✅ Create Invoice</button>
+    <div class="px-6 py-4 border-t border-slate-200 flex items-center justify-end gap-3 flex-shrink-0">
+      <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition" onclick="closeModal('invoiceModal')">Cancel</button>
+      <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-slate-700 border border-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-50 transition">💾 Save Draft</button>
+      <button class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-700 text-white rounded-lg text-sm font-semibold hover:bg-blue-800 transition">✅ Create Invoice</button>
     </div>
   </div>
 </div>
@@ -345,12 +296,20 @@
     { txn:'TXN-9005', patient:'Emily Carter',    invoice:'INV-2026-0306', method:'Cash',        amount:120,  date:'Mar 14, 2026', status:'completed' },
   ];
 
-  const invStatus  = { paid:'badge-success', pending:'badge-warning', overdue:'badge-danger', cancelled:'badge-gray' };
+  const invStatus  = {
+    paid:      'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700',
+    pending:   'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700',
+    overdue:   'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700',
+    cancelled: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600'
+  };
   const invLabel   = { paid:'✅ Paid',        pending:'⏳ Pending',    overdue:'🔴 Overdue',   cancelled:'❌ Cancelled' };
-  const payStatus  = { completed:'badge-success', partial:'badge-warning' };
+  const payStatus  = {
+    completed: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700',
+    partial:   'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700'
+  };
   const payLabel   = { completed:'✅ Completed', partial:'⚡ Partial' };
   const methodIcon = { Insurance:'🏥', Medicare:'🏛️', Card:'💳', Cash:'💵' };
-  const avatarCls  = ['avatar-blue','avatar-green','avatar-orange','avatar-purple'];
+  const avatarBg   = ['bg-blue-600','bg-green-600','bg-orange-500','bg-purple-600'];
 
   let currentFilter = 'all';
   let currentSearch = '';
@@ -363,65 +322,76 @@
       return matchStatus && matchSearch;
     });
     tbody.innerHTML = filtered.map((inv, idx) => `
-      <tr>
-        <td style="font-family:monospace;font-size:.82rem;color:var(--primary);">${inv.id}</td>
-        <td>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div class="avatar avatar-sm ${avatarCls[idx % 4]}">${inv.patient.split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
-            <span style="font-weight:600;font-size:.88rem;">${inv.patient}</span>
+      <tr class="border-t border-slate-100 hover:bg-slate-50 transition">
+        <td class="px-4 py-3 font-mono text-xs text-blue-700">${inv.id}</td>
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white ${avatarBg[idx % 4]}">${inv.patient.split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
+            <span class="font-semibold text-sm text-slate-800">${inv.patient}</span>
           </div>
         </td>
-        <td style="font-size:.82rem;color:var(--gray-500);max-width:180px;">${inv.services}</td>
-        <td class="amount-positive">$${inv.amount.toLocaleString()}</td>
-        <td style="font-size:.82rem;color:var(--gray-600);">${inv.insurance}</td>
-        <td style="font-size:.82rem;color:var(--gray-500);">${inv.due}</td>
-        <td><span class="badge ${invStatus[inv.status]}">${invLabel[inv.status]}</span></td>
-        <td>
-          <div style="display:flex;gap:4px;">
-            <button class="action-btn" title="View">👁️</button>
-            <button class="action-btn" title="Print">🖨️</button>
-            ${inv.status === 'pending' || inv.status === 'overdue' ? '<button class="action-btn" title="Record Payment">💳</button>' : ''}
+        <td class="px-4 py-3 text-xs text-slate-500 max-w-[180px]">${inv.services}</td>
+        <td class="px-4 py-3 text-sm font-bold text-green-600">$${inv.amount.toLocaleString()}</td>
+        <td class="px-4 py-3 text-xs text-slate-600">${inv.insurance}</td>
+        <td class="px-4 py-3 text-xs text-slate-500">${inv.due}</td>
+        <td class="px-4 py-3"><span class="${invStatus[inv.status]}">${invLabel[inv.status]}</span></td>
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-1">
+            <button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-sm transition" title="View">👁️</button>
+            <button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-sm transition" title="Print">🖨️</button>
+            ${inv.status === 'pending' || inv.status === 'overdue' ? '<button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-sm transition" title="Record Payment">💳</button>' : ''}
           </div>
         </td>
       </tr>
-    `).join('') || `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray-400);">No invoices found</td></tr>`;
+    `).join('') || `<tr><td colspan="8" class="px-4 py-10 text-center text-slate-400 text-sm">No invoices found</td></tr>`;
   }
 
   function renderPayments() {
     const tbody = document.getElementById('paymentsBody');
     tbody.innerHTML = payments.map((p, idx) => `
-      <tr>
-        <td style="font-family:monospace;font-size:.82rem;color:var(--accent);">${p.txn}</td>
-        <td>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div class="avatar avatar-sm ${avatarCls[idx % 4]}">${p.patient.split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
-            <span style="font-weight:600;font-size:.88rem;">${p.patient}</span>
+      <tr class="border-t border-slate-100 hover:bg-slate-50 transition">
+        <td class="px-4 py-3 font-mono text-xs text-accent">${p.txn}</td>
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white ${avatarBg[idx % 4]}">${p.patient.split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
+            <span class="font-semibold text-sm text-slate-800">${p.patient}</span>
           </div>
         </td>
-        <td style="font-family:monospace;font-size:.82rem;color:var(--primary);">${p.invoice}</td>
-        <td style="font-size:.85rem;">${methodIcon[p.method] || ''} ${p.method}</td>
-        <td class="amount-positive">$${p.amount.toLocaleString()}</td>
-        <td style="font-size:.82rem;color:var(--gray-500);">${p.date}</td>
-        <td><span class="badge ${payStatus[p.status]}">${payLabel[p.status]}</span></td>
-        <td><button class="action-btn" title="Receipt">🧾</button></td>
+        <td class="px-4 py-3 font-mono text-xs text-blue-700">${p.invoice}</td>
+        <td class="px-4 py-3 text-sm">${methodIcon[p.method] || ''} ${p.method}</td>
+        <td class="px-4 py-3 text-sm font-bold text-green-600">$${p.amount.toLocaleString()}</td>
+        <td class="px-4 py-3 text-xs text-slate-500">${p.date}</td>
+        <td class="px-4 py-3"><span class="${payStatus[p.status]}">${payLabel[p.status]}</span></td>
+        <td class="px-4 py-3"><button class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-sm transition" title="Receipt">🧾</button></td>
       </tr>
     `).join('');
   }
 
   function setFilter(val, el) {
     currentFilter = val;
-    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
+    document.querySelectorAll('.filter-tab').forEach(t => {
+      t.classList.remove('border-blue-700', 'bg-blue-700', 'text-white');
+      t.classList.add('border-slate-200', 'bg-white', 'text-slate-600');
+    });
+    el.classList.remove('border-slate-200', 'bg-white', 'text-slate-600');
+    el.classList.add('border-blue-700', 'bg-blue-700', 'text-white');
     renderInvoices();
   }
 
   function filterInvoices(val) { currentSearch = val.toLowerCase(); renderInvoices(); }
 
   function switchTab(name, el) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('tab-' + name).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.remove('text-blue-600', 'border-blue-600');
+      b.classList.add('text-slate-500', 'border-transparent');
+    });
+    el.classList.remove('text-slate-500', 'border-transparent');
+    el.classList.add('text-blue-600', 'border-blue-600');
+    document.querySelectorAll('#tab-invoices, #tab-payments').forEach(p => {
+      if (!p.classList.contains('hidden')) p.classList.add('hidden');
+    });
+    const panel = document.getElementById('tab-' + name);
+    if (panel.classList.contains('hidden')) panel.classList.remove('hidden');
   }
 
   function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
@@ -430,12 +400,12 @@
   function addLineItem() {
     const wrap = document.getElementById('lineItems');
     const div = document.createElement('div');
-    div.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:10px;';
+    div.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end;';
     div.innerHTML = `
-      <div><input type="text" class="form-control" placeholder="Service description" /></div>
-      <div><input type="number" class="form-control" placeholder="Qty" value="1" min="1" /></div>
-      <div><input type="number" class="form-control" placeholder="Unit price ($)" /></div>
-      <button onclick="this.closest('div[style]').remove()" style="width:32px;height:42px;border-radius:8px;border:1px solid #fca5a5;background:#fee2e2;cursor:pointer;font-size:1rem;">✕</button>
+      <div><input type="text" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white w-full" placeholder="Service description" /></div>
+      <div><input type="number" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white w-full" placeholder="Qty" value="1" min="1" /></div>
+      <div><input type="number" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-500 focus:bg-white w-full" placeholder="Unit price ($)" /></div>
+      <button onclick="this.closest('div[style]').remove()" class="w-8 h-10 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 flex items-center justify-center text-sm cursor-pointer transition">✕</button>
     `;
     wrap.appendChild(div);
   }
