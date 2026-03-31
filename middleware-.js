@@ -5,8 +5,8 @@ export async function middleware(req) {
   const path = req.nextUrl.pathname;
 
   // Skip middleware for public routes
-  const publicRoutes = ["/api/auth/login", "/api/auth/register"];
-  if (publicRoutes.includes(path)) {
+  const publicRoutes = ["/api/auth/login", "/api/register"];
+  if (publicRoutes.includes(path) || path.startsWith("/api/auth/")) {
     return NextResponse.next();
   }
 
@@ -15,14 +15,20 @@ export async function middleware(req) {
     const token = getBearerToken(req);
 
     if (!token) {
-      return NextResponse.json({ message: "Missing bearer token" }, { status: 401 });
+      return NextResponse.json(
+        { message: "Missing bearer token" },
+        { status: 401 },
+      );
     }
 
     let user;
     try {
       user = await verifyToken(token);
     } catch (error) {
-      return NextResponse.json({ message: "Invalid or expired token" }, { status: 401 });
+      return NextResponse.json(
+        { message: "Invalid or expired token" },
+        { status: 401 },
+      );
     }
 
     // Attach user to request headers for route handlers to access

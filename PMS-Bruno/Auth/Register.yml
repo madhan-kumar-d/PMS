@@ -5,12 +5,13 @@ info:
 
 http:
   method: POST
-  url: "{{base}}/register"
+  url: "{{base}}/auth/register"
   body:
     type: json
     data: |-
       {
-        "name": "Madhan"
+        "name": "Madhan",
+        "role": "doctor"
       }
   auth: inherit
 
