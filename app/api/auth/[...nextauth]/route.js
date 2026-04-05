@@ -37,6 +37,12 @@ export const authOptions = {
           throw new Error("Account is not active. Contact your administrator");
         }
 
+        if (user.role === "patient") {
+          throw new Error(
+            "Login facilities are limited. Patients are not allowed",
+          );
+        }
+
         return {
           id: String(user.id),
           name: user.name,

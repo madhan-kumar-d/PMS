@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model appointment {
@@ -118,7 +119,7 @@ model users {
   patients_patients_createdbyTousers       patients[]           @relation("patients_createdbyTousers")
   patients_patients_updatedbyTousers       patients[]           @relation("patients_updatedbyTousers")
   patients_patients_user_idTousers         patients[]           @relation("patients_user_idTousers")
-  users_users_createdbyTousers             users                @relation("users_createdbyTousers", fields: [createdby], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_users_createdbyTousers             users?               @relation("users_createdbyTousers", fields: [createdby], references: [id], onDelete: NoAction, onUpdate: NoAction)
   other_users_users_createdbyTousers       users[]              @relation("users_createdbyTousers")
   users_users_modifiedbyTousers            users?               @relation("users_modifiedbyTousers", fields: [modifiedby], references: [id], onDelete: NoAction, onUpdate: NoAction)
   other_users_users_modifiedbyTousers      users[]              @relation("users_modifiedbyTousers")

@@ -2,11 +2,13 @@
   "name": "hospitals",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "prisma db seed"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.5.0",
@@ -28,5 +30,8 @@
     "prisma": "^7.5.0",
     "tailwindcss": "^4",
     "@tailwindcss/postcss": "^4"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }
